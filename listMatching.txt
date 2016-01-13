@@ -1,0 +1,30 @@
+#!/bin/bash
+count=1
+while read line1
+    do
+      line2=`sed -n "$count"p 2.txt`
+      if [ "$line1" = "$line2" ] 
+      then
+        :
+	#echo "$line2" >> 2f.txt
+      elif [ "$line1" != "$line2" ] && [ ! -z "$line2" ]
+      then
+        echo >> 2f.txt
+	sed -n ''$count',3p' 2.txt >> 2f.txt
+	cp 2f.txt 2.txt
+      fi
+        count=`expr $count + 1`
+done < 1.txt
+cat 2.txt
+
+###sed 's/$line2/^H/g' "$2.txt"
+
+sed 's/$line2/" "/g' > 2f.txt
+
+: '
+      if [ "$line1" = "$line2" ] 
+      then
+        echo "$line2" >> 2f.txt
+        sed -n ''$count',3p' 2.txt >> 2f.txt
+	mv 2f.txt 2.txt 
+      '
