@@ -1,30 +1,54 @@
+############################################################################################
+# NAME: listMatching
+#
+# DESCRIPTION:
+# This script will merge all sources' list of hosts together and show
+# which hosts are missing and which hosts are in the exception list 
+#
+# OUTPUT: 
+#   1  A                   YES                 YES                 YES                 YES
+#   2  B                   YES                 N/A 0001            YES                 YES
+#   3  C                   YES                 YES                 YES
+#   4  D                   YES                 YES
+#   5  E                   YES                 N/A 0002                                YES
+#   6  F                                       YES                                     YES
+#   7  G                   N/A 0001            YES                 N/A 0001            YES
+#   8  H                   N/A 0002            YES                 N/A 0002            YES
+#   9  I                   N/A 0003            N/A 0003            YES                 YES
+#  10  J                   N/A 0004            N/A 0004            YES                 YES
+#
+# ENVIRONMENT VARIABLES:
+# 
+# NOTES:
+#
+# EXIT CODE:
+# 0 - success
+# 1 - incorrect arguements
+#
+# AUTHOR:
+# PHAT TRAN
+#############################################################################################
+
 #!/bin/bash
-count=1
-while read line1
-    do
-      line2=`sed -n "$count"p 2.txt`
-      if [ "$line1" = "$line2" ] 
-      then
-        :
-	#echo "$line2" >> 2f.txt
-      elif [ "$line1" != "$line2" ] && [ ! -z "$line2" ]
-      then
-        echo >> 2f.txt
-	sed -n ''$count',3p' 2.txt >> 2f.txt
-	cp 2f.txt 2.txt
-      fi
-        count=`expr $count + 1`
-done < 1.txt
-cat 2.txt
-
-###sed 's/$line2/^H/g' "$2.txt"
-
-sed 's/$line2/" "/g' > 2f.txt
-
-: '
-      if [ "$line1" = "$line2" ] 
-      then
-        echo "$line2" >> 2f.txt
-        sed -n ''$count',3p' 2.txt >> 2f.txt
-	mv 2f.txt 2.txt 
-      '
+cat source1.txt source2.txt source3.txt source4.txt | sort -u > Master.txt
+for f in source1.txt source2.txt source3.txt source4.txt
+do
+rm final$f
+	while read line1
+	do
+		grep "$line1" $f > /dev/null
+		if [ $? -eq 0 ] 
+		then
+			echo "YES" >> final$f
+		else
+			grep "$line1" Ex$f > /dev/null
+			if [ $? -eq 0 ]
+			then
+				grep "$line1" Ex$f | awk '{print "N/A " $1}' >> final$f
+			else
+				echo >> final$f
+			fi
+		fi
+	done < Master.txt
+done
+paste Master.txt finalsource1.txt finalsource2.txt finalsource3.txt finalsource4.txt | pr -t -e20 > Masterlists.txt 
