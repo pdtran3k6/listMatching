@@ -1,54 +1,92 @@
-############################################################################################
+#!/bin/ksh
+###########################################################################################################
 # NAME: listMatching
 #
 # DESCRIPTION:
 # This script will merge all sources' list of hosts together and show
 # which hosts are missing and which hosts are in the exception list 
 #
-# OUTPUT: 
-#   1  A                   YES                 YES                 YES                 YES
-#   2  B                   YES                 N/A 0001            YES                 YES
-#   3  C                   YES                 YES                 YES
-#   4  D                   YES                 YES
-#   5  E                   YES                 N/A 0002                                YES
-#   6  F                                       YES                                     YES
-#   7  G                   N/A 0001            YES                 N/A 0001            YES
-#   8  H                   N/A 0002            YES                 N/A 0002            YES
-#   9  I                   N/A 0003            N/A 0003            YES                 YES
-#  10  J                   N/A 0004            N/A 0004            YES                 YES
+# INPUT: 
+# SOURCE1, SOURCE2, ... , SOURCEN: one file per source that contains a column of host names 
+# registered in a particular source
+# 
+# ExceptionFile: contains a list of all the exception hosts that shouldn't be in certain sources.
+# 
+# SOURCE1name, SOURCE2name, ... , SOURCENname: a file containing the name of the source. 
+# This file is used to make the header of the table 
+# Title: a file containing the word "Hostname".
 #
+#
+# OUTPUT:
+# finalSOURCE1, finalSOURCE2, ... , finalSOURCEN: one file per source that contains a column 
+# filled with YES, blank ( ), or N/A ex# (N/A 2093)
+#
+# MasterList: Table with the first column being the master list of all the sources, 
+# then the rest of the columns are the finalSOURCE1, finalSOURCE2, ... , finalSOURCEN.
+# 
+# 
 # ENVIRONMENT VARIABLES:
 # 
 # NOTES:
+# The name of the sources in the ExceptionFile must match the names of sources 
+# as defined in the variables below
+#
+#
 #
 # EXIT CODE:
 # 0 - success
 # 1 - incorrect arguements
 #
-# AUTHOR:
-# PHAT TRAN
-#############################################################################################
+# CHANGELOG:
+# Jan 20 2016 PHAT TRAN
+############################################################################################################
 
-#!/bin/bash
-cat source1.txt source2.txt source3.txt source4.txt | sort -u > Master.txt
-for f in source1.txt source2.txt source3.txt source4.txt
+SOURCEDIR=/u1/tranp
+SOURCE1=Altiris
+SOURCE2=AV
+SOURCE3=OVO
+SOURCE4=SNC
+MASTER=Master.txt
+SOURCE1name=Altirisname
+SOURCE2name=AVname
+SOURCE3name=OVOname
+SOURCE4name=SNCname
+
+cd $SOURCEDIR
+
+cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u > $MASTER
+for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 
 do
-rm final$f
-	while read line1
+rm final$source
+	while read hostName;
 	do
-		grep "$line1" $f > /dev/null
+		# Check to see if the host is in the source
+		grep "$hostName" $source > /dev/null
 		if [ $? -eq 0 ] 
 		then
-			echo "YES" >> final$f
+			echo "YES" >> final$source
 		else
-			grep "$line1" Ex$f > /dev/null
+			# If not found in the source, check if it's in the ExceptionFile
+			grep "$source		$hostName" ExceptionFile > /dev/null
+
 			if [ $? -eq 0 ]
 			then
-				grep "$line1" Ex$f | awk '{print "N/A " $1}' >> final$f
+				# Check the expiration date of the exception. If it never expires, insert N/A; then check if it has expired. 
+				if [ $(grep "$source		$hostName" ExceptionFile | awk '{print $4}') == "Never" ]
+				then
+					grep "$source		$hostName" ExceptionFile | awk '{print "N/A " $1}' >> final$source
+				elif [ $(date +%Y%m%d) -ge $(grep "$source		$hostName" ExceptionFile | awk '{print $4}' | sed 's/-//g') ]
+				then
+					echo >> final$source
+				else
+					grep "$source		$hostName" ExceptionFile | awk '{print "N/A " $1}' >> final$source
+				fi
 			else
-				echo >> final$f
+				echo >> final$source
 			fi
 		fi
-	done < Master.txt
+	done < $MASTER
 done
-paste Master.txt finalsource1.txt finalsource2.txt finalsource3.txt finalsource4.txt | pr -t -e20 > Masterlists.txt 
+paste Title $SOURCE1name $SOURCE2name $SOURCE3name $SOURCE4name | pr -t -e20 > MasterList
+paste $MASTER final$SOURCE1 final$SOURCE2 final$SOURCE3 final$SOURCE4 | pr -t -e20 >> MasterList
+cat MasterList
