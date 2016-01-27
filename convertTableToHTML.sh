@@ -1,4 +1,8 @@
-#!/usr/bin/ksh 
+#!/usr/bin/ksh
+
+MASTER_TABLE_DIR=/u1/tranp 
+
+cd $MASTER_TABLE_DIR
 rm table.html
 echo "<html>\n" >> table.html
 	
@@ -11,10 +15,10 @@ td
 }
 </style>
 </head>\n" >> table.html
-echo "<body>\n" >> table.html
+echo "<body align='center'>\n" >> table.html
 date >> table.html
 echo "\n<h3>List of Hosts from Different Sources</h3>\n" >> table.html
-echo "<table>" >> table.html
+echo "<table align='center'>" >> table.html
 
 
 #Add each columns and each rows into table format
