@@ -1,4 +1,4 @@
-#!/usr/bin/ksh
+#!/bin/ksh
 ###########################################################################################################
 # NAME: listMatching
 #
@@ -49,64 +49,104 @@ SOURCE2=AV
 SOURCE3=OVO
 SOURCE4=SNC
 MASTER=Master
-SOURCE1name=Altirisname
-SOURCE2name=AVname
-SOURCE3name=OVOname
-SOURCE4name=SNCname
+tally=0
+HostTally=0
+MatchedTally=0
+
 
 cd $SOURCEDIR
 
+# Generate raw Masterlist (no header)
 cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u > $MASTER
 
 for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 
-
 do
-
 rm final$source
-	
+echo "$source" > final$source
 	while read hostName;
-	
 	do
 		# Check to see if the host is in the source
-		
 		grep "$hostName" $source > /dev/null
-		
 		if [ $? -eq 0 ] 
-		
 		then
 			echo "YES" >> final$source
+			tally=$((tally + 1))
 		else
 			# If not found in the source, check if it's in the ExceptionFile
-
 			grep "$source		$hostName" ExceptionFile > /dev/null
-
 			if [ $? -eq 0 ]
-			
 			then
-
 				# Check the expiration date of the exception. If it never expires or hasn't expired, insert N/A Ex#; otherwise, insert N/A Ex# (exp). 
-
 				if [ $(grep "$source		$hostName" ExceptionFile | awk '{print $4}') == "Never" ] || [ $(date +%Y%m%d) -le $(grep "$source		$hostName" ExceptionFile | awk '{print $4}' | sed 's/-//g') ]
-				
 				then
 					grep "$source		$hostName" ExceptionFile | awk '{print "N/A_" $1}' >> final$source
-
+					tally=$((tally + 1))
 				else
-
 					grep "$source		$hostName" ExceptionFile | awk '{print "N/A_" $1 "-(exp)"}' >> final$source
-
+					tally=$((tally + 1))
 				fi
 			else
-				echo "_" >> final$source
+				echo "_" >> final$source			
 			fi
 		fi
-
 	done < $MASTER
-
+	echo $tally >> final$source
+	total=$(wc -l $MASTER | awk {'print $1'})
+	HostPercTotal=$(print "scale=1; ($tally/$total)*100" | bc)
+	echo $HostPercTotal"%" >> final$source
+	tally=0
 done
 
-paste Title $SOURCE1name $SOURCE2name $SOURCE3name $SOURCE4name | pr -t -e20 > MasterTable
 
-paste $MASTER final$SOURCE1 final$SOURCE2 final$SOURCE3 final$SOURCE4 | pr -t -e20 >> MasterTable
 
+# Generate the matched list
+echo "MATCH" > final
+	while read hostName;
+	do
+		for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4
+		do
+		grep "$hostName" $source > /dev/null
+			if [ $? -eq 0 ]
+			then
+				HostTally=$((HostTally + 1))
+			else
+			grep "$source		$hostName" ExceptionFile > /dev/null
+				if [ $? -eq 0 ]
+				then
+					HostTally=$((HostTally + 1))
+				fi
+			fi
+		done
+		
+		if [ $HostTally -eq  4 ]
+		then
+			MatchedTally=$((MatchedTally + 1))
+			echo "***" >> final	
+		else
+			echo "_" >> final		
+		fi
+		HostTally=0
+	done < $MASTER
+echo $MatchedTally >> final
+percTotal=$(print "scale=1; ($MatchedTally/$total)*100" | bc)
+echo $percTotal"%" >> final
+
+
+
+
+# Re-generate the Masterlist with proper header and important attributes
+echo "Hostname" > $MASTER
+cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u >> $MASTER
+echo "Num_Host_Matched" >> $MASTER
+echo "Percentage_Matched" >> $MASTER
+
+
+
+# Generate the output table
+paste $MASTER final$SOURCE1 final$SOURCE2 final$SOURCE3 final$SOURCE4 final | pr -t -e20 > MasterTable
 cat MasterTable
+
+
+
+# Re-generate raw Masterlist
+cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u > $MASTER
