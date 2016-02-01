@@ -1,0 +1,13 @@
+Hostname            Altiris             AV                  OVO                 SNC                 MATCH
+A                   YES                 YES                 YES                 YES                 ***
+B                   YES                 N/A_0005-(exp)      YES                 YES                 ***
+C                   YES                 YES                 YES                 _                   _
+D                   YES                 YES                 _                   _                   _
+E                   YES                 N/A_0002            _                   YES                 _
+F                   _                   YES                 _                   YES                 _
+G                   N/A_0001            YES                 N/A_0009-(exp)      YES                 ***
+H                   N/A_0006            YES                 N/A_0003            YES                 ***
+I                   N/A_0010            N/A_0004            YES                 YES                 ***
+J                   N/A_0007            N/A_0008-(exp)      YES                 YES                 ***
+Num_Host_Matched    9                   10                  7                   8                   6
+Percentage_Matched  90.0%               100.0%              70.0%               80.0%               60.0%
