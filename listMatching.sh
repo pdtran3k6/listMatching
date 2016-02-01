@@ -43,6 +43,7 @@ SOURCE2=AV
 SOURCE3=OVO
 SOURCE4=SNC
 MASTER=Master
+EXCEPTION=ExceptionFile
 tally=0
 HostTally=0
 MatchedTally=0
@@ -70,19 +71,19 @@ echo "$source" > final$source
 			echo "YES" >> final$source
 			tally=$((tally + 1))
 		else
-			# If not found in the source, check if it's in the ExceptionFile
-			grep "$source		$hostName" ExceptionFile > /dev/null
+			# If not found in the source, check if it's in the $EXCEPTION
+			grep "$source		$hostName" $EXCEPTION > /dev/null
 			if [ $? -eq 0 ]
 			then
 				# Check the expiration date of the exception. If it never expires or hasn't expired, insert N/A Ex#; otherwise, insert N/A Ex# (exp). 
-				if [ $(grep "$source		$hostName" ExceptionFile | awk '{print $4}') == "Never" ] || [ $(date +%Y%m%d) -le $(grep "$source		$hostName" ExceptionFile | awk '{print $4}' | sed 's/-//g') ]
+				if [ $(grep "$source		$hostName" $EXCEPTION | awk '{print $4}') == "Never" ] || [ $(date +%Y%m%d) -le $(grep "$source		$hostName" $EXCEPTION | awk '{print $4}' | sed 's/-//g') ]
 				then
-					grep "$source		$hostName" ExceptionFile | awk '{print "N/A_" $1}' >> final$source
+					grep "$source		$hostName" $EXCEPTION | awk '{print "N/A_" $1}' >> final$source
 					tally=$((tally + 1))
 				else
 					# Generate the list of all the exceptions that has expired
-					grep "$source		$hostName" ExceptionFile >> ExpiredExceptionFile
-					grep "$source		$hostName" ExceptionFile | awk '{print "N/A_" $1 "-(exp)"}' >> final$source
+					grep "$source		$hostName" $EXCEPTION >> ExpiredExceptionFile
+					grep "$source		$hostName" $EXCEPTION | awk '{print "N/A_" $1 "-(exp)"}' >> final$source
 					tally=$((tally + 1))
 				fi
 			else
@@ -104,6 +105,7 @@ done
 while read 
 	
 # List of exceptions sorted by date
+cat $EXCEPTION
 
 # List of exceptions sorted by host's name
 
@@ -119,7 +121,7 @@ echo "MATCH" > matchedList
 			then
 				HostTally=$((HostTally + 1))
 			else
-			grep "$source		$hostName" ExceptionFile > /dev/null
+			grep "$source		$hostName" $EXCEPTION > /dev/null
 				if [ $? -eq 0 ]
 				then
 					HostTally=$((HostTally + 1))
@@ -155,7 +157,8 @@ echo "Percentage_Matched" >> $MASTER
 paste $MASTER final$SOURCE1 final$SOURCE2 final$SOURCE3 final$SOURCE4 matchedList | pr -t -e20 > MasterTable
 cat MasterTable
 
-
+# Generate the list of exceptions that have expired
+cat ExpiredExceptionFile
 
 # Re-generate raw Masterlist
 cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u > $MASTER
