@@ -9,3 +9,4 @@ Ex#	Source		Hostname	Expiration
 0008	AV		J		2015-09-30
 0009	OVO		G		2016-01-23
 0010	Altiris		I		Never
+0011	SNC		KK		2016-02-01

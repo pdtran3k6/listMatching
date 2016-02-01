@@ -1,10 +1,9 @@
+# This script needs to be in the folder containing the Masterlist and the MasterTable.
+# Run as root if needed
 #!/usr/bin/ksh 	
 MASTER=Master
-MASTER_TABLE_DIR=/u1/tranp 
+HTML_OUTPUT_DIR=/APACHE/listMatching
 
-
-cd $MASTER_TABLE_DIR
-rm table.html
 echo "<html>\n" >> table.html
 	
 # Set the spacing between columns
@@ -19,8 +18,9 @@ td
 echo "<body align='center'>\n" >> table.html
 date >> table.html
 
+
 # Title of the table
-echo "\n<h3>List of Hosts from Different Sources</h3>\n" >> table.html
+echo "\n<h3 style='font-family:Tahoma;'>List of Hosts from Different Sources</h3>\n" >> table.html
 echo "<table align='center'>" >> table.html
 
 
@@ -47,6 +47,6 @@ do
 done < MasterTable	
 	
 # Close table and html
-print "\n</table>\n</body>\n</html>" >> table.html
+echo "\n</table>\n</body>\n</html>" >> table.html
 
-cat table.html
+mv table.html $HTML_OUTPUT_DIR

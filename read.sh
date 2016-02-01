@@ -12,19 +12,15 @@
 # 
 # ExceptionFile: contains a list of all the exception hosts that shouldn't be in certain sources.
 # 
-# SOURCE1name, SOURCE2name, ... , SOURCENname: a file containing the name of the source. 
-# This file is used to make the header of the output table 
-# 
-# Title: a file containing the word "Hostname". This file is used to make the header of the output table
-# 
-# Master: a file that contains all the possible hosts from all the sources (master list)
+# Master: a file that contains all the possible hosts from all the sources (Masterlist)
 #
 # OUTPUT:
 # finalSOURCE1, finalSOURCE2, ... , finalSOURCEN: one file per source that contains a column 
-# filled with YES, blank ( ), or N/A ex# (N/A 2093)
+# filled with YES, blank ( ), or N/A ex# (e.g N/A 2093). It also shows expired exception values
 #
-# MasterTable: Table with the first column being the master list of all the sources, 
-# then the rest of the columns are the finalSOURCE1, finalSOURCE2, ... , finalSOURCEN.
+# MasterTable: Table with the first column being the list containing all the possible hosts, 
+# then the rest of the columns are the finalSOURCE1, finalSOURCE2, ... , finalSOURCEN. Last column 
+# is the matched list (hosts that appeared in all sources including exception)
 # 
 # 
 # ENVIRONMENT VARIABLES:
@@ -32,8 +28,6 @@
 # NOTES:
 # The name of the sources in the ExceptionFile must match the names of sources 
 # as defined in the variables below
-#
-#
 #
 # EXIT CODE:
 # 0 - success
@@ -43,7 +37,7 @@
 # Jan 22 2016 PHAT TRAN
 ############################################################################################################
 
-SOURCEDIR=/u1/tranp
+SOURCE_DIR=/u1/tranp
 SOURCE1=Altiris
 SOURCE2=AV
 SOURCE3=OVO
@@ -54,14 +48,18 @@ HostTally=0
 MatchedTally=0
 
 
-cd $SOURCEDIR
+cd $SOURCE_DIR
 
 # Generate raw Masterlist (no header)
 cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u > $MASTER
 
+rm ExpiredExceptionFile
+
+# Loop through each source
 for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 
 do
 rm final$source
+# Header for sources' columns
 echo "$source" > final$source
 	while read hostName;
 	do
@@ -82,6 +80,8 @@ echo "$source" > final$source
 					grep "$source		$hostName" ExceptionFile | awk '{print "N/A_" $1}' >> final$source
 					tally=$((tally + 1))
 				else
+					# Generate the list of all the exceptions that has expired
+					grep "$source		$hostName" ExceptionFile >> ExpiredExceptionFile
 					grep "$source		$hostName" ExceptionFile | awk '{print "N/A_" $1 "-(exp)"}' >> final$source
 					tally=$((tally + 1))
 				fi
@@ -97,10 +97,19 @@ echo "$source" > final$source
 	tally=0
 done
 
+# Check to see if there's any host that is in the Masterlist but not in the ExceptionFile
+
+# Check to see if there's any host that's in a source but not supposed to be in that source
+
+while read 
+	
+# List of exceptions sorted by date
+
+# List of exceptions sorted by host's name
 
 
 # Generate the matched list
-echo "MATCH" > final
+echo "MATCH" > matchedList
 	while read hostName;
 	do
 		for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4
@@ -121,15 +130,15 @@ echo "MATCH" > final
 		if [ $HostTally -eq  4 ]
 		then
 			MatchedTally=$((MatchedTally + 1))
-			echo "***" >> final	
+			echo "***" >> matchedList	
 		else
-			echo "_" >> final		
+			echo "_" >> matchedList		
 		fi
 		HostTally=0
 	done < $MASTER
-echo $MatchedTally >> final
+echo $MatchedTally >> matchedList
 percTotal=$(print "scale=1; ($MatchedTally/$total)*100" | bc)
-echo $percTotal"%" >> final
+echo $percTotal"%" >> matchedList
 
 
 
@@ -143,7 +152,7 @@ echo "Percentage_Matched" >> $MASTER
 
 
 # Generate the output table
-paste $MASTER final$SOURCE1 final$SOURCE2 final$SOURCE3 final$SOURCE4 final | pr -t -e20 > MasterTable
+paste $MASTER final$SOURCE1 final$SOURCE2 final$SOURCE3 final$SOURCE4 matchedList | pr -t -e20 > MasterTable
 cat MasterTable
 
 
