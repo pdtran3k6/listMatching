@@ -103,11 +103,6 @@ done
 # Check to see if there's any host that's in a source but not supposed to be in that source
 
 while read 
-	
-# List of exceptions sorted by date
-cat $EXCEPTION | sed '1d' | sort -k 4
-
-# List of exceptions sorted by host's name
 
 
 # Generate the matched list
@@ -159,6 +154,14 @@ cat MasterTable
 
 # Generate the list of exceptions that have expired
 cat ExpiredExceptionFile
+
+# List of exceptions sorted by date
+cat $EXCEPTION | sed '1d' | sort -k 4 > sorted_by_date-$EXCEPTION
+cat sorted_by_date-$EXCEPTION
+
+# List of exceptions sorted by host's name
+cat $EXCEPTION | sed '1d' | sort -k 2 > sorted_by_hostName-$EXCEPTION
+cat sorted_by_hostName-$EXCEPTION
 
 # Re-generate raw Masterlist
 cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u > $MASTER
