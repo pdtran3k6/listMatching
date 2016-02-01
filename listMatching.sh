@@ -105,7 +105,7 @@ done
 while read 
 	
 # List of exceptions sorted by date
-cat $EXCEPTION
+cat $EXCEPTION | sed '1d' | sort -k 4
 
 # List of exceptions sorted by host's name
 
