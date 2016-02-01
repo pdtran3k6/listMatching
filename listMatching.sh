@@ -98,7 +98,8 @@ echo "$source" > final$source
 	tally=0
 done
 
-# Check to see if there's any host that is in the Masterlist but not in the ExceptionFile
+
+
 
 # Check to see if there's any host that's in a source but not supposed to be in that source
 
@@ -165,3 +166,9 @@ cat sorted_by_hostName-$EXCEPTION
 
 # Re-generate raw Masterlist
 cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u > $MASTER
+
+# Generate list of hosts in ExceptionFile
+cat ExceptionFile | awk {'print $3'} | sed 's/Hostname//g' | sed '/^\s*$/d' | sort -u > ExHosts
+
+# Check to see if there's any host that is in the ExceptionFile but not in the raw Masterlist
+comm -31 Master ExHosts
