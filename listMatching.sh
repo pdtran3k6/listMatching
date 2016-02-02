@@ -54,12 +54,12 @@ cd $SOURCE_DIR
 # Generate raw Masterlist (no header)
 cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u > $MASTER
 
-rm ExpiredExceptionFile
+rm ExpiredExceptionFile 2> /dev/null
 
 # Loop through each source
 for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 
 do
-	rm final$source 
+	rm final$source 2> /dev/null
 	rm extra_hosts-$source 2> /dev/null
 
 	# Header for sources' columns
@@ -102,8 +102,6 @@ do
 					grep "$source		$hostName" $EXCEPTION | awk '{print "N/A_" $1}' >> final$source
 					tally=$((tally + 1))
 				else
-					# Generate the list of all the exceptions that has expired
-					grep "$source		$hostName" $EXCEPTION >> ExpiredExceptionFile
 					grep "$source		$hostName" $EXCEPTION | awk '{print "N/A_" $1 "-(exp)"}' >> final$source
 					tally=$((tally + 1))
 				fi
@@ -167,28 +165,36 @@ paste $MASTER final$SOURCE1 final$SOURCE2 final$SOURCE3 final$SOURCE4 matchedLis
 cat MasterTable
 echo
 
-# Generate the list of exceptions that have expired
+cat $EXCEPTION | sed '1d' > noHeader-$EXCEPTION
+
+# Generate the list of all the exceptions that has expired
+while read row;
+do
+	if [ $(echo $row | awk '{print $4}') != "Never" ] && [ $(date +%Y%m%d) -gt $(echo $row | awk '{print $4}' | sed 's/-//g') ]
+	then
+		grep "$(echo $row | awk '{print $4}')" noHeader-$EXCEPTION >> ExpiredExceptionFile
+	fi
+done < noHeader-$EXCEPTION
+
 echo "List of expired exceptions"
 cat ExpiredExceptionFile
 echo
 
 # List of exceptions sorted by date
 echo "Exceptions sorted by date"
-cat $EXCEPTION | sed '1d' | sort -k 4 > sorted_by_date-$EXCEPTION
-cat sorted_by_date-$EXCEPTION
+cat noHeader-$EXCEPTION | sort -k 4 
 echo
 
 # List of exceptions sorted by host's name
 echo "Exceptions sorted by host name"
-cat $EXCEPTION | sed '1d' | sort -k 3 > sorted_by_hostName-$EXCEPTION
-cat sorted_by_hostName-$EXCEPTION
+cat noHeader-$EXCEPTION | sort -k 3 
 echo
 
 # Re-generate raw Masterlist
 cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u > $MASTER
 
 # Generate list of hosts in ExceptionFile
-cat ExceptionFile | awk {'print $3'} | sed 's/Hostname//g' | sed '/^\s*$/d' | sort -u > ExHosts
+cat noHeader-$EXCEPTION | awk {'print $3'} | sort -u > ExHosts
 
 # Check to see if there's any host that is in the ExceptionFile but not in the raw Masterlist
 echo "Hosts that are in the $EXCEPTION but not in the $MASTER"
