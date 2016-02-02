@@ -46,7 +46,17 @@ do
 	echo "\n" >> table.html
 done < MasterTable	
 	
-# Close table and html
-echo "\n</table>\n</body>\n</html>" >> table.html
+# Close table
+echo "\n</table>"
+
+
+
+
+
+
+
+
+# Close html
+echo "\n</body>\n</html>" >> table.html
 
 mv table.html $HTML_OUTPUT_DIR
