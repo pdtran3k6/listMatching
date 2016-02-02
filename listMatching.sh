@@ -59,24 +59,29 @@ rm ExpiredExceptionFile
 # Loop through each source
 for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 
 do
-rm final$source 
-rm extra_hosts-$source
+	rm final$source 
+	rm extra_hosts-$source 2> /dev/null
 
-# Header for sources' columns
-echo "$source" > final$source
+	# Header for sources' columns
+	echo "$source" > final$source
 
-# Check to see if there's any host that isn't supposed to be in the source but appear in the source
-while read hostName;
-do
-grep "$source		$hostName" $EXCEPTION > /dev/null
-if [ $? -eq 0 ]
-then
-	echo "$hostName" >> extra_hosts-$source
-fi
-done < $source
+	# Check to see if there's any host that isn't supposed to be in the source but appear in the source
+	while read hostName;
+	do
+		grep "$source		$hostName" $EXCEPTION > /dev/null
+		if [ $? -eq 0 ]
+		then
+			echo "$hostName" >> extra_hosts-$source
+		fi
+	done < $source
 
-cat extra_hosts-$source
-echo "\n\n"
+	ls | grep "extra_hosts-$source" > /dev/null
+	if [ $? -eq 0 ]
+	then
+		echo "List of extra hosts in $source"
+		cat extra_hosts-$source
+		echo "\n"
+	fi
 
 	while read hostName;
 	do
@@ -107,18 +112,13 @@ echo "\n\n"
 			fi
 		fi
 	done < $MASTER
+	
 	echo $tally >> final$source
-	total=$(wc -l $MASTER | awk {'print $1'})
+	total=$(wc -l $MASTER | awk {'print $1'})		
 	HostPercTotal=$(print "scale=1; ($tally/$total)*100" | bc)
 	echo $HostPercTotal"%" >> final$source
 	tally=0
 done
-
-
-
-
-# Check to see if there's any host that's in a source but not supposed to be in that source
-
 
 
 # Generate the matched list
@@ -165,17 +165,21 @@ echo "Percentage_Matched" >> $MASTER
 # Generate the output table
 paste $MASTER final$SOURCE1 final$SOURCE2 final$SOURCE3 final$SOURCE4 matchedList | pr -t -e20 > MasterTable
 cat MasterTable
+echo
 
 # Generate the list of exceptions that have expired
+echo "List of expired exceptions"
 cat ExpiredExceptionFile
 echo
 
 # List of exceptions sorted by date
+echo "Exceptions sorted by date"
 cat $EXCEPTION | sed '1d' | sort -k 4 > sorted_by_date-$EXCEPTION
 cat sorted_by_date-$EXCEPTION
 echo
 
 # List of exceptions sorted by host's name
+echo "Exceptions sorted by host name"
 cat $EXCEPTION | sed '1d' | sort -k 3 > sorted_by_hostName-$EXCEPTION
 cat sorted_by_hostName-$EXCEPTION
 echo
@@ -187,4 +191,5 @@ cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u > $MASTER
 cat ExceptionFile | awk {'print $3'} | sed 's/Hostname//g' | sed '/^\s*$/d' | sort -u > ExHosts
 
 # Check to see if there's any host that is in the ExceptionFile but not in the raw Masterlist
+echo "Hosts that are in the $EXCEPTION but not in the $MASTER"
 comm -31 $MASTER ExHosts
