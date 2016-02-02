@@ -51,9 +51,9 @@ MatchedTally=0
 
 cd $SOURCE_DIR
 
-# Generate raw Masterlist (no header)
+# Generate raw Masterlist and raw ExceptionFile (no header)
 cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u > $MASTER
-
+cat $EXCEPTION | sed '1d' > noHeader-$EXCEPTION
 rm ExpiredExceptionFile 2> /dev/null
 
 # Loop through each source
@@ -65,6 +65,7 @@ do
 	# Header for sources' columns
 	echo "$source" > final$source
 
+	
 	# Check to see if there's any host that isn't supposed to be in the source but appear in the source
 	while read hostName;
 	do
@@ -74,7 +75,10 @@ do
 			echo "$hostName" >> extra_hosts-$source
 		fi
 	done < $source
-
+	
+	
+	
+	# List all the hosts that aren't supposed to be in certain source	
 	ls | grep "extra_hosts-$source" > /dev/null
 	if [ $? -eq 0 ]
 	then
@@ -82,7 +86,9 @@ do
 		cat extra_hosts-$source
 		echo "\n"
 	fi
-
+	
+	
+	
 	while read hostName;
 	do
 		# Check to see if the host is in the source
@@ -152,8 +158,6 @@ percTotal=$(print "scale=1; ($MatchedTally/$total)*100" | bc)
 echo $percTotal"%" >> matchedList
 
 
-
-
 # Re-generate the Masterlist with proper header and important attributes
 echo "Hostname" > $MASTER
 cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u >> $MASTER
@@ -165,7 +169,6 @@ paste $MASTER final$SOURCE1 final$SOURCE2 final$SOURCE3 final$SOURCE4 matchedLis
 cat MasterTable
 echo
 
-cat $EXCEPTION | sed '1d' > noHeader-$EXCEPTION
 
 # Generate the list of all the exceptions that has expired
 while read row;
