@@ -1,5 +1,6 @@
 #!/bin/ksh
 
+# If there are processes running, it will send the list of hosts to the following file path
 bpps -a > /dev/null
 if [ $? -eq 0 ]
 then
