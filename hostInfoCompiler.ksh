@@ -3,5 +3,6 @@
 rm hostinfo
 while read line;
 do
-	echo -n "$line" | awk '{print $2 "\t"}' >> hostinfo
+	echo "$line" | awk '{print $2}' >> hostinfo
 done < A-sysinfo.txt
+cat hostinfo | xargs
