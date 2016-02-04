@@ -1,5 +1,5 @@
 #!/bin/ksh
-TARGETDIR=/u1/tranp
+TARGETDIR=/opt/fundserv/syscheck/data/`date +%Y%m`/`uname –n`/listmatching
 SOURCEDIR=/
 
-cat `find $SOURCEDIR -type f -name 'BoKS-*.lst'` | sort > $TARGETDIR/BoKS.lst
+cat `find $SOURCEDIR -type f -name 'boks-*.lst'` | sort > $TARGETDIR/BoKS.lst
