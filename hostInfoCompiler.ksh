@@ -4,9 +4,7 @@ rm hostinfo
 while read hostname;
 do
 	cd $HOST_INFO_DIR
-	while read line;
-	do
-		echo "$line" | awk '{print $2}' ORS='	' >> hostinfo
-	done < $hostname-sysinfo.txt
+	grep . $hostname-sysinfo.txt | awk '{print $2}' ORS='	' >> hostinfo
+	echo >> hostinfo
 done < Master
 cat hostinfo
