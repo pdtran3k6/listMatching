@@ -16,11 +16,35 @@ cd $SOURCE_DIR
 # Generate raw Masterlist and raw ExceptionFile (no header)
 cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u > $MASTER
 cat $EXCEPTION | sed '1d' > noHeader-$EXCEPTION
-
+rm ExpiredExceptionFile 2> /dev/null
 
 # Loop through each source
 for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 
 do
+
+	rm perc$source 2> /dev/null
+	rm extra_hosts-$source 2> /dev/null
+	
+	# Check to see if there's any host that isn't supposed to be in the source but appear in the source
+	while read hostName;
+	do
+		grep "$source		$hostName" $EXCEPTION > /dev/null
+		if [ $? -eq 0 ]
+		then
+			echo "$hostName" >> extra_hosts-$source
+		fi
+	done < $source
+	
+	# List all the hosts that aren't supposed to be in certain source	
+	ls | grep "extra_hosts-$source" > /dev/null
+	if [ $? -eq 0 ]
+	then
+		echo "List of extra hosts in $source"
+		cat extra_hosts-$source
+		echo
+	fi
+	
+	
 	while read hostName;
 	do
 		# Check to see if the host is in the source
@@ -69,8 +93,8 @@ echo "Total Yes and N/A" >> attributes
 echo "Percentage Yes and N/A" >> attributes
 
 # Generate the output table
-paste $MASTER final$SOURCE1 final$SOURCE2 final$SOURCE3 final$SOURCE4 matchedList | pr -t -e20 > MasterTable
-cat MasterTable
+paste attributes perc$SOURCE1 final$SOURCE2 final$SOURCE3 final$SOURCE4 matchedList | pr -t -e20 > Report
+cat Report
 echo
 
 
@@ -96,9 +120,6 @@ echo
 echo "Exceptions sorted by host name"
 cat noHeader-$EXCEPTION | sort -k 3 
 echo
-
-# Re-generate raw Masterlist
-cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u > $MASTER
 
 # Generate list of hosts in ExceptionFile
 cat noHeader-$EXCEPTION | awk {'print $3'} | sort -u > ExHosts
