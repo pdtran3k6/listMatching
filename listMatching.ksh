@@ -52,8 +52,8 @@ MatchedTally=0
 cd $SOURCE_DIR
 
 # Generate raw Masterlist and raw ExceptionFile (no header)
-cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u > $MASTER
-total=$(wc -l $MASTER | awk {'print $1'})
+cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u > noHeader-$MASTER
+total=$(wc -l noHeader-$MASTER | awk {'print $1'})
 
 # Loop through each source
 for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 
@@ -82,7 +82,10 @@ do
 				echo "_" >> final$source			
 			fi
 		fi
-	done < $MASTER
+	done < noHeader-$MASTER
+	
+	echo "_" >> final$source
+	echo "_" >> final$source
 done
 
 
@@ -96,11 +99,13 @@ echo "MATCH" > matchedList
 			if [ $? -eq 0 ]
 			then
 				HostTally=$((HostTally + 1))
+
 			else
 			grep "$source		$hostName" $EXCEPTION > /dev/null
 				if [ $? -eq 0 ]
 				then
 					HostTally=$((HostTally + 1))
+
 				fi
 			fi
 		done
@@ -110,16 +115,16 @@ echo "MATCH" > matchedList
 			MatchedTally=$((MatchedTally + 1))
 			echo "***" >> matchedList	
 		else
-			echo "_" >> matchedList		
+			echo "_" >> matchedList
 		fi
 		HostTally=0
-	done < $MASTER
+	done < noHeader-$MASTER
 echo $MatchedTally >> matchedList
 percTotal=$(print "scale=1; ($MatchedTally/$total)*100" | bc)
 echo $percTotal"%" >> matchedList
 
 
-# Re-generate the Masterlist with proper header and important attributes
+# Generate the Masterlist with proper header and important attributes
 echo "Hostname" > $MASTER
 cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u >> $MASTER
 echo "Num_Host_Matched" >> $MASTER
@@ -129,3 +134,4 @@ echo "Percentage_Matched" >> $MASTER
 paste $MASTER final$SOURCE1 final$SOURCE2 final$SOURCE3 final$SOURCE4 matchedList | pr -t -e20 > MasterTable
 cat MasterTable
 echo
+

@@ -29,7 +29,7 @@ while read col1 col2 col3 col4 col5 col6
 do
 	echo "<tr>" >> table.html
 	# Link to host info file only if the it's the host is in the Masterlist
-	grep "$col1" $MASTER > /dev/null
+	grep "$col1" noHeader-$MASTER > /dev/null
 	if [ $? -eq 0 ]
 	then
 		echo "<td><a href='/inv/$col1.txt'>$col1</td>" >> table.html
