@@ -1,10 +1,10 @@
+#!/usr/bin/ksh 
 # This script needs to be in the folder containing the Masterlist and the MasterTable.
-# Run as root if needed
-#!/usr/bin/ksh 	
+# Run as root if needed	
 MASTER=Master
 HTML_OUTPUT_DIR=/APACHE/listMatching
 
-echo "<html>\n" >> table.html
+echo "<html>\n" > table.html
 	
 # Set the spacing between columns
 echo "<head>
