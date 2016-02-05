@@ -17,7 +17,7 @@ cd $SOURCE_DIR
 cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u > $MASTER
 cat $EXCEPTION | sed '1d' > noHeader-$EXCEPTION
 rm ExpiredExceptionFile 2> /dev/null
-rm Report 2> /dev/null
+rm Report.txt 2> /dev/null
 
 # Loop through each source
 for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 
@@ -40,9 +40,9 @@ do
 	ls | grep "extra_hosts-$source" > /dev/null
 	if [ $? -eq 0 ]
 	then
-		echo "List of extra hosts in $source" >> Report
-		cat extra_hosts-$source >> Report
-		echo >> Report
+		echo "List of extra hosts in $source" >> Report.txt
+		cat extra_hosts-$source >> Report.txt
+		echo >> Report.txt
 	fi
 	
 	
@@ -95,7 +95,7 @@ echo "% Yes and N/A" >> attributes
 
 # Generate the output table
 paste attributes perc$SOURCE1 perc$SOURCE2 perc$SOURCE3 perc$SOURCE4 | pr -t -e20 >> Report
-echo >> Report
+echo >> Report.txt
 
 
 # Generate the list of all the exceptions that has expired
@@ -107,23 +107,23 @@ do
 	fi
 done < noHeader-$EXCEPTION
 
-echo "List of expired exceptions" >> Report
-cat ExpiredExceptionFile >> Report
-echo >> Report
+echo "List of expired exceptions" >> Report.txt
+cat ExpiredExceptionFile >> Report.txt
+echo >> Report.txt
 
 # List of exceptions sorted by date
-echo "Exceptions sorted by date" >> Report
-cat noHeader-$EXCEPTION | sort -k 4 >> Report
-echo >> Report
+echo "Exceptions sorted by date" >> Report.txt
+cat noHeader-$EXCEPTION | sort -k 4 >> Report.txt
+echo >> Report.txt
 
 # List of exceptions sorted by host's name
-echo "Exceptions sorted by host name" >> Report
-cat noHeader-$EXCEPTION | sort -k 3 >> Report
-echo >> Report
+echo "Exceptions sorted by host name" >> Report.txt
+cat noHeader-$EXCEPTION | sort -k 3 >> Report.txt
+echo >> Report.txt
 
 # Generate list of hosts in ExceptionFile
 cat noHeader-$EXCEPTION | awk {'print $3'} | sort -u > ExHosts
 
 # Check to see if there's any host that is in the ExceptionFile but not in the raw Masterlist
-echo "Hosts that are in the $EXCEPTION but not in the $MASTER" >> Report
-comm -31 $MASTER ExHosts >> Report
+echo "Hosts that are in the $EXCEPTION but not in the $MASTER" >> Report.txt
+comm -31 $MASTER ExHosts >> Report.txt

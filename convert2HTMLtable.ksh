@@ -47,7 +47,9 @@ do
 done < MasterTable	
 	
 # Close table
-echo "\n</table>"
+echo "\n</table>\n" >> table.html
+
+echo "<h2>Go to <a href='/listMatching/Report.txt'>Report</a></h2>" >> table.html
 
 
 
