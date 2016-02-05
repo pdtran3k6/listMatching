@@ -1,0 +1,47 @@
+List of extra hosts in SNC
+KK
+
+Sources             Altiris             AV                  OVO                 SNC
+Yes                 5                   6                   5                   9
+Yes Percentage      40.0%               50.0%               40.0%               80.0%
+N/A                 4                   4                   2                   0
+N/A Percentage      30.0%               30.0%               10.0%               0%
+Total Yes and N/A   9                   10                  7                   9
+% Yes and N/A       80.0%               90.0%               60.0%               80.0%
+
+List of expired exceptions
+0005    AV              B               2015-12-31
+0008    AV              J               2015-09-30
+0009    OVO             G               2016-01-23
+0011    SNC             KK              2016-02-01
+
+Exceptions sorted by date
+0008    AV              J               2015-09-30
+0005    AV              B               2015-12-31
+0009    OVO             G               2016-01-23
+0011    SNC             KK              2016-02-01
+0004    AV              I               2016-03-20
+0006    Altiris         H               2016-05-20
+0007    Altiris         J               2016-08-31
+0002    AV              E               2016-09-23
+0003    OVO             H               2016-10-10
+0001    Altiris         G               Never
+0010    Altiris         I               Never
+0012    OVO             X               Never
+
+Exceptions sorted by host name
+0005    AV              B               2015-12-31
+0002    AV              E               2016-09-23
+0009    OVO             G               2016-01-23
+0001    Altiris         G               Never
+0006    Altiris         H               2016-05-20
+0003    OVO             H               2016-10-10
+0004    AV              I               2016-03-20
+0010    Altiris         I               Never
+0008    AV              J               2015-09-30
+0007    Altiris         J               2016-08-31
+0011    SNC             KK              2016-02-01
+0012    OVO             X               Never
+
+Hosts that are in the ExceptionFile but not in the Master
+X
