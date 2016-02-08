@@ -6,18 +6,17 @@
 # This script will merge all sources' list of hosts together to generate the master list
 # and show which hosts are missing and which hosts are not supposed to be in that source (exceptions) 
 #
+#
 # INPUT: 
 # SOURCE1, SOURCE2, ... , SOURCEN: one file per source that contains a column of hosts' names 
 # registered in a particular source
-# 
 # ExceptionFile: contains a list of all the exception hosts that shouldn't be in certain sources.
-# 
 # Master: a file that contains all the possible hosts from all the sources (Masterlist)
+#
 #
 # OUTPUT:
 # finalSOURCE1, finalSOURCE2, ... , finalSOURCEN: one file per source that contains a column 
 # filled with YES, blank ( ), or N/A ex# (e.g N/A 2093). It also shows expired exception values
-#
 # MasterTable: Table with the first column being the list containing all the possible hosts, 
 # then the rest of the columns are the finalSOURCE1, finalSOURCE2, ... , finalSOURCEN. Last column 
 # is the matched list (hosts that appeared in all sources including exception)
@@ -25,16 +24,19 @@
 # 
 # ENVIRONMENT VARIABLES:
 # 
+#
 # NOTES:
 # The name of the sources in the ExceptionFile must match the names of sources 
 # as defined in the variables below
+#
 #
 # EXIT CODE:
 # 0 - success
 # 1 - incorrect arguements
 #
+#
 # CHANGELOG:
-# Jan 22 2016 PHAT TRAN
+# Feb 8 2016 PHAT TRAN
 ############################################################################################################
 
 SOURCE_DIR=/u1/tranp
