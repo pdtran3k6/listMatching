@@ -1,4 +1,44 @@
 #!/bin/ksh
+###########################################################################################################
+# NAME: report
+#
+# DESCRIPTION:
+# This script will generate a report containing all the information below: 
+# 	- All the hosts that aren't supposed to be in a source but end up appearing in that source.	
+#	- The number of 'YES's and 'N/A's/total for each source with percentages, respectively.
+#	- All the exceptions that has expired.
+#	- All the exceptions sorted by date of expiration/host's name
+#	- All hosts that is in ExceptionFile but not in Master (Masterlist)
+#
+#
+# INPUT: 
+# SOURCE1, SOURCE2, ... , SOURCEN: one file per source that contains a column of hosts' names 
+# registered in a particular source
+# ExceptionFile: contains a list of all the exception hosts that shouldn't be in certain sources.
+# Master: a file that contains all the possible hosts from all the sources (Masterlist)
+#
+#
+# OUTPUT:
+# Report.txt: A text file that contains all the information listed above
+# 
+# 
+# ENVIRONMENT VARIABLES:
+#
+# 
+# NOTES:
+# The name of the sources in the ExceptionFile must match the names of sources 
+# as defined in the variables below
+# The script needs to be in the same folder as all the sources' list and the ExceptionFile
+#
+#
+# EXIT CODE:
+# 0 - success
+# 1 - incorrect arguements
+#
+#
+# CHANGELOG:
+# Feb 8 2016 PHAT TRAN
+############################################################################################################
 
 SOURCE_DIR=/u1/tranp
 SOURCE1=Altiris
@@ -7,6 +47,7 @@ SOURCE3=OVO
 SOURCE4=SNC
 MASTER=Master
 EXCEPTION=ExceptionFile
+HTML_OUTPUT_DIR=/APACHE/listMatching
 
 Yes_Tally=0
 NA_Tally=0
@@ -87,10 +128,10 @@ done
 # Generate the first column of the table with corresponding attributes
 echo "Sources" > attributes
 echo "Yes" >> attributes
-echo "Yes Percentage" >> attributes
+echo "% Yes" >> attributes
 echo "N/A" >> attributes
-echo "N/A Percentage" >> attributes
-echo "Total Yes and N/A" >> attributes
+echo "% N/A" >> attributes
+echo "Yes and N/A" >> attributes
 echo "% Yes and N/A" >> attributes
 
 # Generate the output table
@@ -127,3 +168,7 @@ cat noHeader-$EXCEPTION | awk {'print $3'} | sort -u > ExHosts
 # Check to see if there's any host that is in the ExceptionFile but not in the raw Masterlist
 echo "Hosts that are in the $EXCEPTION but not in the $MASTER" >> Report.txt
 comm -31 $MASTER ExHosts >> Report.txt
+
+mv Report.txt $HTML_OUTPUT_DIR
+cd $HTML_OUTPUT_DIR
+cat Report.txt
