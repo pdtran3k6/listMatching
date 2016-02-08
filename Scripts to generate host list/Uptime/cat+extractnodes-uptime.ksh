@@ -1,14 +1,12 @@
 #!/bin/ksh
 ###########################################################################################################
-# NAME: cat-syscheck
+# NAME: cat+extractnodes-uptime
 #
 # DESCRIPTION:
-# This script will merge all lists of hosts from Syscheck into a bigger list that contains all
-# the hosts from Syscheck
+# This script will extract all hosts from UpTime mysql database and output into a file
 #
 #
 # INPUT: 
-# SOURCEDIR: the path to the directory that contains all the lists of hosts
 # TARGETDIR: the path to the directory that contains the final list of hosts
 #
 #
@@ -19,7 +17,6 @@
 # 
 #
 # NOTES:
-# The name of the individual list has to be in this format: all_*.lst
 #
 #
 # EXIT CODE:
@@ -31,7 +28,6 @@
 # Feb 8 2016 PHAT TRAN
 ############################################################################################################
 
-SOURCEDIR=/opt/fundserv/syscheck/local-etc
 TARGETDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/`uname –n`/listmatching
 
-cat `find $SOURCEDIR -type f -name 'all_*.list'` | sort > $TARGETDIR/Syscheck.lst
+mysql -u uptime -puptime -P3308 --protocol=tcp uptime -e "SELECT name FROM entity" | sed '1d' > $TARGETDIR/Uptime.lst
