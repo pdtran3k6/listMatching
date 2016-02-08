@@ -40,6 +40,7 @@
 # Feb 8 2016 PHAT TRAN
 ############################################################################################################
 
+#!/bin/ksh
 SOURCE_DIR=/u1/tranp
 SOURCE1=Altiris
 SOURCE2=AV
@@ -47,7 +48,7 @@ SOURCE3=OVO
 SOURCE4=SNC
 MASTER=Master
 EXCEPTION=ExceptionFile
-HTML_OUTPUT_DIR=/APACHE/listMatching
+HTML_OUTPUT_DIR=/u1/tranp
 
 Yes_Tally=0
 NA_Tally=0
@@ -125,6 +126,7 @@ do
 done
 
 
+
 # Generate the first column of the table with corresponding attributes
 echo "Sources" > attributes
 echo "Yes" >> attributes
@@ -135,7 +137,7 @@ echo "Yes and N/A" >> attributes
 echo "% Yes and N/A" >> attributes
 
 # Generate the output table
-paste attributes perc$SOURCE1 perc$SOURCE2 perc$SOURCE3 perc$SOURCE4 | pr -t -e20 >> Report
+paste attributes perc$SOURCE1 perc$SOURCE2 perc$SOURCE3 perc$SOURCE4 | pr -t -e20 >> Report.txt
 echo >> Report.txt
 
 
