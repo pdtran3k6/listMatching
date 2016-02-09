@@ -39,11 +39,11 @@
 # Feb 8 2016 PHAT TRAN
 ############################################################################################################
 
-SOURCE_DIR=/u1/tranp
-SOURCE1=Altiris
-SOURCE2=AV
-SOURCE3=OVO
-SOURCE4=SNC
+SOURCE_DIR=/u1/tranp/sources
+SOURCE1=NetBackup.lst
+SOURCE2=Syscheck.lst
+SOURCE3=BoKS.lst
+SOURCE4=Uptime.lst
 MASTER=Master
 EXCEPTION=ExceptionFile
 
@@ -54,7 +54,7 @@ MatchedTally=0
 cd $SOURCE_DIR
 rm noHeader-$MASTER
 # Generate raw Masterlist and raw ExceptionFile (no header)
-cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u > noHeader-$MASTER
+cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u | cut -c1-20 > noHeader-$MASTER
 cat $EXCEPTION | sed '1d' | awk '{print $3}' > noHeader-$EXCEPTION
 while read hostName;
 do
@@ -79,15 +79,15 @@ do
 			echo "YES" >> final$source
 		else
 			# If not found in the source, check if it's in the $EXCEPTION
-			grep "$source		$hostName" $EXCEPTION > /dev/null
+			grep -s "$source		$hostName" $EXCEPTION > /dev/null
 			if [ $? -eq 0 ]
 			then
 				# Check the expiration date of the exception. If it never expires or hasn't expired, insert N/A Ex#; otherwise, insert N/A Ex# (exp). 
-				if [ $(grep "$source		$hostName" $EXCEPTION | awk '{print $4}') == "Never" ] || [ $(date +%Y%m%d) -le $(grep "$source		$hostName" $EXCEPTION | awk '{print $4}' | sed 's/-//g') ]
+				if [ $(grep -s "$source		$hostName" $EXCEPTION | awk '{print $4}') == "Never" ] || [ $(date +%Y%m%d) -le $(grep "$source		$hostName" $EXCEPTION | awk '{print $4}' | sed 's/-//g') ]
 				then
-					grep "$source		$hostName" $EXCEPTION | awk '{print "N/A_" $1}' >> final$source
+					grep -s "$source		$hostName" $EXCEPTION | awk '{print "N/A_" $1}' >> final$source
 				else
-					grep "$source		$hostName" $EXCEPTION | awk '{print "N/A_" $1 "-(exp)"}' >> final$source
+					grep -s "$source		$hostName" $EXCEPTION | awk '{print "N/A_" $1 "-(exp)"}' >> final$source
 				fi
 			else
 				echo "_" >> final$source			
@@ -112,7 +112,7 @@ echo "MATCH" > matchedList
 				HostTally=$((HostTally + 1))
 
 			else
-			grep "$source		$hostName" $EXCEPTION > /dev/null
+			grep -s "$source		$hostName" $EXCEPTION > /dev/null
 				if [ $? -eq 0 ]
 				then
 					HostTally=$((HostTally + 1))
@@ -131,7 +131,7 @@ echo "MATCH" > matchedList
 		HostTally=0
 	done < noHeader-$MASTER
 echo $MatchedTally >> matchedList
-percTotal=$(print "scale=1; ($MatchedTally/$total)*100" | bc)
+percTotal=$(print "scale=4; ($MatchedTally/$total)*100" | bc)
 echo $percTotal"%" >> matchedList
 
 
