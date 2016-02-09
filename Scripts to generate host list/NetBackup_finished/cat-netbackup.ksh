@@ -3,8 +3,8 @@
 # NAME: cat-netbackup
 #
 # DESCRIPTION:
-# This script will merge all lists of hosts from a particular source into a bigger list that contains all
-# the hosts from that source
+# This script will merge all lists of hosts from NetBackup into a bigger list that contains all
+# the hosts from NetBackup
 #
 #
 # INPUT: 
