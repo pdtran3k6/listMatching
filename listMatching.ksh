@@ -54,7 +54,7 @@ MatchedTally=0
 cd $SOURCE_DIR
 rm noHeader-$MASTER
 # Generate raw Masterlist and raw ExceptionFile (no header)
-cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u | cut -c1-20 > noHeader-$MASTER
+cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u | sed 's/ /_/g' | cut -c1-15 > noHeader-$MASTER
 cat $EXCEPTION | sed '1d' | awk '{print $3}' > noHeader-$EXCEPTION
 while read hostName;
 do
