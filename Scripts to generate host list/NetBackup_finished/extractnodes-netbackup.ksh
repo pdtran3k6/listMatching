@@ -28,7 +28,7 @@
 # Feb 9 2016 PHAT TRAN
 ############################################################################################################
 
-TARGETDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/`uname –n`/listmatching
+TARGETDIR=/u1/tranp
 
 # Check to see if there are processes running (except JAVA GUI)
 /usr/openv/netbackup/bin/bpps -a | grep -v "java" > /dev/null
