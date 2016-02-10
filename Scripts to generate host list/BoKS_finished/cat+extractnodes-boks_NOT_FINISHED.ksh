@@ -33,7 +33,7 @@ TARGETDIR=/opt/fundserv/syscheck/common-bin
 
 # Check to see if there's a symbolic link on pam.conf
 cd /etc
-ls -l pam.* | grep "pam.conf..ssm" 2> /dev/null
+ls -l pam.conf | grep "pam.conf..ssm" 2> /dev/null
 if [ $? -eq 0 ]
 then
 	# Check if the process exists
