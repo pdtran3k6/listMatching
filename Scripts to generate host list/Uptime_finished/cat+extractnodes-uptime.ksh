@@ -25,9 +25,9 @@
 #
 #
 # CHANGELOG:
-# Feb 8 2016 PHAT TRAN
+# Feb 10 2016 PHAT TRAN
 ############################################################################################################
 
-TARGETDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/`uname –n`/listmatching
+TARGETDIR=/opt/fundserv/syscheck/common-bin
 
 mysql -u uptime -puptime -P3308 --protocol=tcp uptime -e "SELECT name FROM entity" | sed '1d' > $TARGETDIR/Uptime.lst

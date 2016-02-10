@@ -32,7 +32,7 @@
 ############################################################################################################
 
 HOST=`uname -n`
-TARGETDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/$HOST/listmatching
+TARGETDIR=/opt/fundserv/syscheck/common-bin
 SOURCEDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/$HOST/listmatching
 
 cat `find $SOURCEDIR -type f -name 'netbackup-*.lst'` | sort > $TARGETDIR/NetBackup.lst

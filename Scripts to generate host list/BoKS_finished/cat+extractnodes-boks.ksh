@@ -29,7 +29,7 @@
 ############################################################################################################
 
 HOST=`uname -n`
-TARGETDIR=/opt/fundserv/syscheck/data/`date +%Y%m`/$HOST/listmatching
+TARGETDIR=/opt/fundserv/syscheck/common-bin
 
 # Check to see if there's a symbolic link on pam.conf
 cd /etc

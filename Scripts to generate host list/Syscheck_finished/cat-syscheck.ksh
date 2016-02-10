@@ -33,6 +33,6 @@
 
 HOST=`uname -n`
 SOURCEDIR=/opt/fundserv/syscheck/local-etc
-TARGETDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/$HOST/listmatching
+TARGETDIR=/opt/fundserv/syscheck/common-bin
 
 cat `find $SOURCEDIR -type f -name 'all_*.list'` | sort > $TARGETDIR/Syscheck.lst
