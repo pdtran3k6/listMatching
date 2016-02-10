@@ -25,10 +25,11 @@
 #
 #
 # CHANGELOG:
-# Feb 9 2016 PHAT TRAN
+# Feb 10 2016 PHAT TRAN
 ############################################################################################################
 
-TARGETDIR=/u1/tranp
+HOST=`uname -n`
+TARGETDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/$HOST/listmatching
 
 # Check to see if there are processes running (except JAVA GUI)
 /usr/openv/netbackup/bin/bpps -a | grep -v "java" > /dev/null
@@ -36,5 +37,5 @@ TARGETDIR=/u1/tranp
 # Send the list of hosts that aren't Windows to the file path
 if [ $? -eq 0 ]
 then
-	sudo bpplclients -allunique -l | grep -i -v "windows" | awk '{print $2}' > $TARGETDIR/netbackup-`uname –n`.lst
+	sudo bpplclients -allunique -l | grep -i -v "windows" | awk '{print $2}' > $TARGETDIR/netbackup-$HOST.lst
 fi
