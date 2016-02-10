@@ -28,9 +28,11 @@
 #
 #
 # CHANGELOG:
-# Feb 8 2016 PHAT TRAN
+# Feb 10 2016 PHAT TRAN
 ############################################################################################################
-TARGETDIR=/u1/tranp
-SOURCEDIR=/
+
+HOST=`uname -n`
+TARGETDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/$HOST/listmatching
+SOURCEDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/$HOST/listmatching
 
 cat `find $SOURCEDIR -type f -name 'netbackup-*.lst'` | sort > $TARGETDIR/NetBackup.lst
