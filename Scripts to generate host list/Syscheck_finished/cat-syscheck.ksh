@@ -28,10 +28,11 @@
 #
 #
 # CHANGELOG:
-# Feb 8 2016 PHAT TRAN
+# Feb 10 2016 PHAT TRAN
 ############################################################################################################
 
+HOST=`uname -n`
 SOURCEDIR=/opt/fundserv/syscheck/local-etc
-TARGETDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/`uname –n`/listmatching
+TARGETDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/$HOST/listmatching
 
 cat `find $SOURCEDIR -type f -name 'all_*.list'` | sort > $TARGETDIR/Syscheck.lst
