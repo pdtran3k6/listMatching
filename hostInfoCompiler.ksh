@@ -33,11 +33,11 @@ HOST_INFO_DIR=/u1/tranp
 OUTPUT_DIR=/APACHE/inv
 MASTER=Master
 
-echo "Hostname		Date		CPU		Model" > hostinfo.txt
+#echo "Hostname			Date			OS			Kernel			Model			CPU				Zonetype			Zonelist			SW Uptime			SW Netbackup" > hostinfo.txt
 while read hostname;
 do
 	cd $HOST_INFO_DIR
-	grep -s . $hostname-sysinfo.txt | awk '{print $2}' ORS='	' >> hostinfo.txt
+	grep -s . $hostname-sysinfo.txt | sed '/^$/g' | awk -F: '{print $2}' ORS='		' >> hostinfo.txt
 	echo >> hostinfo.txt
 done < $MASTER
 mv hostinfo.txt $OUTPUT_DIR
