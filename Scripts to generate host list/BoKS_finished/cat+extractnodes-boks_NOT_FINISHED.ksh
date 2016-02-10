@@ -37,7 +37,7 @@ ls -l pam.* | grep "pam.conf..ssm" 2> /dev/null
 if [ $? -eq 0 ]
 then
 	# Check if the process exists
-	grep "boksinit.client" /etc/opt/boksm 2> /dev/null
+	ps -ef | grep "boksinit.client" /etc/opt/boksm 2> /dev/null
 	if [ $? -eq 0 ]
 	then
 		# Send the list of hosts to TARGETDIR
