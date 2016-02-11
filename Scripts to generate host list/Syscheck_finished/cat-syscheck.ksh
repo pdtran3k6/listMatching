@@ -35,4 +35,5 @@ HOST=`uname -n`
 SOURCEDIR=/opt/fundserv/syscheck/local-etc
 TARGETDIR=/opt/fundserv/syscheck/common-bin
 
-cat `find $SOURCEDIR -type f -name 'all_*.list'` | sort > $TARGETDIR/Syscheck.lst
+cd $SOURCEDIR
+cat all_dev.lst all_uat.lst all_prod.lst | sort > $TARGETDIR/Syscheck.lst
