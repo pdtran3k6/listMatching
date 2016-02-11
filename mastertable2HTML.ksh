@@ -34,6 +34,7 @@
 # CHANGELOG:
 # Feb 11 2016 PHAT TRAN
 ############################################################################################################
+MASTER_DIR=/opt/fundserv/syscheck/sources
 MASTER=Master
 HTML_OUTPUT_DIR=/APACHE/listMatching
 

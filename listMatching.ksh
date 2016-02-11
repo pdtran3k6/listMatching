@@ -36,10 +36,10 @@
 #
 #
 # CHANGELOG:
-# Feb 8 2016 PHAT TRAN
+# Feb 11 2016 PHAT TRAN
 ############################################################################################################
 
-SOURCE_DIR=/u1/tranp/sources
+SOURCE_DIR=/opt/fundserv/syscheck/sources
 SOURCE1=NetBackup.lst
 SOURCE2=Syscheck.lst
 SOURCE3=BoKS.lst
