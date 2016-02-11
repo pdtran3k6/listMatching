@@ -32,8 +32,8 @@
 ############################################################################################################
 
 HOST=`uname -n`
-SOURCEDIR=/opt/fundserv/syscheck/local-etc
+SOURCEDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`
 TARGETDIR=/opt/fundserv/syscheck/common-bin
 
 cd $SOURCEDIR
-cat all_dev.lst all_uat.lst all_prod.lst | sort > $TARGETDIR/Syscheck.lst
+ls | sort > $TARGETDIR/Syscheck.lst
