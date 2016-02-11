@@ -32,7 +32,7 @@
 #
 #
 # CHANGELOG:
-# Feb 8 2016 PHAT TRAN
+# Feb 11 2016 PHAT TRAN
 ############################################################################################################
 MASTER=Master
 HTML_OUTPUT_DIR=/APACHE/listMatching
@@ -83,8 +83,8 @@ done < MasterTable
 # Close table
 echo "\n</table>\n" >> table.html
 
-# Link to the report page
-echo "<h2>Go to <a href='/listMatching/Report.txt'>Report</a></h2>" >> table.html
+# Link to the report folder
+echo "<h2>Go to <a href='/listMatching/Reports/'>Report</a></h2>" >> table.html
 
 # Close html
 echo "\n</body>\n</html>" >> table.html
