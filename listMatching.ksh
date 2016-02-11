@@ -95,6 +95,7 @@ do
 		fi
 	done < noHeader-$MASTER
 	
+	# For formatting purposes
 	echo "_" >> final$source
 	echo "_" >> final$source
 done
@@ -104,6 +105,7 @@ done
 echo "MATCH" > matchedList
 	while read hostName;
 	do
+		# Check if each source has a specific host
 		for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4
 		do
 		grep "$hostName" $source > /dev/null
@@ -116,11 +118,11 @@ echo "MATCH" > matchedList
 				if [ $? -eq 0 ]
 				then
 					HostTally=$((HostTally + 1))
-
 				fi
 			fi
 		done
 		
+		# If the rows are filled with 'Yes's and/or 'N/a's, then add '***' to the matchedList
 		if [ $HostTally -eq  4 ]
 		then
 			MatchedTally=$((MatchedTally + 1))
@@ -130,6 +132,8 @@ echo "MATCH" > matchedList
 		fi
 		HostTally=0
 	done < noHeader-$MASTER
+
+# Calculate the percentage matched + Output the total number of hosts matched
 echo $MatchedTally >> matchedList
 percTotal=$(print "scale=4; ($MatchedTally/$total)*100" | bc)
 echo $percTotal"%" >> matchedList
