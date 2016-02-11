@@ -49,15 +49,16 @@ td
 </style>
 </head>\n" >> table.html
 echo "<body align='center'>\n" >> table.html
-date >> table.html
 
+# Date when the table.html was generated
+date >> table.html
 
 # Title of the table
 echo "\n<h3 style='font-family:Tahoma;'>List of Hosts from Different Sources</h3>\n" >> table.html
 echo "<table align='center'>" >> table.html
 
 
-# Add each columns and each rows into table format
+# Add each columns and each rows into table format (Additional columns could be added)
 while read col1 col2 col3 col4 col5 col6
 do
 	echo "<tr>" >> table.html
@@ -82,14 +83,8 @@ done < MasterTable
 # Close table
 echo "\n</table>\n" >> table.html
 
+# Link to the report page
 echo "<h2>Go to <a href='/listMatching/Report.txt'>Report</a></h2>" >> table.html
-
-
-
-
-
-
-
 
 # Close html
 echo "\n</body>\n</html>" >> table.html
