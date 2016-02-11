@@ -19,7 +19,15 @@
 #
 #
 # OUTPUT:
-# Report.txt: A text file that contains all the information listed above
+# Yes_NA_Report.txt: A text file that contains the number of 'YES's and 'N/A's/total 
+# for each source with percentages, respectively.
+# Extra_Hosts_Report.txt: A text file that contains all the lists of extra hosts from different
+# sources.
+# Expired_Exceptions_Report.txt: A text file that contains all the expired exceptions
+# Exceptions_By_Date_Report.txt: A text file that contains all the exceptions sorted by date
+# Exceptions_By_Hostname_Report.txt: A text file that contains all the exceptions sorted by host name
+# Missing_Hosts_Report.txt: A text file that contains all the missing hosts that aren't in 
+# any sources but they are in the ExceptionFile
 # 
 # 
 # ENVIRONMENT VARIABLES:
@@ -37,18 +45,18 @@
 #
 #
 # CHANGELOG:
-# Feb 8 2016 PHAT TRAN
+# Feb 11 2016 PHAT TRAN
 ############################################################################################################
 
 #!/bin/ksh
-SOURCE_DIR=/u1/tranp
-SOURCE1=Altiris
-SOURCE2=AV
-SOURCE3=OVO
-SOURCE4=SNC
-MASTER=Master
+SOURCE_DIR=/u1/tranp/sources
+SOURCE1=NetBackup.lst
+SOURCE2=Syscheck.lst
+SOURCE3=BoKS.lst
+SOURCE4=Uptime.lst
+MASTER=Mastercd 
 EXCEPTION=ExceptionFile
-HTML_OUTPUT_DIR=/u1/tranp
+HTML_OUTPUT_DIR=/APACHE/listMatching/Reports
 
 Yes_Tally=0
 NA_Tally=0
@@ -59,7 +67,7 @@ cd $SOURCE_DIR
 cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u > $MASTER
 cat $EXCEPTION | sed '1d' > noHeader-$EXCEPTION
 rm ExpiredExceptionFile 2> /dev/null
-rm Report.txt 2> /dev/null
+rm Extra_Hosts_Report.txt 2> /dev/null
 
 # Loop through each source
 for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 
@@ -82,9 +90,9 @@ do
 	ls | grep "extra_hosts-$source" > /dev/null
 	if [ $? -eq 0 ]
 	then
-		echo "List of extra hosts in $source" >> Report.txt
-		cat extra_hosts-$source >> Report.txt
-		echo >> Report.txt
+		echo "List of extra hosts in $source" >> Extra_Hosts_Report.txt
+		cat extra_hosts-$source >> Extra_Hosts_Report.txt
+		echo >> Extra_Hosts_Report.txt
 	fi
 	
 	
@@ -137,8 +145,8 @@ echo "Yes and N/A" >> attributes
 echo "% Yes and N/A" >> attributes
 
 # Generate the output table
-paste attributes perc$SOURCE1 perc$SOURCE2 perc$SOURCE3 perc$SOURCE4 | pr -t -e20 >> Report.txt
-echo >> Report.txt
+paste attributes perc$SOURCE1 perc$SOURCE2 perc$SOURCE3 perc$SOURCE4 | pr -t -e20 >> Yes_NA_Report.txt
+echo >> Yes_NA_Report.txt
 
 
 # Generate the list of all the exceptions that has expired
@@ -150,27 +158,31 @@ do
 	fi
 done < noHeader-$EXCEPTION
 
-echo "List of expired exceptions" >> Report.txt
-cat ExpiredExceptionFile >> Report.txt
-echo >> Report.txt
+echo "List of expired exceptions" >> Expired_Exceptions_Report.txt
+cat ExpiredExceptionFile >> Expired_Exceptions_Report.txt
+echo >> Expired_Exceptions_Report.txt
 
 # List of exceptions sorted by date
-echo "Exceptions sorted by date" >> Report.txt
-cat noHeader-$EXCEPTION | sort -k 4 >> Report.txt
-echo >> Report.txt
+echo "Exceptions sorted by date" >> Exceptions_By_Date_Report.txt
+cat noHeader-$EXCEPTION | sort -k 4 >> Exceptions_By_Date_Report.txt
+echo >> Exceptions_By_Date_Report.txt
 
 # List of exceptions sorted by host's name
-echo "Exceptions sorted by host name" >> Report.txt
-cat noHeader-$EXCEPTION | sort -k 3 >> Report.txt
-echo >> Report.txt
+echo "Exceptions sorted by host name" >> Exceptions_By_Hostname_Report.txt
+cat noHeader-$EXCEPTION | sort -k 3 >> Exceptions_By_Hostname_Report.txt
+echo >> Exceptions_By_Hostname_Report.txt
 
 # Generate list of hosts in ExceptionFile
 cat noHeader-$EXCEPTION | awk {'print $3'} | sort -u > ExHosts
 
 # Check to see if there's any host that is in the ExceptionFile but not in the raw Masterlist
-echo "Hosts that are in the $EXCEPTION but not in the $MASTER" >> Report.txt
-comm -31 $MASTER ExHosts >> Report.txt
+echo "Hosts that are in the $EXCEPTION but not in the $MASTER" >> Missing_Hosts_Report.txt
+comm -31 $MASTER ExHosts >> Missing_Hosts_Report.txt
 
-mv Report.txt $HTML_OUTPUT_DIR
+mv Extra_Hosts_Report.txt $HTML_OUTPUT_DIR
+mv Yes_NA_Report.txt $HTML_OUTPUT_DIR
+mv Expired_Exceptions_Report.txt $HTML_OUTPUT_DIR
+mv Exceptions_By_Date_Report.txt $HTML_OUTPUT_DIR
+mv Exceptions_By_Hostname_Report.txt $HTML_OUTPUT_DIR
+mv Missing_Hosts_Report.txt $HTML_OUTPUT_DIR
 cd $HTML_OUTPUT_DIR
-cat Report.txt
