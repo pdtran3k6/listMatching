@@ -11,14 +11,15 @@
 #
 #
 # OUTPUT:
-# hostinfo.txt: A table containing all the hosts with their information (Name, Date, CPU, Model) 
+# hostinfo.txt: A table containing all the hosts with their information
 # 
 # 
 # ENVIRONMENT VARIABLES:
 # 
 #
 # NOTES:
-# There must be a folder where it stores all files containing the information of each host
+# There must be a folder where it stores all files containing the information of each host 
+# ($hostname-sysinfo.txt)
 #
 #
 # EXIT CODE:
@@ -33,7 +34,9 @@ HOST_INFO_DIR=/u1/tranp
 OUTPUT_DIR=/APACHE/inv
 MASTER=Master
 
-#echo "Hostname			Date			OS			Kernel			Model			CPU				Zonetype			Zonelist			SW Uptime			SW Netbackup" > hostinfo.txt
+# Header of the hostinfo.txt file soon to be added
+
+# Loop through all the hosts
 while read hostname;
 do
 	cd $HOST_INFO_DIR
