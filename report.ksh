@@ -54,7 +54,7 @@ SOURCE1=NetBackup.lst
 SOURCE2=Syscheck.lst
 SOURCE3=BoKS.lst
 SOURCE4=Uptime.lst
-MASTER=Mastercd 
+MASTER=Master 
 EXCEPTION=ExceptionFile
 HTML_OUTPUT_DIR=/APACHE/listMatching/Reports
 
@@ -165,7 +165,7 @@ echo >> Expired_Exceptions_Report.txt
 # List of exceptions sorted by date
 echo "Exceptions sorted by date" >> Exceptions_By_Date_Report.txt
 cat noHeader-$EXCEPTION | sort -k 4 >> Exceptions_By_Date_Report.txt
-echo >> Exceptions_By_Date_Report.txt
+echo >> Exceptions_By_Date_Report.txt 
 
 # List of exceptions sorted by host's name
 echo "Exceptions sorted by host name" >> Exceptions_By_Hostname_Report.txt
