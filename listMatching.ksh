@@ -36,14 +36,16 @@
 #
 #
 # CHANGELOG:
-# Feb 11 2016 PHAT TRAN
+# Feb 12 2016 PHAT TRAN
 ############################################################################################################
 
 SOURCE_DIR=/opt/fundserv/syscheck/sources
-SOURCE1=NetBackup.lst
-SOURCE2=Syscheck.lst
-SOURCE3=BoKS.lst
-SOURCE4=Uptime.lst
+SOURCE1=NetBackup.list
+SOURCE2=Syscheck.list
+SOURCE3=BoKS.list
+SOURCE4=Uptime.list
+SOURCE5=PiKT.list
+SOURCE6=ControlM.list
 MASTER=Master
 EXCEPTION=ExceptionFile
 
@@ -54,7 +56,7 @@ MatchedTally=0
 cd $SOURCE_DIR
 rm noHeader-$MASTER
 # Generate raw Masterlist and raw ExceptionFile (no header)
-cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u | sed 's/ /_/g' | cut -c1-15 > noHeader-$MASTER
+cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 $SOURCE6| sort -u | sed 's/ /_/g' | cut -c1-15 > noHeader-$MASTER
 cat $EXCEPTION | sed '1d' | awk '{print $3}' > noHeader-$EXCEPTION
 while read hostName;
 do
@@ -67,7 +69,7 @@ done < noHeader-$EXCEPTION
 total=$(wc -l noHeader-$MASTER | awk {'print $1'})
 
 # Loop through each source
-for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 
+for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 $SOURCE6
 do
 	echo "$source" > final$source
 	while read hostName;
@@ -106,7 +108,7 @@ echo "MATCH" > matchedList
 	while read hostName;
 	do
 		# Check if each source has a specific host
-		for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4
+		for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 $SOURCE6
 		do
 		grep "$hostName" $source > /dev/null
 			if [ $? -eq 0 ]
@@ -146,6 +148,6 @@ echo "Num_Host_Matched" >> $MASTER
 echo "Percentage_Matched" >> $MASTER
 
 # Generate the output table
-paste $MASTER final$SOURCE1 final$SOURCE2 final$SOURCE3 final$SOURCE4 matchedList | pr -t -e20 > MasterTable
+paste $MASTER final$SOURCE1 final$SOURCE2 final$SOURCE3 final$SOURCE4 final$SOURCE5 final$SOURCE6 matchedList | pr -t -e20 > MasterTable
 cat MasterTable
 echo

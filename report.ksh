@@ -45,15 +45,17 @@
 #
 #
 # CHANGELOG:
-# Feb 11 2016 PHAT TRAN
+# Feb 12 2016 PHAT TRAN
 ############################################################################################################
 
 #!/bin/ksh
 SOURCE_DIR=/u1/tranp/sources
-SOURCE1=NetBackup.lst
-SOURCE2=Syscheck.lst
-SOURCE3=BoKS.lst
-SOURCE4=Uptime.lst
+SOURCE1=NetBackup.list
+SOURCE2=Syscheck.list
+SOURCE3=BoKS.list
+SOURCE4=Uptime.list
+SOURCE5=PiKT.list
+SOURCE6=ControlM.list
 MASTER=Master 
 EXCEPTION=ExceptionFile
 HTML_OUTPUT_DIR=/APACHE/listMatching/Reports
