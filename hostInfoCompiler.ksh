@@ -28,10 +28,11 @@
 #
 #
 # CHANGELOG:
-# Feb 8 2016 PHAT TRAN
+# Feb 12 2016 PHAT TRAN
 ############################################################################################################
-HOST_INFO_DIR=/u1/tranp
-OUTPUT_DIR=/APACHE/inv
+
+HOST_INFO_DIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`
+OUTPUT_DIR=/opt/fundserv/syscheck
 MASTER=Master
 
 # Header of the hostinfo.txt file soon to be added
@@ -39,8 +40,7 @@ MASTER=Master
 # Loop through all the hosts
 while read hostname;
 do
-	cd $HOST_INFO_DIR
-	grep -s . $hostname-sysinfo.txt | sed '/^$/g' | awk -F: '{print $2}' ORS='		' >> hostinfo.txt
+	cat `find $HOST_INFO_DIR/$hostname/CMDB -type f -name '$hostname-sysinfo.txt'` | sed '/^$/d' | awk -F: '{print $2}' ORS=: >> hostinfo.txt
 	echo >> hostinfo.txt
 done < $MASTER
 mv hostinfo.txt $OUTPUT_DIR
