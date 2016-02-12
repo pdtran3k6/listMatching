@@ -49,16 +49,16 @@
 ############################################################################################################
 
 #!/bin/ksh
-SOURCE_DIR=/u1/tranp/sources
+SOURCE_DIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
 SOURCE1=NetBackup.list
 SOURCE2=Syscheck.list
 SOURCE3=BoKS.list
 SOURCE4=Uptime.list
 SOURCE5=PiKT.list
 SOURCE6=ControlM.list
-MASTER=Master 
+MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/Master 
 EXCEPTION=ExceptionFile
-HTML_OUTPUT_DIR=/APACHE/listMatching/Reports
+HTML_OUTPUT_DIR=/opt/fundserv/syscheck/webcontent/listMatching/reports
 
 Yes_Tally=0
 NA_Tally=0
@@ -66,7 +66,7 @@ NA_Tally=0
 cd $SOURCE_DIR
 
 # Generate raw Masterlist and raw ExceptionFile (no header)
-cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 | sort -u > $MASTER
+cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 $SOURCE6 | sort -u > $MASTER
 cat $EXCEPTION | sed '1d' > noHeader-$EXCEPTION
 rm ExpiredExceptionFile 2> /dev/null
 rm Extra_Hosts_Report.txt 2> /dev/null
