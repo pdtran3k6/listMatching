@@ -3,7 +3,7 @@
 # NAME: extractnodes-netbackup
 #
 # DESCRIPTION:
-# This script will extract all the hosts from a NetBackup server and output into a .lst file
+# This script will extract all the hosts from a NetBackup server and output into a .list file
 #
 #
 # INPUT: 
@@ -25,7 +25,7 @@
 #
 #
 # CHANGELOG:
-# Feb 10 2016 PHAT TRAN
+# Feb 12 2016 PHAT TRAN
 ############################################################################################################
 
 HOST=`uname -n`
@@ -37,5 +37,5 @@ TARGETDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/$HOST/listmatching
 # Send the list of hosts that aren't Windows to the file path
 if [ $? -eq 0 ]
 then
-	sudo bpplclients -allunique -l | grep -i -v "windows" | awk '{print $2}' > $TARGETDIR/netbackup-$HOST.lst
+	sudo bpplclients -allunique -l | grep -i -v "windows" | awk '{print $2}' > $TARGETDIR/netbackup-$HOST.list
 fi

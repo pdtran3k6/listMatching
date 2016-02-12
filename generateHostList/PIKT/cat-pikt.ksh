@@ -1,10 +1,10 @@
 #!/bin/ksh
 ###########################################################################################################
-# NAME: cat-syscheck
+# NAME: cat-pikt
 #
 # DESCRIPTION:
-# This script will merge all lists of hosts from Syscheck into a bigger list that contains all
-# the hosts from Syscheck
+# This script will merge all smaller lists of hosts from PIKT into a bigger list that contains all
+# the hosts from PIKT
 #
 #
 # INPUT: 
@@ -28,12 +28,9 @@
 #
 #
 # CHANGELOG:
-# Feb 10 2016 PHAT TRAN
+# Feb 12 2016 PHAT TRAN
 ############################################################################################################
+TARGETDIR=/opt/fundserv/syscheck/data/`date +%Y%m`/`uname –n`/listmatching
+SOURCEDIR=/
 
-HOST=`uname -n`
-SOURCEDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`
-TARGETDIR=/opt/fundserv/syscheck/common-bin
-
-cd $SOURCEDIR
-ls | sort > $TARGETDIR/Syscheck.lst
+cat `find $SOURCEDIR -type f -name 'pikt-*.list'` | sort > $TARGETDIR/PIKT.list

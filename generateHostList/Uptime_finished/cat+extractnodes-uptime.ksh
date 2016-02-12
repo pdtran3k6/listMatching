@@ -3,7 +3,7 @@
 # NAME: cat+extractnodes-uptime
 #
 # DESCRIPTION:
-# This script will extract all hosts from UpTime mysql database and output into a file
+# This script will extract all hosts from UpTime mysql database and output into a file .list
 #
 #
 # INPUT: 
@@ -25,7 +25,7 @@
 #
 #
 # CHANGELOG:
-# Feb 10 2016 PHAT TRAN
+# Feb 12 2016 PHAT TRAN
 ############################################################################################################
 
 TARGETDIR=/opt/fundserv/syscheck/common-bin
@@ -34,4 +34,4 @@ TARGETDIR=/opt/fundserv/syscheck/common-bin
 
 
 # Extract all hosts and output into Uptime.lst
-mysql -u uptime -puptime -P3308 --protocol=tcp uptime -e "SELECT name FROM entity" | sed '1d' > $TARGETDIR/Uptime.lst
+mysql -u uptime -puptime -P3308 --protocol=tcp uptime -e "SELECT name FROM entity" | sed '1d' > $TARGETDIR/Uptime.list

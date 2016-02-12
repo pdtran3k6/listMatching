@@ -1,10 +1,10 @@
 #!/bin/ksh
 ###########################################################################################################
-# NAME: cat-netbackup
+# NAME: cat-syscheck
 #
 # DESCRIPTION:
-# This script will merge all lists of hosts from NetBackup into a bigger list that contains all
-# the hosts from NetBackup
+# This script will merge all lists of hosts from Syscheck into a bigger list that contains all
+# the hosts from Syscheck
 #
 #
 # INPUT: 
@@ -19,7 +19,6 @@
 # 
 #
 # NOTES:
-# The name of the individual list has to be in this format: netbackup-*.lst
 #
 #
 # EXIT CODE:
@@ -28,11 +27,11 @@
 #
 #
 # CHANGELOG:
-# Feb 10 2016 PHAT TRAN
+# Feb 12 2016 PHAT TRAN
 ############################################################################################################
 
 HOST=`uname -n`
+SOURCEDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`
 TARGETDIR=/opt/fundserv/syscheck/common-bin
-SOURCEDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/$HOST/listmatching
 
-cat `find $SOURCEDIR -type f -name 'netbackup-*.lst'` | sort > $TARGETDIR/NetBackup.lst
+ls $SOURCEDIR > $TARGETDIR/Syscheck.list
