@@ -32,7 +32,7 @@ HOST=`uname -n`
 TARGETDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/$HOST/listmatching
 
 # Check to see if there are processes running (except JAVA GUI)
-/usr/openv/netbackup/bin/bpps -a | grep -v "java" > /dev/null
+find /usr/openv/netbackup/bin/admincmd/ -type f -name 'bpplclients' > /dev/null
 
 # Send the list of hosts that aren't Windows to the file path
 if [ $? -eq 0 ]
