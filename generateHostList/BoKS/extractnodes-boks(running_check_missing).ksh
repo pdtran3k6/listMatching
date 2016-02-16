@@ -1,9 +1,9 @@
 #!/bin/ksh
 ###########################################################################################################
-# NAME: cat+extractnodes-boks
+# NAME: extractnodes-boks
 #
 # DESCRIPTION:
-# This script will extract all the hosts from BoKS server and output into a .list file
+# This script will extract all the hosts from BoKS server and output into a boks-$HOST.list file
 #
 #
 # INPUT: 
@@ -25,11 +25,11 @@
 #
 #
 # CHANGELOG:
-# Feb 10 2016 PHAT TRAN
+# Feb 16 2016 PHAT TRAN
 ############################################################################################################
 
 HOST=`uname -n`
-TARGETDIR=/opt/fundserv/syscheck/common-bin
+TARGETDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/$HOST/listMatching
 
 # Check to see if there's a symbolic link on pam.conf
 cd /etc
@@ -41,6 +41,6 @@ then
 	if [ $? -eq 0 ]
 	then
 		# Send the list of hosts to TARGETDIR
-		sudo /opt/boksm/sbin/boksadm -S hostadm -l -t UNIXBOKSHOST -S | awk '{print $1}' > $TARGETDIR/BoKS.list
+		sudo /opt/boksm/sbin/boksadm -S hostadm -l -t UNIXBOKSHOST -S | awk '{print $1}' > $TARGETDIR/boks-$HOST.list
 	fi
 fi

@@ -1,10 +1,10 @@
 #!/bin/ksh
 ###########################################################################################################
-# NAME: cat-syscheck
+# NAME: extractnodes-pikt
 #
 # DESCRIPTION:
-# This script will merge all lists of hosts from Syscheck into a bigger list that contains all
-# the hosts from Syscheck
+# This script will merge all smaller lists of hosts from PIKT into a bigger list that contains all
+# the hosts from PIKT
 #
 #
 # INPUT: 
@@ -19,6 +19,7 @@
 # 
 #
 # NOTES:
+# The name of the individual list has to be in this format: all_*.lst
 #
 #
 # EXIT CODE:
@@ -27,11 +28,6 @@
 #
 #
 # CHANGELOG:
-# Feb 12 2016 PHAT TRAN
+# Feb 16 2016 PHAT TRAN
 ############################################################################################################
 
-HOST=`uname -n`
-SOURCEDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`
-TARGETDIR=/opt/fundserv/syscheck/common-bin
-
-ls $SOURCEDIR > $TARGETDIR/Syscheck.list

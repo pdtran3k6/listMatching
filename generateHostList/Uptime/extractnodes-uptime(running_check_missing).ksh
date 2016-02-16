@@ -1,14 +1,12 @@
 #!/bin/ksh
 ###########################################################################################################
-# NAME: cat-pikt
+# NAME: extractnodes-uptime
 #
 # DESCRIPTION:
-# This script will merge all smaller lists of hosts from PIKT into a bigger list that contains all
-# the hosts from PIKT
+# This script will extract all hosts from UpTime mysql database and output into a file uptime-$HOST.list
 #
 #
 # INPUT: 
-# SOURCEDIR: the path to the directory that contains all the lists of hosts
 # TARGETDIR: the path to the directory that contains the final list of hosts
 #
 #
@@ -19,7 +17,6 @@
 # 
 #
 # NOTES:
-# The name of the individual list has to be in this format: all_*.lst
 #
 #
 # EXIT CODE:
@@ -30,7 +27,15 @@
 # CHANGELOG:
 # Feb 12 2016 PHAT TRAN
 ############################################################################################################
-TARGETDIR=/opt/fundserv/syscheck/data/`date +%Y%m`/`uname –n`/listmatching
-SOURCEDIR=/
 
-cat `find $SOURCEDIR -type f -name 'pikt-*.list'` | sort > $TARGETDIR/PIKT.list
+HOST=`uname -n`
+TARGETDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/$HOST/listMatching
+
+# Check if Uptime is running on the server
+
+
+# Extract all hosts and output into Uptime.list
+if [ $? -eq 0 ]
+then
+mysql -u uptime -puptime -P3308 --protocol=tcp uptime -e "SELECT name FROM entity" | sed '1d' > $TARGETDIR/uptime-$HOST.list
+fi

@@ -3,11 +3,11 @@
 # NAME: extractnodes-netbackup
 #
 # DESCRIPTION:
-# This script will extract all the hosts from a NetBackup server and output into a .list file
+# This script will extract all the hosts from a NetBackup server and output into a netbackup-$HOST.list file
 #
 #
 # INPUT: 
-# TARGETDIR: the path to the directory that contains the final list of hosts
+# TARGETDIR: the path to the directory that contains the list of hosts gathered from that server
 #
 #
 # OUTPUT:
@@ -25,14 +25,14 @@
 #
 #
 # CHANGELOG:
-# Feb 12 2016 PHAT TRAN
+# Feb 16 2016 PHAT TRAN
 ############################################################################################################
 
 HOST=`uname -n`
-TARGETDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/$HOST/listmatching
+TARGETDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/$HOST/listMatching
 
-# Check to see if there are processes running (except JAVA GUI)
-find /usr/openv/netbackup/bin/admincmd/ -type f -name 'bpplclients' > /dev/null
+# Check to see if the command exists
+find /usr/openv/netbackup/bin/admincmd/ -type f -name 'bpplclients' 2> /dev/null
 
 # Send the list of hosts that aren't Windows to the file path
 if [ $? -eq 0 ]
