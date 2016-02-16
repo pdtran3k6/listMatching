@@ -3,13 +3,14 @@
 # NAME: catSources
 #
 # DESCRIPTION:
-# This script will merge all lists of hosts from a source into a bigger list that contains all
-# the hosts from that source
+# This script will merge all lists of nodes from a server (if there are more than one)
+# into a bigger list that contains all the nodes from that server
 #
 #
 # INPUT: 
-# SOURCEDIR: the path to the directory that contains all the lists of hosts
-# TARGETDIR: the path to the directory that contains the final list of hosts
+# SOURCEDIR: the path to the directory that contains all lists of nodes extracted from each admin server
+# TARGETDIR: the path to the directory that contains one list of nodes for each tool 
+# (NetBackup, BoKS, etc.)
 #
 #
 # OUTPUT:
@@ -19,7 +20,6 @@
 # 
 #
 # NOTES: 
-#
 #
 #
 # EXIT CODE:

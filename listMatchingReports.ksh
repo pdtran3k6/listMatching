@@ -36,7 +36,6 @@
 # NOTES:
 # The name of the sources in the ExceptionFile must match the names of sources 
 # as defined in the variables below
-# The script needs to be in the same folder as all the sources' list and the ExceptionFile
 #
 #
 # EXIT CODE:
@@ -45,7 +44,7 @@
 #
 #
 # CHANGELOG:
-# Feb 12 2016 PHAT TRAN
+# Feb 16 2016 PHAT TRAN
 ############################################################################################################
 
 #!/bin/ksh
@@ -57,8 +56,11 @@ SOURCE4=Uptime.list
 SOURCE5=PiKT.list
 SOURCE6=ControlM.list
 MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/Master 
-EXCEPTION=ExceptionFile
-HTML_OUTPUT_DIR=/opt/fundserv/syscheck/webcontent/listMatching/reports
+EXCEPTION=/opt/fundserv/syscheck/webcontent/listMatching/exception/ExceptionFile
+NO_HEADER_EXCEPTION=/opt/fundserv/syscheck/webcontent/listMatching/exception/noHeader-ExceptionFile
+EXPIRE_EXCEPTION=/opt/fundserv/syscheck/webcontent/listMatching/exception/ExpiredExceptionFile
+EXCEPTION_HOSTS=/opt/fundserv/syscheck/webcontent/listMatching/exception/ExceptionHosts
+REPORTS_OUTPUT_DIR=/opt/fundserv/syscheck/webcontent/listMatching/reports
 
 Yes_Tally=0
 NA_Tally=0
@@ -67,16 +69,14 @@ cd $SOURCE_DIR
 
 # Generate raw Masterlist and raw ExceptionFile (no header)
 cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 $SOURCE6 | sort -u > $MASTER
-cat $EXCEPTION | sed '1d' > noHeader-$EXCEPTION
-rm ExpiredExceptionFile 2> /dev/null
-rm Extra_Hosts_Report.txt 2> /dev/null
+cat $EXCEPTION | sed '1d' > $NO_HEADER_EXCEPTION
+rm $EXPIRE_EXCEPTION 2> /dev/null
+rm $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt 2> /dev/null
+
 
 # Loop through each source
-for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 
+for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 $SOURCE6
 do
-
-	rm perc$source 2> /dev/null
-	rm extra_hosts-$source 2> /dev/null
 	
 	# Check to see if there's any host that isn't supposed to be in the source but appear in the source
 	while read hostName;
@@ -92,11 +92,10 @@ do
 	ls | grep "extra_hosts-$source" > /dev/null
 	if [ $? -eq 0 ]
 	then
-		echo "List of extra hosts in $source" >> Extra_Hosts_Report.txt
-		cat extra_hosts-$source >> Extra_Hosts_Report.txt
-		echo >> Extra_Hosts_Report.txt
+		echo "List of extra hosts in $source" >> $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt
+		cat extra_hosts-$source >> $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt
+		echo >> $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt
 	fi
-	
 	
 	while read hostName;
 	do
@@ -106,7 +105,7 @@ do
 		then
 			Yes_Tally=$((Yes_Tally + 1))
 		else
-			# If not found in the source, check if it's in the $EXCEPTION
+			# If not found in the source, check if it's in the ExceptionFile
 			grep "$source		$hostName" $EXCEPTION > /dev/null
 			if [ $? -eq 0 ]
 			then
@@ -147,44 +146,44 @@ echo "Yes and N/A" >> attributes
 echo "% Yes and N/A" >> attributes
 
 # Generate the output table
-paste attributes perc$SOURCE1 perc$SOURCE2 perc$SOURCE3 perc$SOURCE4 | pr -t -e20 >> Yes_NA_Report.txt
-echo >> Yes_NA_Report.txt
+paste attributes perc$SOURCE1 perc$SOURCE2 perc$SOURCE3 perc$SOURCE4 | pr -t -e20 > $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
+echo >> $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
 
+# Clean up trash in the source folder
+rm attributes
+for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 $SOURCE6
+do 
+	rm perc$source 2> /dev/null
+	rm extra_hosts-$source 2> /dev/null
+done
 
 # Generate the list of all the exceptions that has expired
 while read row;
 do
 	if [ $(echo $row | awk '{print $4}') != "Never" ] && [ $(date +%Y%m%d) -gt $(echo $row | awk '{print $4}' | sed 's/-//g') ]
 	then
-		grep "$(echo $row | awk '{print $4}')" noHeader-$EXCEPTION >> ExpiredExceptionFile
+		grep "$(echo $row | awk '{print $4}')" $EXCEPTION >> $EXPIRE_EXCEPTION
 	fi
-done < noHeader-$EXCEPTION
+done < $NO_HEADER_EXCEPTION
 
-echo "List of expired exceptions" >> Expired_Exceptions_Report.txt
-cat ExpiredExceptionFile >> Expired_Exceptions_Report.txt
-echo >> Expired_Exceptions_Report.txt
+echo "List of expired exceptions" > $REPORTS_OUTPUT_DIR/Expired_Exceptions_Report.txt
+cat $EXPIRE_EXCEPTION >> $REPORTS_OUTPUT_DIR/Expired_Exceptions_Report.txt
+echo >> $REPORTS_OUTPUT_DIR/Expired_Exceptions_Report.txt
 
 # List of exceptions sorted by date
-echo "Exceptions sorted by date" >> Exceptions_By_Date_Report.txt
-cat noHeader-$EXCEPTION | sort -k 4 >> Exceptions_By_Date_Report.txt
-echo >> Exceptions_By_Date_Report.txt 
+echo "Exceptions sorted by date" > $REPORTS_OUTPUT_DIR/Exceptions_By_Date_Report.txt
+cat $NO_HEADER_EXCEPTION | sort -k 4 >> $REPORTS_OUTPUT_DIR/Exceptions_By_Date_Report.txt
+echo >> $REPORTS_OUTPUT_DIR/Exceptions_By_Date_Report.txt 
 
 # List of exceptions sorted by host's name
-echo "Exceptions sorted by host name" >> Exceptions_By_Hostname_Report.txt
-cat noHeader-$EXCEPTION | sort -k 3 >> Exceptions_By_Hostname_Report.txt
-echo >> Exceptions_By_Hostname_Report.txt
+echo "Exceptions sorted by host name" > $REPORTS_OUTPUT_DIR/Exceptions_By_Hostname_Report.txt
+cat $NO_HEADER_EXCEPTION | sort -k 3 >> $REPORTS_OUTPUT_DIR/Exceptions_By_Hostname_Report.txt
+echo >> $REPORTS_OUTPUT_DIR/Exceptions_By_Hostname_Report.txt
 
 # Generate list of hosts in ExceptionFile
-cat noHeader-$EXCEPTION | awk {'print $3'} | sort -u > ExHosts
+cat $NO_HEADER_EXCEPTION | awk {'print $3'} | sort -u > $EXCEPTION_HOSTS
 
 # Check to see if there's any host that is in the ExceptionFile but not in the raw Masterlist
-echo "Hosts that are in the $EXCEPTION but not in the $MASTER" >> Missing_Hosts_Report.txt
-comm -31 $MASTER ExHosts >> Missing_Hosts_Report.txt
+echo "Hosts that are in the ExceptionFile but not in the Master" > $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
+comm -31 $MASTER $EXCEPTION_HOSTS >> $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
 
-mv Extra_Hosts_Report.txt $HTML_OUTPUT_DIR
-mv Yes_NA_Report.txt $HTML_OUTPUT_DIR
-mv Expired_Exceptions_Report.txt $HTML_OUTPUT_DIR
-mv Exceptions_By_Date_Report.txt $HTML_OUTPUT_DIR
-mv Exceptions_By_Hostname_Report.txt $HTML_OUTPUT_DIR
-mv Missing_Hosts_Report.txt $HTML_OUTPUT_DIR
-cd $HTML_OUTPUT_DIR

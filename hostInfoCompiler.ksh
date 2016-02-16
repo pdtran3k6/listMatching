@@ -11,7 +11,7 @@
 #
 #
 # OUTPUT:
-# hostinfo.txt: A table containing all the hosts with their information
+# 
 # 
 # 
 # ENVIRONMENT VARIABLES:
@@ -28,21 +28,34 @@
 #
 #
 # CHANGELOG:
-# Feb 12 2016 PHAT TRAN
+# Feb 16 2016 PHAT TRAN
 ############################################################################################################
 
 HOST_INFO_DIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`
-OUTPUT_DIR=/opt/fundserv/syscheck
-MASTER=Master
+MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/Master
+HARDWARE_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/hardwareReport.txt
+SOFTWARE_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/softwareReport.txt
+ZONELIST_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/zonelistReport.txt
 
-# Header of the hostinfo.txt file soon to be added
+# Header of all the reports file
+echo "HOSTNAME		DATE			OS			KERNEL			MODEL			CPU					ZONETYPE" >> $HARDWARE_INFO
+echo "UPTIME		NETBACKUP" >> $SOFTWARE_INFO
+echo "HOSTNAME		DATE			ZONELIST" >> $ZONELIST_INFO
 
 # Loop through all the hosts
-while read hostname;
+while read hostName;
 do
-	cat `find $HOST_INFO_DIR/$hostname/CMDB -type f -name '$hostname-sysinfo.txt'` | sed '/^$/d' | awk -F: '{print $2}' ORS=: >> hostinfo.txt
-	echo >> hostinfo.txt
+	# Data for hardware
+	cat `find $HOST_INFO_DIR/$hostname/CMDB -type f -name '$hostName-sysinfo.txt'` | sed '/^$/d' | egrep -v 'ZONELIST|SW'  | awk -F: '{print $2}' ORS='		' >> $HARDWARE_INFO
+	echo >> $HARDWARE_INFO
+	
+	# Data for software
+	cat `find $HOST_INFO_DIR/$hostname/CMDB -type f -name '$hostName-sysinfo.txt'` | grep 'SW' | awk -F: '{print $2}' ORS='			' >> $SOFTWARE_INFO
+	echo >> $SOFTWARE_INFO
+	
+	# Data for zonelist
+	cat `find $HOST_INFO_DIR/$hostname/CMDB -type f -name '$hostName-sysinfo.txt'` | egrep 'HOSTNAME|DATE|ZONELIST' | awk -F: '{print $2}' ORS='			' >> $ZONELIST_INFO
+	echo >> $ZONELIST_INFO
+	
 done < $MASTER
-mv hostinfo.txt $OUTPUT_DIR
-cd $OUTPUT_DIR
-cat hostinfo.txt
+

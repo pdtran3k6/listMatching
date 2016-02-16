@@ -39,34 +39,37 @@
 # Feb 12 2016 PHAT TRAN
 ############################################################################################################
 
-SOURCE_DIR=/opt/fundserv/syscheck/sources
+SOURCE_DIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
 SOURCE1=NetBackup.list
 SOURCE2=Syscheck.list
 SOURCE3=BoKS.list
 SOURCE4=Uptime.list
 SOURCE5=PiKT.list
 SOURCE6=ControlM.list
-MASTER=Master
-EXCEPTION=ExceptionFile
+MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/Master 
+NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
+EXCEPTION=/opt/fundserv/syscheck/webcontent/listMatching/exception/ExceptionFile
+NO_HEADER_EXCEPTION=/opt/fundserv/syscheck/webcontent/listMatching/exception/noHeader-ExceptionFile
+MASTERTABLE=/opt/fundserv/syscheck/webcontent/listMatching/table/MasterTable
 
 HostTally=0
 MatchedTally=0
 
 
 cd $SOURCE_DIR
-rm noHeader-$MASTER
+
 # Generate raw Masterlist and raw ExceptionFile (no header)
-cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 $SOURCE6| sort -u | sed 's/ /_/g' | cut -c1-15 > noHeader-$MASTER
-cat $EXCEPTION | sed '1d' | awk '{print $3}' > noHeader-$EXCEPTION
+cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 $SOURCE6 | sort -u | sed 's/ /_/g' | cut -c1-15 > $NO_HEADER_MASTER
+cat $EXCEPTION | sed '1d' | awk '{print $3}' > $NO_HEADER_EXCEPTION
 while read hostName;
 do
-	grep "$hostName" noHeader-$MASTER > /dev/null
+	grep "$hostName" $NO_HEADER_MASTER > /dev/null
 	if [ $? -ne 0 ] 
 	then
-		echo "$hostName" >> noHeader-$MASTER
+		echo "$hostName" >> $NO_HEADER_MASTER
 	fi
-done < noHeader-$EXCEPTION
-total=$(wc -l noHeader-$MASTER | awk {'print $1'})
+done < $NO_HEADER_EXCEPTION
+total=$(wc -l $NO_HEADER_MASTER | awk {'print $1'})
 
 # Loop through each source
 for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 $SOURCE6
@@ -95,7 +98,7 @@ do
 				echo "_" >> final$source			
 			fi
 		fi
-	done < noHeader-$MASTER
+	done < $NO_HEADER_MASTER
 	
 	# For formatting purposes
 	echo "_" >> final$source
@@ -133,7 +136,7 @@ echo "MATCH" > matchedList
 			echo "_" >> matchedList
 		fi
 		HostTally=0
-	done < noHeader-$MASTER
+	done < $NO_HEADER_MASTER
 
 # Calculate the percentage matched + Output the total number of hosts matched
 echo $MatchedTally >> matchedList
@@ -143,11 +146,16 @@ echo $percTotal"%" >> matchedList
 
 # Generate the Masterlist with proper header and important attributes
 echo "Hostname" > $MASTER
-cat noHeader-$MASTER >> $MASTER
+cat $NO_HEADER_MASTER >> $MASTER
 echo "Num_Host_Matched" >> $MASTER
 echo "Percentage_Matched" >> $MASTER
 
 # Generate the output table
-paste $MASTER final$SOURCE1 final$SOURCE2 final$SOURCE3 final$SOURCE4 final$SOURCE5 final$SOURCE6 matchedList | pr -t -e20 > MasterTable
-cat MasterTable
-echo
+paste $MASTER final$SOURCE1 final$SOURCE2 final$SOURCE3 final$SOURCE4 final$SOURCE5 final$SOURCE6 matchedList | pr -t -e20 > $MASTERTABLE
+
+# Clean up trash in source folder
+rm matchedList
+for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 $SOURCE6
+do 
+	rm final$source
+done
