@@ -3,7 +3,7 @@
 # NAME: hostinfoCompiler
 #
 # DESCRIPTION:
-# This script will generate a file that contains all the hosts' information in a table 
+# This script will generate 3 different reports that contain all the nodes' information 
 #
 #
 # INPUT: 
@@ -28,17 +28,23 @@
 #
 #
 # CHANGELOG:
-# Feb 16 2016 PHAT TRAN
+# Feb 17 2016 PHAT TRAN
 ############################################################################################################
 
-HOST_INFO_DIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`
+HOST_INFO_DIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/
+WEB_HOST_INFO_DIR=/opt/fundserv/syscheck/webcontent/CMDB/sysinfo
 MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/Master
 HARDWARE_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/hardwareReport.txt
 SOFTWARE_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/softwareReport.txt
 ZONELIST_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/zonelistReport.txt
 
+# Delete all current sysinfo.txt files from WEB_HOST_INFO_DIR
+cd $WEB_HOST_INFO_DIR
+rm *
+cd ..
+
 # Header of all the reports file
-echo "HOSTNAME		DATE			OS			KERNEL			MODEL			CPU					ZONETYPE" >> $HARDWARE_INFO
+echo "HOSTNAME		DATE			OS					KERNEL					MODEL					CPU					ZONETYPE" >> $HARDWARE_INFO
 echo "UPTIME		NETBACKUP" >> $SOFTWARE_INFO
 echo "HOSTNAME		DATE			ZONELIST" >> $ZONELIST_INFO
 
@@ -54,8 +60,10 @@ do
 	echo >> $SOFTWARE_INFO
 	
 	# Data for zonelist
-	cat `find $HOST_INFO_DIR/$hostname/CMDB -type f -name '$hostName-sysinfo.txt'` | egrep 'HOSTNAME|DATE|ZONELIST' | awk -F: '{print $2}' ORS='			' >> $ZONELIST_INFO
+	cat `find $HOST_INFO_DIR/$hostname/CMDB -type f -name '$hostName-sysinfo.txt'` | egrep 'HOSTNAME|DATE|ZONELIST' | awk -F: '{print $2}' ORS='		' >> $ZONELIST_INFO
 	echo >> $ZONELIST_INFO
 	
+	# Copy new set of sysinfo.txt files from HOST_INFO_DIR into WEB_HOST_INFO_DIR
+	cp $HOST_INFO_DIR/$hostName/CMDB/'$hostName-sysinfo.txt' $WEB_HOST_INFO_DIR/'$hostname-sysinfo.txt'
 done < $MASTER
 
