@@ -44,7 +44,7 @@
 #
 #
 # CHANGELOG:
-# Feb 16 2016 PHAT TRAN
+# Feb 17 2016 PHAT TRAN
 ############################################################################################################
 
 #!/bin/ksh
@@ -53,8 +53,7 @@ SOURCE1=NetBackup.list
 SOURCE2=Syscheck.list
 SOURCE3=BoKS.list
 SOURCE4=Uptime.list
-SOURCE5=PiKT.list
-SOURCE6=ControlM.list
+SOURCE5=ControlM.list
 MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/Master 
 EXCEPTION=/opt/fundserv/syscheck/webcontent/listMatching/exception/ExceptionFile
 NO_HEADER_EXCEPTION=/opt/fundserv/syscheck/webcontent/listMatching/exception/noHeader-ExceptionFile
@@ -68,14 +67,14 @@ NA_Tally=0
 cd $SOURCE_DIR
 
 # Generate raw Masterlist and raw ExceptionFile (no header)
-cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 $SOURCE6 | sort -u > $MASTER
+cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 | sort -u > $MASTER
 cat $EXCEPTION | sed '1d' > $NO_HEADER_EXCEPTION
 rm $EXPIRE_EXCEPTION 2> /dev/null
 rm $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt 2> /dev/null
 
 
 # Loop through each source
-for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 $SOURCE6
+for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 do
 	
 	# Check to see if there's any host that isn't supposed to be in the source but appear in the source
@@ -151,7 +150,7 @@ echo >> $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
 
 # Clean up trash in the source folder
 rm attributes
-for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 $SOURCE6
+for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 do 
 	rm perc$source 2> /dev/null
 	rm extra_hosts-$source 2> /dev/null
