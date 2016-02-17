@@ -24,11 +24,11 @@
 # 
 #
 # CHANGELOG:
-# Feb 16 2016 PHAT TRAN
+# Feb 17 2016 PHAT TRAN
 ############################################################################################################
 
 NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
-MASTERTABLE_HTML=/opt/fundserv/syscheck/webcontent/listMatching/table.html
+MASTERTABLE_HTML=/opt/fundserv/syscheck/webcontent/listMatching/MasterTable.html
 MASTERTABLE=/opt/fundserv/syscheck/webcontent/listMatching/table/MasterTable
 
 echo "<html>\n" > $MASTERTABLE_HTML
@@ -53,7 +53,7 @@ echo "<table align='center'>" >> $MASTERTABLE_HTML
 
 
 # Add each columns and each rows into table format (Additional columns could be added)
-while read col1 col2 col3 col4 col5 col6 col7 col8
+while read col1 col2 col3 col4 col5 col6 col7
 do
 	echo "<tr>" >> $MASTERTABLE_HTML
 	# Link to host info file only if the it's the host is in the Masterlist
