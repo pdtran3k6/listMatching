@@ -24,10 +24,10 @@
 # 
 #
 # CHANGELOG:
-# Feb 17 2016 PHAT TRAN
+# Feb 18 2016 PHAT TRAN
 ############################################################################################################
 
-NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
+NO_HEADER_MASTER_FULLNAME=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master_fullname
 MASTERTABLE_HTML=/opt/fundserv/syscheck/webcontent/listMatching/MasterTable.html
 MASTERTABLE=/opt/fundserv/syscheck/webcontent/listMatching/table/MasterTable
 
@@ -60,7 +60,7 @@ do
 	grep "$col1" $NO_HEADER_MASTER > /dev/null
 	if [ $? -eq 0 ]
 	then
-		echo "<td><a href='/webcontent/CMDB/sysinfo/$col1-sysinfo.txt'>$col1</td>" >> $MASTERTABLE_HTML
+		echo "<td><a href='/CMDB/sysinfo/$col1-sysinfo.txt'>$col1</td>" >> $MASTERTABLE_HTML
 	else
 		echo "<td>$col1</td>" >> $MASTERTABLE_HTML
 	fi
@@ -70,6 +70,7 @@ do
 	echo "<td>$col4</td>" >> $MASTERTABLE_HTML
 	echo "<td>$col5</td>" >> $MASTERTABLE_HTML
 	echo "<td>$col6</td>" >> $MASTERTABLE_HTML
+	echo "<td>$col7</td>" >> $MASTERTABLE_HTML
 	echo "</tr>" >> $MASTERTABLE_HTML
 	echo "\n" >> $MASTERTABLE_HTML
 done < $MASTERTABLE
@@ -78,7 +79,7 @@ done < $MASTERTABLE
 echo "\n</table>\n" >> $MASTERTABLE_HTML
 
 # Link to the report folder
-echo "<h2>Go to <a href='/webcontent/listMatching/reports'>Report</a></h2>" >> $MASTERTABLE_HTML
+echo "<h2>Go to <a href='/listMatching/reports'>Report</a></h2>" >> $MASTERTABLE_HTML
 
 # Close html
 echo "\n</body>\n</html>" >> $MASTERTABLE_HTML
