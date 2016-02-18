@@ -29,18 +29,24 @@
 #
 #
 # CHANGELOG:
-# Feb 17 2016 PHAT TRAN
+# Feb 18 2016 PHAT TRAN
 ############################################################################################################
-
+ 
 HOST=`uname -n`
 TARGETDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/$HOST/listMatching
+
+if [ ! -d $TARGETDIR ]
+then
+	mkdir -p -m 755 $TARGETDIR
+	chown syscheck:staff $TARGETDIR
+fi
 
 ##### BOKS
 # Check to see if this is a BOKS admin server
 # If yes, extract the list of hosts to TARGETDIR
 if [ -f "/opt/boksm/sbin/boksadm" ]
 then
-	sudo /opt/boksm/sbin/boksadm -S hostadm -l -t UNIXBOKSHOST -S | awk '{print $1}' > $TARGETDIR/boks-$HOST.list
+	/opt/boksm/sbin/boksadm -S hostadm -l -t UNIXBOKSHOST -S | awk '{print $1}' > $TARGETDIR/boks-$HOST.list
 fi
 
 ##### CONTROLM
@@ -51,7 +57,7 @@ fi
 # If yes, extract the list of hosts that aren't Windows to the TARGETDIR
 if [ -f "/usr/openv/netbackup/bin/admincmd/bpplclients" ]
 then
-	sudo bpplclients -allunique -l | grep -i -v "windows" | awk '{print $2}' > $TARGETDIR/netbackup-$HOST.list
+	/usr/openv/netbackup/bin/admincmd/bpplclients -allunique -l | grep -i -v "windows" | awk '{print $2}' > $TARGETDIR/netbackup-$HOST.list
 fi
 
 ##### UPTIME
