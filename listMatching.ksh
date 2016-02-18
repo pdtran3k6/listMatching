@@ -36,17 +36,18 @@
 #
 #
 # CHANGELOG:
-# Feb 17 2016 PHAT TRAN
+# Feb 18 2016 PHAT TRAN
 ############################################################################################################
 
 SOURCE_DIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
-SOURCE1=NetBackup.list
-SOURCE2=Syscheck.list
-SOURCE3=BoKS.list
-SOURCE4=Uptime.list
-SOURCE5=ControlM.list
+SOURCE1=NETBACKUP.list
+SOURCE2=SYSCHECK.list
+SOURCE3=BOKS.list
+SOURCE4=UPTIME.list
+SOURCE5=CONTROLM.list
 MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/Master 
 NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
+NO_HEADER_MASTER_FULLNAME=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master_fullname
 EXCEPTION=/opt/fundserv/syscheck/webcontent/listMatching/exception/ExceptionFile
 NO_HEADER_EXCEPTION=/opt/fundserv/syscheck/webcontent/listMatching/exception/noHeader-ExceptionFile
 MASTERTABLE=/opt/fundserv/syscheck/webcontent/listMatching/table/MasterTable
@@ -59,10 +60,11 @@ cd $SOURCE_DIR
 
 # Generate raw Masterlist and raw ExceptionFile (no header)
 cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 | sort -u | sed 's/ /_/g' | cut -c1-15 > $NO_HEADER_MASTER
+cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 | sort -u > $NO_HEADER_MASTER_FULLNAME
 cat $EXCEPTION | sed '1d' | awk '{print $3}' > $NO_HEADER_EXCEPTION
 while read hostName;
 do
-	grep "$hostName" $NO_HEADER_MASTER > /dev/null
+	grep -s "$hostName" $NO_HEADER_MASTER > /dev/null
 	if [ $? -ne 0 ] 
 	then
 		echo "$hostName" >> $NO_HEADER_MASTER
@@ -77,7 +79,7 @@ do
 	while read hostName;
 	do
 		# Check to see if the host is in the source
-		grep "$hostName" $source > /dev/null
+		grep -s "$hostName" $source > /dev/null
 		if [ $? -eq 0 ] 
 		then
 			echo "YES" >> final$source
@@ -87,7 +89,7 @@ do
 			if [ $? -eq 0 ]
 			then
 				# Check the expiration date of the exception. If it never expires or hasn't expired, insert N/A Ex#; otherwise, insert N/A Ex# (exp). 
-				if [ $(grep -s "$source		$hostName" $EXCEPTION | awk '{print $4}') == "Never" ] || [ $(date +%Y%m%d) -le $(grep "$source		$hostName" $EXCEPTION | awk '{print $4}' | sed 's/-//g') ]
+				if [ $(grep -s "$source		$hostName" $EXCEPTION | awk '{print $4}') == "Never" ] || [ $(date +%Y%m%d) -le $(grep -s "$source		$hostName" $EXCEPTION | awk '{print $4}' | sed 's/-//g') ]
 				then
 					grep -s "$source		$hostName" $EXCEPTION | awk '{print "N/A_" $1}' >> final$source
 				else
@@ -97,7 +99,7 @@ do
 				echo "_" >> final$source			
 			fi
 		fi
-	done < $NO_HEADER_MASTER
+	done < $NO_HEADER_MASTER_FULLNAME
 	
 	# For formatting purposes
 	echo "_" >> final$source
@@ -112,7 +114,7 @@ echo "MATCH" > matchedList
 		# Check if each source has a specific host
 		for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 		do
-		grep "$hostName" $source > /dev/null
+		grep -s "$hostName" $source > /dev/null
 			if [ $? -eq 0 ]
 			then
 				HostTally=$((HostTally + 1))
@@ -127,7 +129,7 @@ echo "MATCH" > matchedList
 		done
 		
 		# If the rows are filled with 'Yes's and/or 'N/a's, then add '***' to the matchedList
-		if [ $HostTally -eq  4 ]
+		if [ $HostTally -eq  5 ]
 		then
 			MatchedTally=$((MatchedTally + 1))
 			echo "***" >> matchedList	
@@ -135,11 +137,11 @@ echo "MATCH" > matchedList
 			echo "_" >> matchedList
 		fi
 		HostTally=0
-	done < $NO_HEADER_MASTER
+	done < $NO_HEADER_MASTER_FULLNAME
 
 # Calculate the percentage matched + Output the total number of hosts matched
 echo $MatchedTally >> matchedList
-percTotal=$(print "scale=4; ($MatchedTally/$total)*100" | bc)
+percTotal=$(print "scale=2; ($MatchedTally/$total)*100" | bc)
 echo $percTotal"%" >> matchedList
 
 
