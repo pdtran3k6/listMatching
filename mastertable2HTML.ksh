@@ -27,7 +27,7 @@
 # Feb 18 2016 PHAT TRAN
 ############################################################################################################
 
-NO_HEADER_MASTER_FULLNAME=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master_fullname
+NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
 MASTERTABLE_HTML=/opt/fundserv/syscheck/webcontent/listMatching/MasterTable.html
 MASTERTABLE=/opt/fundserv/syscheck/webcontent/listMatching/table/MasterTable
 
@@ -51,7 +51,6 @@ date >> $MASTERTABLE_HTML
 echo "\n<h3 style='font-family:Tahoma;'>List of Nodes from Different Tool</h3>\n" >> $MASTERTABLE_HTML
 echo "<table align='center'>" >> $MASTERTABLE_HTML
 
-
 # Add each columns and each rows into table format (Additional columns could be added)
 while read col1 col2 col3 col4 col5 col6 col7
 do
@@ -60,7 +59,7 @@ do
 	grep "$col1" $NO_HEADER_MASTER > /dev/null
 	if [ $? -eq 0 ]
 	then
-		echo "<td><a href='/CMDB/sysinfo/$col1-sysinfo.txt'>$col1</td>" >> $MASTERTABLE_HTML
+		echo "<td><a href='/CMDB/sysinfo/`echo $col1 | sed 's/_/ /g'`-sysinfo.txt'>$col1</td>" >> $MASTERTABLE_HTML
 	else
 		echo "<td>$col1</td>" >> $MASTERTABLE_HTML
 	fi
