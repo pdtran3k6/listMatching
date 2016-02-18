@@ -44,16 +44,15 @@
 #
 #
 # CHANGELOG:
-# Feb 17 2016 PHAT TRAN
+# Feb 18 2016 PHAT TRAN
 ############################################################################################################
 
-#!/bin/ksh
 SOURCE_DIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
-SOURCE1=NetBackup.list
-SOURCE2=Syscheck.list
-SOURCE3=BoKS.list
-SOURCE4=Uptime.list
-SOURCE5=ControlM.list
+SOURCE1=NETBACKUP.list
+SOURCE2=SYSCHECK.list
+SOURCE3=BOKS.list
+SOURCE4=UPTIME.list
+SOURCE5=CONTROLM.list
 MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/Master 
 EXCEPTION=/opt/fundserv/syscheck/webcontent/listMatching/exception/ExceptionFile
 NO_HEADER_EXCEPTION=/opt/fundserv/syscheck/webcontent/listMatching/exception/noHeader-ExceptionFile
@@ -80,7 +79,7 @@ do
 	# Check to see if there's any host that isn't supposed to be in the source but appear in the source
 	while read hostName;
 	do
-		grep "$source		$hostName" $EXCEPTION > /dev/null
+		grep -s "$source		$hostName" $EXCEPTION > /dev/null
 		if [ $? -eq 0 ]
 		then
 			echo "$hostName" >> extra_hosts-$source
@@ -88,7 +87,7 @@ do
 	done < $source
 	
 	# List all the hosts that aren't supposed to be in certain source	
-	ls | grep "extra_hosts-$source" > /dev/null
+	ls | grep -s "extra_hosts-$source" > /dev/null
 	if [ $? -eq 0 ]
 	then
 		echo "List of extra hosts in $source" >> $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt
@@ -99,13 +98,13 @@ do
 	while read hostName;
 	do
 		# Check to see if the host is in the source
-		grep "$hostName" $source > /dev/null
+		grep -s "$hostName" $source > /dev/null
 		if [ $? -eq 0 ] 
 		then
 			Yes_Tally=$((Yes_Tally + 1))
 		else
 			# If not found in the source, check if it's in the ExceptionFile
-			grep "$source		$hostName" $EXCEPTION > /dev/null
+			grep -s "$source		$hostName" $EXCEPTION > /dev/null
 			if [ $? -eq 0 ]
 			then
 				NA_Tally=$((NA_Tally + 1))
@@ -115,9 +114,9 @@ do
 	
 	# Calculating percentages for Yes and N/A
 	total=$(wc -l $MASTER | awk {'print $1'})		
-	HostPercTotal=$(print "scale=1; (($Yes_Tally + $NA_Tally)/$total)*100" | bc)
-	YesPercTotal=$(print "scale=1; ($Yes_Tally/$total)*100" | bc)
-	NAPercTotal=$(print "scale=1; ($NA_Tally/$total)*100" | bc)
+	HostPercTotal=$(print "scale=2; (($Yes_Tally + $NA_Tally)/$total)*100" | bc)
+	YesPercTotal=$(print "scale=2; ($Yes_Tally/$total)*100" | bc)
+	NAPercTotal=$(print "scale=2; ($NA_Tally/$total)*100" | bc)
 	
 	# Output into file with Header for sources' columns
 	echo "$source" > perc$source
@@ -145,7 +144,7 @@ echo "Yes and N/A" >> attributes
 echo "% Yes and N/A" >> attributes
 
 # Generate the output table
-paste attributes perc$SOURCE1 perc$SOURCE2 perc$SOURCE3 perc$SOURCE4 | pr -t -e20 > $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
+paste attributes perc$SOURCE1 perc$SOURCE2 perc$SOURCE3 perc$SOURCE4 perc$SOURCE5| pr -t -e20 > $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
 echo >> $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
 
 # Clean up trash in the source folder
@@ -161,7 +160,7 @@ while read row;
 do
 	if [ $(echo $row | awk '{print $4}') != "Never" ] && [ $(date +%Y%m%d) -gt $(echo $row | awk '{print $4}' | sed 's/-//g') ]
 	then
-		grep "$(echo $row | awk '{print $4}')" $EXCEPTION >> $EXPIRE_EXCEPTION
+		grep -s "$(echo $row | awk '{print $4}')" $EXCEPTION >> $EXPIRE_EXCEPTION
 	fi
 done < $NO_HEADER_EXCEPTION
 
