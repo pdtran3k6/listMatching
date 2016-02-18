@@ -28,12 +28,12 @@
 #
 #
 # CHANGELOG:
-# Feb 17 2016 PHAT TRAN
+# Feb 18 2016 PHAT TRAN
 ############################################################################################################
 
 HOST_INFO_DIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/
 WEB_HOST_INFO_DIR=/opt/fundserv/syscheck/webcontent/CMDB/sysinfo
-MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/Master
+NO_HEADER_MASTER_FULLNAME=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master_fullname
 HARDWARE_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/hardwareReport.txt
 SOFTWARE_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/softwareReport.txt
 ZONELIST_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/zonelistReport.txt
@@ -65,5 +65,5 @@ do
 	
 	# Copy new set of sysinfo.txt files from HOST_INFO_DIR into WEB_HOST_INFO_DIR
 	cp $HOST_INFO_DIR/$hostName/CMDB/'$hostName-sysinfo.txt' $WEB_HOST_INFO_DIR/'$hostname-sysinfo.txt'
-done < $MASTER
+done < $NO_HEADER_MASTER_FULLNAME
 
