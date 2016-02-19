@@ -40,11 +40,11 @@
 ############################################################################################################
 
 SOURCE_DIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
-SOURCE1=NETBACKUP.list
-SOURCE2=SYSCHECK.list
-SOURCE3=BOKS.list
-SOURCE4=UPTIME.list
-SOURCE5=CONTROLM.list
+SOURCE1=BOKS.list
+SOURCE2=CONTROLM.list
+SOURCE3=NETBACKUP.list
+SOURCE4=SYSCHECK.list
+SOURCE5=UPTIME.list
 MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/Master 
 NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
 NO_HEADER_MASTER_FULLNAME=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master_fullname
@@ -75,7 +75,7 @@ total=$(wc -l $NO_HEADER_MASTER | awk {'print $1'})
 # Loop through each source
 for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 do
-	echo "$source" > final$source
+	echo "$source" | sed 's/.list//g' > final$source
 	while read hostName;
 	do
 		# Check to see if the host is in the source
