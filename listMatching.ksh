@@ -59,7 +59,7 @@ MatchedTally=0
 cd $SOURCE_DIR
 
 # Generate raw Masterlist and raw ExceptionFile (no header)
-cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 | sort -u | sed 's/ /_/g' > $NO_HEADER_MASTER
+cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 | sort -u | sed 's/ /+/g' > $NO_HEADER_MASTER
 cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 | sort -u > $NO_HEADER_MASTER_FULLNAME
 cat $EXCEPTION | sed '1d' | awk '{print $3}' > $NO_HEADER_EXCEPTION
 while read hostName;
@@ -144,6 +144,12 @@ echo $MatchedTally >> matchedList
 percTotal=$(print "scale=2; ($MatchedTally/$total)*100" | bc)
 echo $percTotal"%" >> matchedList
 
+# Remove domains of certain nodes 
+grep -s "142.148" $NO_HEADER_MASTER > IPonly
+comm -3 $NO_HEADER_MASTER IPonly > noIP_master
+awk -F. '{print $1}' noIP_master > noIP_master.tmp && mv noIP_master.tmp noIP_master
+cat IPonly noIP_master > $NO_HEADER_MASTER
+rm noIP_master IPonly
 
 # Generate the Masterlist with proper header and important attributes
 echo "Hostname" > $MASTER
