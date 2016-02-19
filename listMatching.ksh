@@ -36,7 +36,7 @@
 #
 #
 # CHANGELOG:
-# Feb 18 2016 PHAT TRAN
+# Feb 19 2016 PHAT TRAN
 ############################################################################################################
 
 SOURCE_DIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
@@ -100,50 +100,39 @@ do
 			fi
 		fi
 	done < $NO_HEADER_MASTER_FULLNAME
-	
-	# For formatting purposes
-	echo "_" >> final$source
-	echo "_" >> final$source
 done
-
 
 # Generate the matched list
 echo "MATCH" > matchedList
-	while read hostName;
+while read hostName;
+do
+	# Check if each source has a specific host
+	for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 	do
-		# Check if each source has a specific host
-		for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
-		do
-		grep -s "$hostName" $source > /dev/null
+	grep -s "$hostName" $source > /dev/null
+		if [ $? -eq 0 ]
+		then
+			HostTally=$((HostTally + 1))
+		else
+		grep -s "$source		$hostName" $EXCEPTION > /dev/null
 			if [ $? -eq 0 ]
 			then
 				HostTally=$((HostTally + 1))
-
-			else
-			grep -s "$source		$hostName" $EXCEPTION > /dev/null
-				if [ $? -eq 0 ]
-				then
-					HostTally=$((HostTally + 1))
-				fi
 			fi
-		done
-		
-		# If the rows are filled with 'Yes's and/or 'N/a's, then add '***' to the matchedList
-		if [ $HostTally -eq  5 ]
-		then
-			MatchedTally=$((MatchedTally + 1))
-			echo "***" >> matchedList	
-		else
-			echo "_" >> matchedList
 		fi
-		HostTally=0
-	done < $NO_HEADER_MASTER_FULLNAME
-
-# Calculate the percentage matched + Output the total number of hosts matched
-echo $MatchedTally >> matchedList
-percTotal=$(print "scale=2; ($MatchedTally/$total)*100" | bc)
-echo $percTotal"%" >> matchedList
-
+	done
+		
+	# If the rows are filled with 'Yes's and/or 'N/a's, then add '***' to the matchedList
+	if [ $HostTally -eq  5 ]
+	then
+		echo "***" >> matchedList	
+	else
+		echo "_" >> matchedList
+	fi
+	HostTally=0
+done < $NO_HEADER_MASTER_FULLNAME
+	
+	
 # Remove domains of certain nodes 
 grep -s "142.148" $NO_HEADER_MASTER > IPonly
 comm -3 $NO_HEADER_MASTER IPonly > noIP_master
@@ -154,8 +143,6 @@ rm noIP_master IPonly
 # Generate the Masterlist with proper header and important attributes
 echo "Hostname" > $MASTER
 cat $NO_HEADER_MASTER >> $MASTER
-echo "Num_Host_Matched" >> $MASTER
-echo "Percentage_Matched" >> $MASTER
 
 # Generate the output table
 paste $MASTER final$SOURCE1 final$SOURCE2 final$SOURCE3 final$SOURCE4 final$SOURCE5 matchedList | pr -t -e20 > $MASTERTABLE

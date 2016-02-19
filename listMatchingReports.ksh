@@ -44,29 +44,31 @@
 #
 #
 # CHANGELOG:
-# Feb 18 2016 PHAT TRAN
+# Feb 19 2016 PHAT TRAN
 ############################################################################################################
 
 SOURCE_DIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
-SOURCE1=NETBACKUP.list
-SOURCE2=SYSCHECK.list
-SOURCE3=BOKS.list
-SOURCE4=UPTIME.list
-SOURCE5=CONTROLM.list
-MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/Master 
+SOURCE1=BOKS.list
+SOURCE2=CONTROLM.list
+SOURCE3=NETBACKUP.list
+SOURCE4=SYSCHECK.list
+SOURCE5=UPTIME.list
+NO_HEADER_MASTER_FULLNAME=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master_fullname 
 EXCEPTION=/opt/fundserv/syscheck/webcontent/listMatching/exception/ExceptionFile
 NO_HEADER_EXCEPTION=/opt/fundserv/syscheck/webcontent/listMatching/exception/noHeader-ExceptionFile
 EXPIRE_EXCEPTION=/opt/fundserv/syscheck/webcontent/listMatching/exception/ExpiredExceptionFile
 EXCEPTION_HOSTS=/opt/fundserv/syscheck/webcontent/listMatching/exception/ExceptionHosts
 REPORTS_OUTPUT_DIR=/opt/fundserv/syscheck/webcontent/listMatching/reports
 
+HostTally=0
+MatchedTally=0
 Yes_Tally=0
 NA_Tally=0
 
 cd $SOURCE_DIR
 
 # Generate raw Masterlist and raw ExceptionFile (no header)
-cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 | sort -u > $MASTER
+cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 | sort -u > $NO_HEADER_MASTER_FULLNAME
 cat $EXCEPTION | sed '1d' > $NO_HEADER_EXCEPTION
 rm $EXPIRE_EXCEPTION 2> /dev/null
 rm $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt 2> /dev/null
@@ -110,22 +112,28 @@ do
 				NA_Tally=$((NA_Tally + 1))
 			fi	
 		fi
-	done < $MASTER
+	done < $NO_HEADER_MASTER_FULLNAME
 	
 	# Calculating percentages for Yes and N/A
-	total=$(wc -l $MASTER | awk {'print $1'})		
+	total=$(wc -l $NO_HEADER_MASTER_FULLNAME | awk {'print $1'})		
 	HostPercTotal=$(print "scale=2; (($Yes_Tally + $NA_Tally)/$total)*100" | bc)
 	YesPercTotal=$(print "scale=2; ($Yes_Tally/$total)*100" | bc)
 	NAPercTotal=$(print "scale=2; ($NA_Tally/$total)*100" | bc)
 	
 	# Output into file with Header for sources' columns
-	echo "$source" > perc$source
-	echo $Yes_Tally >> perc$source
-	echo $YesPercTotal"%" >> perc$source
-	echo $NA_Tally >> perc$source
-	echo $NAPercTotal"%" >> perc$source
-	echo $(($Yes_Tally + $NA_Tally)) >> perc$source
-	echo $HostPercTotal"%" >> perc$source
+	# YES column
+	echo "$source" | sed 's/.list//g' > yes$source
+	echo "YES" >> yes$source
+	echo $Yes_Tally >> yes$source
+	echo $YesPercTotal"%" >> yes$source
+	echo $(($Yes_Tally + $NA_Tally)) >> yes$source
+	echo $HostPercTotal"%" >> yes$source
+	
+	# N/A column
+	echo "---------" > NA$source
+	echo "N/A" >> NA$source
+	echo $NA_Tally >> NA$source
+	echo $NAPercTotal"%" >> NA$source
 	
 	# Reset all tally counts
 	Yes_Tally=0
@@ -134,24 +142,59 @@ done
 
 
 
+
+# Generate the total matches
+while read hostName;
+do
+	# Check if each source has a specific host
+	for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
+	do		
+	grep -s "$hostName" $source > /dev/null
+		if [ $? -eq 0 ]
+		then
+			HostTally=$((HostTally + 1))
+		else
+		grep -s "$source		$hostName" $EXCEPTION > /dev/null
+			if [ $? -eq 0 ]
+			then
+				HostTally=$((HostTally + 1))
+			fi
+		fi
+	done
+		
+	# If the rows are filled with 'Yes's and/or 'N/a's, then add '***' to the totalMatches
+	if [ $HostTally -eq  5 ]
+	then
+		MatchedTally=$((MatchedTally + 1))
+	fi
+	HostTally=0
+done < $NO_HEADER_MASTER_FULLNAME
+
+percTotal=$(print "scale=2; ($MatchedTally/$total)*100" | bc)
+# Output the total number of hosts matched
+echo "Total Matches" > totalMatches
+echo $MatchedTally >> totalMatches
+echo "\n" >> totalMatches
+echo "Percentage matched" >> totalMatches
+echo $percTotal"%" >> totalMatches
+echo $total >> totalMatches
+
 # Generate the first column of the table with corresponding attributes
 echo "Sources" > attributes
-echo "Yes" >> attributes
-echo "% Yes" >> attributes
-echo "N/A" >> attributes
-echo "% N/A" >> attributes
-echo "Yes and N/A" >> attributes
-echo "% Yes and N/A" >> attributes
+echo "MATCH" >> attributes
+echo "\n" >> attributes
+echo "TOTAL" >> attributes
+echo "% TOTAL" >> attributes
 
 # Generate the output table
-paste attributes perc$SOURCE1 perc$SOURCE2 perc$SOURCE3 perc$SOURCE4 perc$SOURCE5| pr -t -e20 > $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
+paste attributes yes$SOURCE1 NA$SOURCE1 yes$SOURCE2 NA$SOURCE2 yes$SOURCE3 NA$SOURCE3 yes$SOURCE4 NA$SOURCE4 yes$SOURCE5 NA$SOURCE5 totalMatches | pr -t -e20 > $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
 echo >> $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
 
 # Clean up trash in the source folder
-rm attributes
+rm attributes totalMatches percentageMatched
 for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 do 
-	rm perc$source 2> /dev/null
+	rm yes$source NA$source 2> /dev/null
 	rm extra_hosts-$source 2> /dev/null
 done
 
@@ -183,5 +226,5 @@ cat $NO_HEADER_EXCEPTION | awk {'print $3'} | sort -u > $EXCEPTION_HOSTS
 
 # Check to see if there's any host that is in the ExceptionFile but not in the raw Masterlist
 echo "Hosts that are in the ExceptionFile but not in the Master" > $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
-comm -31 $MASTER $EXCEPTION_HOSTS >> $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
+comm -31 $NO_HEADER_MASTER_FULLNAME $EXCEPTION_HOSTS >> $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
 
