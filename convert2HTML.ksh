@@ -59,7 +59,7 @@ do
 	grep "$col1" $NO_HEADER_MASTER > /dev/null
 	if [ $? -eq 0 ]
 	then
-		echo "<td><a href='/CMDB/sysinfo/`echo $col1 | sed 's/_/ /g'`-sysinfo.txt'>$col1</td>" >> $MASTERTABLE_HTML
+		echo "<td><a href='/CMDB/sysinfo/`echo $col1 | sed 's/+/ /g'`-sysinfo.txt'>$col1</td>" >> $MASTERTABLE_HTML
 	else
 		echo "<td>$col1</td>" >> $MASTERTABLE_HTML
 	fi
