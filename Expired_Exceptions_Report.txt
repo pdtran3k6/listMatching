@@ -1,0 +1,6 @@
+List of expired exceptions
+0005	ControlM	dsz01privsvr		2015-12-31
+0007	NetBackup	J			2014-08-31
+0008	Syscheck	pua11esxi01		2015-09-30
+0009	Uptime		dsa11core		2016-01-23
+0011	BoKS		access2jump		2016-02-01
