@@ -1,6 +1,6 @@
 Ex#	Source		Hostname				Expiration
-0001	NetBackup	Cisco Wireless Lan Controller		Never
-0002	Syscheck	FundSERV Markham			2018-09-23
+0001	NetBackup	Cisco+Wireless+Lan+Controller		Never
+0002	Syscheck	FundSERV+Markham			2018-09-23
 0003	Uptime		pla01jira01				2018-10-10
 0004	Syscheck	psz01fcomplusn1				2016-03-20
 0005	ControlM	dsz01privsvr				2015-12-31
