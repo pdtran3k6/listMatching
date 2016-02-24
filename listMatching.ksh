@@ -36,7 +36,7 @@
 #
 #
 # CHANGELOG:
-# Feb 19 2016 PHAT TRAN
+# Feb 23 2016 PHAT TRAN
 ############################################################################################################
 
 SOURCE_DIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
@@ -49,8 +49,9 @@ MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/Master
 NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
 NO_HEADER_MASTER_FULLNAME=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master_fullname
 EXCEPTION=/opt/fundserv/syscheck/webcontent/listMatching/exception/ExceptionFile
-NO_HEADER_EXCEPTION=/opt/fundserv/syscheck/webcontent/listMatching/exception/noHeader-ExceptionFile
+HOST_ONLY_EXCEPTION=/opt/fundserv/syscheck/webcontent/listMatching/exception/hostOnly-ExceptionFile
 MASTERTABLE=/opt/fundserv/syscheck/webcontent/listMatching/table/MasterTable
+REPORTS_OUTPUT_DIR=/opt/fundserv/syscheck/webcontent/listMatching/reports
 
 HostTally=0
 MatchedTally=0
@@ -59,18 +60,28 @@ MatchedTally=0
 cd $SOURCE_DIR
 
 # Generate raw Masterlist and raw ExceptionFile (no header)
-cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 | sort -u | sed 's/ /+/g' > $NO_HEADER_MASTER
 cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 | sort -u > $NO_HEADER_MASTER_FULLNAME
-cat $EXCEPTION | sed '1d' | awk '{print $3}' > $NO_HEADER_EXCEPTION
+cat $NO_HEADER_MASTER_FULLNAME | sed 's/ /+/g' > $NO_HEADER_MASTER
+
+cat $EXCEPTION | sed '1d' | awk '{print $3}' > $HOST_ONLY_EXCEPTION
+
+
+echo "Hosts that are in the ExceptionFile but not in the Master" > $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
+# Added missing hosts from ExceptionFile
 while read hostName;
 do
-	grep -s "$hostName" $NO_HEADER_MASTER > /dev/null
+	grep -sw "$hostName" $NO_HEADER_MASTER > /dev/null
 	if [ $? -ne 0 ] 
 	then
-		echo "$hostName" >> $NO_HEADER_MASTER
+		echo "$hostName" >> $NO_HEADER_MASTER_FULLNAME
+		echo "$hostName" >> $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
 	fi
-done < $NO_HEADER_EXCEPTION
-total=$(wc -l $NO_HEADER_MASTER | awk {'print $1'})
+done < $HOST_ONLY_EXCEPTION
+
+cat $NO_HEADER_MASTER_FULLNAME | sort -u > $NO_HEADER_MASTER_FULLNAME.tmp
+mv $NO_HEADER_MASTER_FULLNAME.tmp $NO_HEADER_MASTER_FULLNAME
+
+cat $NO_HEADER_MASTER_FULLNAME | sed 's/ /+/g' > $NO_HEADER_MASTER
 
 # Loop through each source
 for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
@@ -79,21 +90,22 @@ do
 	while read hostName;
 	do
 		# Check to see if the host is in the source
-		grep -s "$hostName" $source > /dev/null
+		grep -sw "$hostName" $source > /dev/null
 		if [ $? -eq 0 ] 
 		then
 			echo "YES" >> final$source
 		else
 			# If not found in the source, check if it's in the $EXCEPTION
-			grep -s "$source		$hostName" $EXCEPTION > /dev/null
+			grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -s "$hostName" > /dev/null
 			if [ $? -eq 0 ]
 			then
+			expiryDate=$(grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | grep -s "$hostName" | awk '{print $4}')
 				# Check the expiration date of the exception. If it never expires or hasn't expired, insert N/A Ex#; otherwise, insert N/A Ex# (exp). 
-				if [ $(grep -s "$source		$hostName" $EXCEPTION | awk '{print $4}') == "Never" ] || [ $(date +%Y%m%d) -le $(grep -s "$source		$hostName" $EXCEPTION | awk '{print $4}' | sed 's/-//g') ]
+				if [ "$expiryDate" = "Never" ] || [ "$(date +%Y%m%d)" -le "$(echo $expiryDate | sed 's/-//g')" ]
 				then
-					grep -s "$source		$hostName" $EXCEPTION | awk '{print "N/A_" $1}' >> final$source
+					grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -s "$hostName" | awk '{print "N/A_" $1}' >> final$source
 				else
-					grep -s "$source		$hostName" $EXCEPTION | awk '{print "N/A_" $1 "-(exp)"}' >> final$source
+					grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -s "$hostName" | awk '{print "N/A_" $1 "-(exp)"}' >> final$source
 				fi
 			else
 				echo "_" >> final$source			
@@ -109,12 +121,12 @@ do
 	# Check if each source has a specific host
 	for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 	do
-	grep -s "$hostName" $source > /dev/null
+	grep -sw "$hostName" $source > /dev/null
 		if [ $? -eq 0 ]
 		then
 			HostTally=$((HostTally + 1))
 		else
-		grep -s "$source		$hostName" $EXCEPTION > /dev/null
+		grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -s "$hostName" > /dev/null
 			if [ $? -eq 0 ]
 			then
 				HostTally=$((HostTally + 1))
