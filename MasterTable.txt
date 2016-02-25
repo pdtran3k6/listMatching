@@ -10,6 +10,4 @@ H                   N/A_0006            YES                 N/A_0003            
 I                   N/A_0010            N/A_0004            YES                 YES                 ***
 J                   N/A_0007            N/A_0008-(exp)      YES                 YES                 ***
 KK                  _                   _                   _                   YES                 _
-Num_Host_Matched    _                   _                   _                   _                   6
-Percentage_Matched  _                   _                   _                   _                   50.0%
 
