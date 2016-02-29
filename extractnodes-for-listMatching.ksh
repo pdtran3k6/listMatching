@@ -62,7 +62,7 @@ fi
 
 ##### UPTIME
 # Check to see if this is a UPTIME admin server
-echo $HOST | grep -i "uptime" > /dev/null
+# echo $HOST | grep -i "uptime" > /dev/null
 
 # Extract all hosts and output into Uptime.list
 if [ $? -eq 0 ]
