@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    
+    <head>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"/>
+		<link rel="stylesheet" href="css/style.css"/>
+		<title>Operations Portal</title>
+	</head>
+	<body>
+		
+		
+		<img class="col-sm-12" src="image/header.jpg">
+		<div id="navtext">
+			<h1>Operations Portal</h1>
+			<h2>List Matching Page</h2>
+		</div>
+		<p>The list matching is used to measure the compliance of the computing devices against our 
+		Standards to see if all of them are configured into our different Systems Management tools 
+		(or have a valid exclusion).</p>
+		
+		<div class="content">
+			<a href="http://opsportal/listMatching/MasterTable.html">list matching matrix</a><br>
+			<a href="http://opsportal/listMatching/reports/Yes_NA_Report.txt">list matching count and percentage</a>
+			
+
+			<h4>Exception Reports</h4>
+			<ul>
+				<li><a href="http://opsportal/listMatching/reports/Expired_Exceptions_Report.txt">All exceptions that have expired</li>
+				<li><a href="http://opsportal/listMatching/reports/Missing_Hosts_Report.txt">Hostname in exception file but not in master list</li>
+				<li><a href="http://opsportal/listMatching/reports/Extra_Hosts_Report.txt">Hostname that are in a source and have an exception for that source</li>
+				<li><a href="http://opsportal/listMatching/reports/Exceptions_By_Hostname_Report.txt">List of exceptions listed by hostname</li>
+				<li><a href="http://opsportal/listMatching/reports/Exceptions_By_Date_Report.txt">List of exceptions sorted by dates</li>
+			</ul>
+		</div>
+		
+		<h3><a class="col-sm-12" href="/listMatching/index.html">Back to index</a></h3>
+		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	</body>
+	
+</html>
