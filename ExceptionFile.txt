@@ -51,4 +51,4 @@ Ex#	Source		Hostname				Expiration
 0050	Uptime		dsz26nsr_mock				Never
 0051	Uptime		dsz26tfs				Never
 0052	Uptime		dsz26tfs_mock				Never
-0053	Uptime		dsz26ffs_sean				Never
+0053	Uptime		dsz26tfs_sean				Never

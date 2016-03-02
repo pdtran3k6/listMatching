@@ -96,16 +96,16 @@ do
 			echo "YES" >> final$source
 		else
 			# If not found in the source, check if it's in the $EXCEPTION
-			grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -s "$hostName" > /dev/null
+			grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" > /dev/null
 			if [ $? -eq 0 ]
 			then
-			expiryDate=$(grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | awk '$3 == "$hostName"' | awk '{print $4}')
+			expiryDate=$(grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | grep -sw "$hostName" | awk '{print $4}')
 				# Check the expiration date of the exception. If it never expires or hasn't expired, insert N/A Ex#; otherwise, insert N/A Ex# (exp). 
-				if [ "$expiryDate" = "Never" ] || [ "$(date +%Y%m%d)" -le "$(echo $expiryDate | sed 's/-//g')" ]
+				if [ "$expiryDate" == "Never" ] || [ "$(date +%Y%m%d)" -le "$(echo $expiryDate | sed 's/-//g')" ]
 				then
-					grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -s "$hostName" | awk '{print "N/A_" $1}' >> final$source
+					grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" | awk '{print "N/A_" $1}' >> final$source
 				else
-					grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -s "$hostName" | awk '{print "N/A_" $1 "-(exp)"}' >> final$source
+					grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" | awk '{print "N/A_" $1 "-(exp)"}' >> final$source
 				fi
 			else
 				echo "_" >> final$source			
@@ -126,7 +126,7 @@ do
 		then
 			HostTally=$((HostTally + 1))
 		else
-		grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -s "$hostName" > /dev/null
+		grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" > /dev/null
 			if [ $? -eq 0 ]
 			then
 				HostTally=$((HostTally + 1))

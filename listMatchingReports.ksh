@@ -44,7 +44,7 @@
 #
 #
 # CHANGELOG:
-# Feb 23 2016 PHAT TRAN
+# Mar 2 2016 PHAT TRAN
 ############################################################################################################
 
 SOURCE_DIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
@@ -70,7 +70,7 @@ cd $SOURCE_DIR
 # Generate raw Masterlist and raw ExceptionFile (no header)
 cat $EXCEPTION | sed '1d' > $NO_HEADER_EXCEPTION
 rm $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt 2> /dev/null
-
+echo "EXTRA HOSTS \n" > $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt
 total=$(cat $NO_HEADER_MASTER | wc -l)
 
 # Loop through each source
@@ -80,7 +80,7 @@ do
 	# Check to see if there's any host that isn't supposed to be in the source but appear in the source
 	while read hostName;
 	do
-		grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -s "$hostName" > /dev/null
+		grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" > /dev/null
 		if [ $? -eq 0 ]
 		then
 			echo "$hostName" >> extra_hosts-$source
@@ -133,12 +133,12 @@ do
 	# Check if each source has a specific host
 	for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 	do		
-	grep -s "$hostName" $source > /dev/null
+	grep -sw "$hostName" $source > /dev/null
 		if [ $? -eq 0 ]
 		then
 			HostTally=$((HostTally + 1))
 		else
-		grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g'| grep -s "$hostName" > /dev/null
+		grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g'| grep -sw "$hostName" > /dev/null
 			if [ $? -eq 0 ]
 			then
 				HostTally=$((HostTally + 1))
@@ -154,19 +154,20 @@ do
 	HostTally=0
 done < $NO_HEADER_MASTER_FULLNAME
 
-percTotal=$(print "scale=2; ($MatchedTally/$total)*100" | bc)
+percMatched=$(print "scale=2; ($MatchedTally/$total)*100" | bc)
 # Output the total number of hosts matched
 echo "Total Matches" > totalMatches
 echo $MatchedTally >> totalMatches
 echo "\n" >> totalMatches
 echo "Percentage matched" >> totalMatches
-echo $percTotal"%" >> totalMatches
+echo $percMatched"%" >> totalMatches
 echo $total >> totalMatches
 
 # Generate the first column of the table with corresponding attributes
 echo "Sources" > attributes
 echo "MATCH" >> attributes
-echo "\n" >> attributes
+echo >> attributes
+echo >> attributes
 echo "TOTAL" >> attributes
 echo "% TOTAL" >> attributes
 

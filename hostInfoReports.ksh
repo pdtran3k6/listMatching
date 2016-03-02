@@ -28,10 +28,10 @@
 #
 #
 # CHANGELOG:
-# Mar 1 2016 PHAT TRAN
+# Mar 2 2016 PHAT TRAN
 ############################################################################################################
 
-HOST_INFO_DIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`
+HOST_INFO_DIR=/opt/fundserv/syscheck/common-data/201602
 WEB_HOST_INFO_DIR=/opt/fundserv/syscheck/webcontent/CMDB/sysinfo
 NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
 HARDWARE_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/hardwareReport.txt
@@ -43,9 +43,9 @@ TMPFILE=/opt/fundserv/syscheck/tmp/`basename $0`.$$
 rm $WEB_HOST_INFO_DIR/* $HARDWARE_INFO $SOFTWARE_INFO $ZONELIST_INFO 2> /dev/null
 
 # Header of all the reports file
-echo "DATE\t\t\tHOSTNAME\t\t\tOS\t\t\tKERNEL\t\t\t\tMODEL\t\t\t\tCPU\t\t\t\tZONETYPE" > $HARDWARE_INFO
-echo "DATE\t\t\tHOSTNAME\t\t\tUPTIME\t\t\tNETBACKUP" > $SOFTWARE_INFO
-echo "DATE\t\t\tHOSTNAME\t\t\tZONELIST" > $ZONELIST_INFO
+echo "HOSTNAME\t\t\tDATE\t\t\t\tOS\t\t\t\tKERNEL\t\t\t\tMODEL\t\t\t\tCPU\t\tZONETYPE" > $HARDWARE_INFO
+echo "HOSTNAME\t\t\tDATE\t\t\t    UPTIME\t\t\t\tNETBACKUP" > $SOFTWARE_INFO
+echo "HOSTNAME\t\t\tDATE\t\t\t\tZONELIST" > $ZONELIST_INFO
 
 # Loop through all the hosts
 while read hostName
@@ -63,19 +63,19 @@ do
 		# Data for hardware
 		cat $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt | sed '/^$/d' | egrep -v 'ZONELIST|SW' | grep "^HOSTNAME" > $TMPFILE
 		cat $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt | sed '/^$/d' | egrep -v 'ZONELIST|SW' | grep -v "^HOSTNAME" >> $TMPFILE
-		awk -F: '{print $2}' $TMPFILE | cut -c 2- | perl -p -e 's/\n/\t\t/' >> $HARDWARE_INFO
+		awk -F: '{print $2}' $TMPFILE | cut -c 2- | sed 's/ /_/g' | awk '{ printf "%-30s", $1}' >> $HARDWARE_INFO
 		echo >> $HARDWARE_INFO
 		
 		# Data for software
 		cat $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt | egrep 'HOSTNAME|DATE|SW' | grep "^HOSTNAME" > $TMPFILE
 		cat $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt | egrep 'HOSTNAME|DATE|SW' | grep -v "^HOSTNAME" >> $TMPFILE
-		awk -F: '{print $2}' $TMPFILE | cut -c 2- | perl -p -e 's/\n/\t\t/' >> $SOFTWARE_INFO 
+		awk -F: '{print $2}' $TMPFILE | cut -c 2- | sed 's/ /_/g' | awk '{ printf "%-30s", $1}' >> $SOFTWARE_INFO 
 		echo >> $SOFTWARE_INFO
 		
 		# Data for zonelist
 		cat $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt | egrep 'HOSTNAME|DATE|ZONELIST' | grep "^HOSTNAME" > $TMPFILE
 		cat $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt | egrep 'HOSTNAME|DATE|ZONELIST' | grep -v "^HOSTNAME" >> $TMPFILE
-		awk -F: '{print $2}' $TMPFILE | cut -c 2- | perl -p -e 's/\n/\t\t/' >> $ZONELIST_INFO
+		awk -F: '{print $2}' $TMPFILE | cut -c 2- | sed 's/ /_/g' | awk '{ printf "%-30s", $1}' >> $ZONELIST_INFO
 		echo >> $ZONELIST_INFO
 	fi
 done < $NO_HEADER_MASTER	

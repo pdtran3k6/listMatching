@@ -27,8 +27,10 @@
 #
 #
 # CHANGELOG:
-# Feb 29 2016 PHAT TRAN
+# Mar 2 2016 PHAT TRAN
 ############################################################################################################
+
+
 ./../common-bin/extractnodes-for-listMatching.ksh 2> /dev/null
 ./extractnodes_syscheck-for-listMatching.ksh 2> /dev/null
 ./catSources.ksh 2> /dev/null
@@ -36,3 +38,6 @@
 ./../common-bin/convert2HTML.ksh 2> /dev/null
 ./listMatchingReports.ksh 2> /dev/null
 ./hostInfoReports.ksh 2> /dev/null
+
+chown -R syscheck:staff ../common-data/*
+chmod -R 644 ../common-data/*
