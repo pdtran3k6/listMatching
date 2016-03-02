@@ -48,7 +48,8 @@ p
 
 #navtext
 {
-	padding: 60px;
+	margin-top: 60px;
+	margin-bottom: 60px;
 }
 
 .row 
