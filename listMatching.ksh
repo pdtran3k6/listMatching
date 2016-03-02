@@ -99,7 +99,7 @@ do
 			grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -s "$hostName" > /dev/null
 			if [ $? -eq 0 ]
 			then
-			expiryDate=$(grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | grep -s "$hostName" | awk '{print $4}')
+			expiryDate=$(grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | awk '$3 == "$hostName"' | awk '{print $4}')
 				# Check the expiration date of the exception. If it never expires or hasn't expired, insert N/A Ex#; otherwise, insert N/A Ex# (exp). 
 				if [ "$expiryDate" = "Never" ] || [ "$(date +%Y%m%d)" -le "$(echo $expiryDate | sed 's/-//g')" ]
 				then
