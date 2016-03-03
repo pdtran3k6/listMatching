@@ -4,7 +4,8 @@
 #
 # DESCRIPTION:
 # This script will run other scripts involved in the listMatching project 
-# in their respective location sequentially
+# in their respective location sequentially. It will also set specfic permission and owner to 
+# every files in ~syscheck/common-data/ 
 #
 #
 # INPUT:
@@ -27,7 +28,7 @@
 #
 #
 # CHANGELOG:
-# Mar 2 2016 PHAT TRAN
+# Mar 3 2016 PHAT TRAN
 ############################################################################################################
 
 

@@ -1,6 +1,6 @@
 #!/bin/ksh
 ###########################################################################################################
-# NAME: report
+# NAME: listMatchingReports
 #
 # DESCRIPTION:
 # This script will generate a report containing all the information below: 
@@ -44,7 +44,7 @@
 #
 #
 # CHANGELOG:
-# Mar 2 2016 PHAT TRAN
+# Mar 3 2016 PHAT TRAN
 ############################################################################################################
 
 SOURCE_DIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
@@ -96,28 +96,22 @@ do
 		echo >> $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt
 	fi
 	
-	Yes_Tally=$(cat $source | wc -l)
-	NA_Tally=$(grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | wc -l)
+	Yes_Tally=$(cat $source | wc -l | sed 's/^[ \t]*//')
+	NA_Tally=$(grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | wc -l | sed 's/^[ \t]*//')
 	
 	# Calculating percentages for Yes and N/A		
-	HostPercTotal=$(print "scale=2; (($Yes_Tally + $NA_Tally)/$total)*100" | bc)
-	YesPercTotal=$(print "scale=2; ($Yes_Tally/$total)*100" | bc)
-	NAPercTotal=$(print "scale=2; ($NA_Tally/$total)*100" | bc)
+	HostPercTotal=$(print "scale=2; (($Yes_Tally + $NA_Tally)/$total)*100" | bc | sed 's/^[ \t]*//')
+	YesPercTotal=$(print "scale=2; ($Yes_Tally/$total)*100" | bc | sed 's/^[ \t]*//')
+	NAPercTotal=$(print "scale=2; ($NA_Tally/$total)*100" | bc | sed 's/^[ \t]*//')
 	
 	# Output into file with Header for sources' columns
 	# YES column
-	echo "$source" | sed 's/.list//g' > yes$source
-	echo "YES" >> yes$source
-	echo $Yes_Tally >> yes$source
-	echo $YesPercTotal"%" >> yes$source
-	echo $(($Yes_Tally + $NA_Tally)) >> yes$source
-	echo $HostPercTotal"%" >> yes$source
-	
-	# N/A column
-	echo "---------" > NA$source
-	echo "N/A" >> NA$source
-	echo $NA_Tally >> NA$source
-	echo $NAPercTotal"%" >> NA$source
+	echo "--$source--" | sed 's/.list//g' > yes$source
+	echo "YES\tN/A" >> yes$source
+	echo "$Yes_Tally\t$NA_Tally" >> yes$source
+	echo "$YesPercTotal%\t$NAPercTotal%" >> yes$source
+	echo "$(($Yes_Tally + $NA_Tally))\t---" >> yes$source
+	echo "$HostPercTotal%\t---" >> yes$source
 	
 	# Reset all tally counts
 	Yes_Tally=0
@@ -172,8 +166,9 @@ echo "TOTAL" >> attributes
 echo "% TOTAL" >> attributes
 
 # Generate the output table
-paste attributes yes$SOURCE1 NA$SOURCE1 yes$SOURCE2 NA$SOURCE2 yes$SOURCE3 NA$SOURCE3 yes$SOURCE4 NA$SOURCE4 yes$SOURCE5 NA$SOURCE5 totalMatches | pr -t -e20 > $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
+paste attributes yes$SOURCE1 yes$SOURCE2 yes$SOURCE3 yes$SOURCE4 yes$SOURCE5 totalMatches > $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
 echo >> $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
+
 
 # Clean up trash in the source folder
 rm attributes totalMatches 

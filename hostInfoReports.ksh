@@ -31,7 +31,7 @@
 # Mar 2 2016 PHAT TRAN
 ############################################################################################################
 
-HOST_INFO_DIR=/opt/fundserv/syscheck/common-data/201602
+HOST_INFO_DIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`
 WEB_HOST_INFO_DIR=/opt/fundserv/syscheck/webcontent/CMDB/sysinfo
 NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
 HARDWARE_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/hardwareReport.txt
