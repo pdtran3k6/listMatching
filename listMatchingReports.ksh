@@ -44,7 +44,7 @@
 #
 #
 # CHANGELOG:
-# Mar 3 2016 PHAT TRAN
+# Mar 4 2016 PHAT TRAN
 ############################################################################################################
 
 SOURCE_DIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
@@ -64,6 +64,16 @@ HostTally=0
 MatchedTally=0
 Yes_Tally=0
 NA_Tally=0
+Yes_TallyMBOKS=0
+NA_TallyMBOKS=0
+Yes_TallyMCONTROLM=0
+NA_TallyMCONTROLM=0
+Yes_TallyMNETBACKUP=0
+NA_TallyMNETBACKUP=0
+Yes_TallyMSYSCHECK=0
+NA_TallyMSYSCHECK=0
+Yes_TallyMUPTIME=0
+NA_TallyMUPTIME=0
 
 cd $SOURCE_DIR
 
@@ -73,9 +83,54 @@ rm $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt 2> /dev/null
 echo "EXTRA HOSTS \n" > $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt
 total=$(cat $NO_HEADER_MASTER | wc -l)
 
+# Generate the total matches
+while read hostName;
+do
+	# Check if each source has a specific host
+	for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
+	do		
+	grep -sw "$hostName" $source > /dev/null
+		if [ $? -eq 0 ]
+		then
+			HostTally=$((HostTally + 1))
+		else
+		grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g'| grep -sw "$hostName" > /dev/null
+			if [ $? -eq 0 ]
+			then
+				HostTally=$((HostTally + 1))
+			fi
+		fi
+	done
+		
+	# If the rows are filled with 'Yes's and/or 'N/a's, keep track of it as MatchedTally
+	if [ $HostTally -eq  5 ]
+	then
+		MatchedTally=$((MatchedTally + 1))
+		for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
+		do		
+		grep -sw "$hostName" $source > /dev/null
+		if [ $? -eq 0 ]
+		then
+			export Yes_TallyM`echo $source | sed 's/.list//g'`=$((Yes_TallyM`echo $source | sed 's/.list//g'` + 1))
+		else
+		grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g'| grep -sw "$hostName" > /dev/null
+			if [ $? -eq 0 ]
+			then
+				export NA_TallyM`echo $source | sed 's/.list//g'`=$((NA_TallyM`echo $source | sed 's/.list//g'` + 1))
+			fi
+		fi
+		done
+	fi
+	HostTally=0
+done < $NO_HEADER_MASTER_FULLNAME
+
+
 # Loop through each source
 for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 do
+	shortSource=$(echo $source | sed 's/.list//g')
+	Yes_M=$(eval "echo \"\$Yes_TallyM$shortSource\"")
+	NA_M=$(eval "echo \"\$NA_TallyM$shortSource\"")
 	
 	# Check to see if there's any host that isn't supposed to be in the source but appear in the source
 	while read hostName;
@@ -101,17 +156,18 @@ do
 	
 	# Calculating percentages for Yes and N/A		
 	HostPercTotal=$(print "scale=2; (($Yes_Tally + $NA_Tally)/$total)*100" | bc | sed 's/^[ \t]*//')
-	YesPercTotal=$(print "scale=2; ($Yes_Tally/$total)*100" | bc | sed 's/^[ \t]*//')
-	NAPercTotal=$(print "scale=2; ($NA_Tally/$total)*100" | bc | sed 's/^[ \t]*//')
+	HostPercTotal=$(printf %.0f $HostPercTotal)
 	
 	# Output into file with Header for sources' columns
 	# YES column
-	echo "--$source--" | sed 's/.list//g' > yes$source
-	echo "YES\tN/A" >> yes$source
-	echo "$Yes_Tally\t$NA_Tally" >> yes$source
-	echo "$YesPercTotal%\t$NAPercTotal%" >> yes$source
-	echo "$(($Yes_Tally + $NA_Tally))\t---" >> yes$source
-	echo "$HostPercTotal%\t---" >> yes$source
+	echo "--$source--" | sed 's/.list//g' > column$source
+	echo "YES\tN/A" >> column$source
+	echo >> column$source
+	echo "$Yes_M\t$NA_M" >> column$source
+	echo >> column$source
+	echo "$Yes_Tally\t$NA_Tally" >> column$source
+	echo "    $(($Yes_Tally + $NA_Tally))    " >> column$source
+	echo "    $HostPercTotal%   " >> column$source
 	
 	# Reset all tally counts
 	Yes_Tally=0
@@ -119,62 +175,46 @@ do
 done
 
 
-
-
-# Generate the total matches
-while read hostName;
-do
-	# Check if each source has a specific host
-	for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
-	do		
-	grep -sw "$hostName" $source > /dev/null
-		if [ $? -eq 0 ]
-		then
-			HostTally=$((HostTally + 1))
-		else
-		grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g'| grep -sw "$hostName" > /dev/null
-			if [ $? -eq 0 ]
-			then
-				HostTally=$((HostTally + 1))
-			fi
-		fi
-	done
-		
-	# If the rows are filled with 'Yes's and/or 'N/a's, keep track of it as MatchedTally
-	if [ $HostTally -eq  5 ]
-	then
-		MatchedTally=$((MatchedTally + 1))
-	fi
-	HostTally=0
-done < $NO_HEADER_MASTER_FULLNAME
-
-percMatched=$(print "scale=2; ($MatchedTally/$total)*100" | bc)
+percMatched=$(print "scale=2; ($MatchedTally/$total)*100" | bc | sed 's/^[ \t]*//')
+percMatched=$(printf %.0f $percMatched)
 # Output the total number of hosts matched
-echo "Total Matches" > totalMatches
-echo $MatchedTally >> totalMatches
-echo "\n" >> totalMatches
-echo "Percentage matched" >> totalMatches
-echo $percMatched"%" >> totalMatches
-echo $total >> totalMatches
+echo "Total       " > totalMatches
+echo "------------" >> totalMatches
+echo >> totalMatches
+echo $MatchedTally"\t" >> totalMatches
+echo >> totalMatches
+echo >> totalMatches
+echo $total"\t" >> totalMatches
+
+echo "Percentage" > percentageMatched
+echo "------------" >> percentageMatched
+echo >> percentageMatched
+echo $percMatched"%" >> percentageMatched
+echo >> percentageMatched
+echo >> percentageMatched
+echo "100%" >> percentageMatched
+
 
 # Generate the first column of the table with corresponding attributes
-echo "Sources" > attributes
-echo "MATCH" >> attributes
+echo "Sources              " > attributes
+echo "                     " >> attributes
 echo >> attributes
+echo "MATCH IN ALL SOURCES" >> attributes
 echo >> attributes
-echo "TOTAL" >> attributes
-echo "% TOTAL" >> attributes
+echo "COUNT IN EACH SOURCE" >> attributes
+echo "                    " >> attributes
+echo "                    " >> attributes
 
 # Generate the output table
-paste attributes yes$SOURCE1 yes$SOURCE2 yes$SOURCE3 yes$SOURCE4 yes$SOURCE5 totalMatches > $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
+paste attributes column$SOURCE1 column$SOURCE2 column$SOURCE3 column$SOURCE4 column$SOURCE5 totalMatches percentageMatched > $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
 echo >> $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
 
 
 # Clean up trash in the source folder
-rm attributes totalMatches 
+rm attributes totalMatches percentageMatched 
 for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 do 
-	rm yes$source NA$source 2> /dev/null
+	rm column$source 2> /dev/null
 	rm extra_hosts-$source 2> /dev/null
 done
 
