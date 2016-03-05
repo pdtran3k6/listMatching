@@ -45,7 +45,7 @@ do
 	for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 	do	
 		if [ -f "$SOURCEDIR/$hostName/listMatching/$source-$hostName.list" ]
-		then	
+		then
 			cp $SOURCEDIR/$hostName/listMatching/$source-$hostName.list $TARGETDIR/$source-$hostName.list
 		fi
 	done
@@ -56,4 +56,3 @@ do
 	cat $TARGETDIR/$source-*.list | sed '/^$/d' | sort -u > $TARGETDIR/`echo $source | tr [a-z] [A-Z]`.list
 	rm $TARGETDIR/$source-*.list
 done
-
