@@ -44,7 +44,7 @@
 #
 #
 # CHANGELOG:
-# Mar 4 2016 PHAT TRAN
+# Mar 7 2016 PHAT TRAN
 ############################################################################################################
 
 SOURCE_DIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
@@ -166,6 +166,7 @@ do
 	echo "$Yes_M\t$NA_M" >> column$source
 	echo >> column$source
 	echo "$Yes_Tally\t$NA_Tally" >> column$source
+	echo >> column$source
 	echo "    $(($Yes_Tally + $NA_Tally))    " >> column$source
 	echo "    $HostPercTotal%   " >> column$source
 	
@@ -179,39 +180,34 @@ percMatched=$(print "scale=2; ($MatchedTally/$total)*100" | bc | sed 's/^[ \t]*/
 percMatched=$(printf %.0f $percMatched)
 # Output the total number of hosts matched
 echo "Total       " > totalMatches
-echo "------------" >> totalMatches
-echo >> totalMatches
-echo $MatchedTally"\t" >> totalMatches
 echo >> totalMatches
 echo >> totalMatches
-echo $total"\t" >> totalMatches
-
-echo "Percentage" > percentageMatched
-echo "------------" >> percentageMatched
-echo >> percentageMatched
-echo $percMatched"%" >> percentageMatched
-echo >> percentageMatched
-echo >> percentageMatched
-echo "100%" >> percentageMatched
+echo $MatchedTally"\t"$percMatched"%" >> totalMatches
+echo >> totalMatches
+echo $total"\t100%" >> totalMatches
 
 
 # Generate the first column of the table with corresponding attributes
 echo "Sources              " > attributes
 echo "                     " >> attributes
 echo >> attributes
-echo "MATCH IN ALL SOURCES" >> attributes
+echo "Match in all sources" >> attributes
 echo >> attributes
-echo "COUNT IN EACH SOURCE" >> attributes
+echo "Count in each source" >> attributes
+echo "                    " >> attributes
 echo "                    " >> attributes
 echo "                    " >> attributes
 
 # Generate the output table
-paste attributes column$SOURCE1 column$SOURCE2 column$SOURCE3 column$SOURCE4 column$SOURCE5 totalMatches percentageMatched > $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
+echo "List Matching Matrix as of `date`" > $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
+echo >> $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
+echo >> $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
+paste attributes column$SOURCE1 column$SOURCE2 column$SOURCE3 column$SOURCE4 column$SOURCE5 totalMatches >> $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
 echo >> $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
 
 
 # Clean up trash in the source folder
-rm attributes totalMatches percentageMatched 
+rm attributes totalMatches
 for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 do 
 	rm column$source 2> /dev/null
