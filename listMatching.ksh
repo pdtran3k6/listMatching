@@ -67,6 +67,9 @@ cat $EXCEPTION | sed '1d' | awk '{print $3}' > $HOST_ONLY_EXCEPTION
 
 
 echo "Hosts that are in the ExceptionFile but not in the Master" > $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
+date '+%a %d-%b-%Y %R' >> $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
+echo >> $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
+
 # Added missing hosts from ExceptionFile
 while read hostName;
 do

@@ -24,7 +24,7 @@
 # 
 #
 # CHANGELOG:
-# Feb 19 2016 PHAT TRAN
+# Mar 7 2016 PHAT TRAN
 ############################################################################################################
 
 NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
@@ -44,11 +44,10 @@ td
 </head>\n" >> $MASTERTABLE_HTML
 echo "<body align='center'>\n" >> $MASTERTABLE_HTML
 
-# Date when the $MASTERTABLE_HTML was generated
-date >> $MASTERTABLE_HTML
 
 # Title of the table
-echo "\n<h3 style='font-family:Tahoma;'>List of Nodes from Different Tool</h3>\n" >> $MASTERTABLE_HTML
+echo "\n<h3 style='font-family:Tahoma;'>List of nodes from different Systems Management tools</h3>\n" >> $MASTERTABLE_HTML
+date '+%a %d-%b-%Y %R' >> $MASTERTABLE_HTML
 echo "<table align='center'>" >> $MASTERTABLE_HTML
 
 # Add each columns and each rows into table format (Additional columns could be added)

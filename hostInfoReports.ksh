@@ -28,7 +28,7 @@
 #
 #
 # CHANGELOG:
-# Mar 4 2016 PHAT TRAN 
+# Mar 8 2016 PHAT TRAN 
 ############################################################################################################
 
 HOST_INFO_DIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`
@@ -43,9 +43,43 @@ TMPFILE=/opt/fundserv/syscheck/tmp/`basename $0`.$$
 rm $WEB_HOST_INFO_DIR/* $HARDWARE_INFO $SOFTWARE_INFO $ZONELIST_INFO 2> /dev/null
 
 # Header of all the reports file
-echo "HOSTNAME\t\t\tDATE\t\t\t\tOS\t\t\t\tKERNEL\t\t\t\tMODEL\t\t\t\tCPU\t\t    ZONETYPE" > $HARDWARE_INFO
-echo "HOSTNAME\t\t\tDATE\t\t\t    UPTIME\t\t\t\tNETBACKUP" > $SOFTWARE_INFO
-echo "HOSTNAME\t\t\tDATE\t\t\t\tZONELIST" > $ZONELIST_INFO
+echo "HOSTNAME" >> $HARDWARE_INFO
+echo "DATE" >> $HARDWARE_INFO
+echo "OS" >> $HARDWARE_INFO
+echo "KERNEL" >> $HARDWARE_INFO
+echo "MODEL" >> $HARDWARE_INFO
+echo "CPU" >> $HARDWARE_INFO
+echo "ZONETYPE" >> $HARDWARE_INFO
+awk '{printf "%-30s", $1}' $HARDWARE_INFO > $HARDWARE_INFO.tmp && mv $HARDWARE_INFO.tmp $HARDWARE_INFO
+echo >> $HARDWARE_INFO
+echo "HARDWARE REPORT" > $HARDWARE_INFO.tmp
+date '+%a %d-%b-%Y %R' >> $HARDWARE_INFO.tmp
+echo >> $HARDWARE_INFO.tmp 
+cat $HARDWARE_INFO >> $HARDWARE_INFO.tmp
+mv $HARDWARE_INFO.tmp $HARDWARE_INFO
+
+echo "HOSTNAME" > $SOFTWARE_INFO
+echo "DATE" >> $SOFTWARE_INFO
+echo "UPTIME" >> $SOFTWARE_INFO
+echo "NETBACKUP" >> $SOFTWARE_INFO
+awk '{printf "%-30s", $1}' $SOFTWARE_INFO > $SOFTWARE_INFO.tmp && mv $SOFTWARE_INFO.tmp $SOFTWARE_INFO
+echo >> $SOFTWARE_INFO
+echo "SOFTWARE REPORT" > $SOFTWARE_INFO.tmp
+date '+%a %d-%b-%Y %R' >> $SOFTWARE_INFO.tmp
+echo >> $SOFTWARE_INFO.tmp 
+cat $SOFTWARE_INFO >> $SOFTWARE_INFO.tmp
+mv $SOFTWARE_INFO.tmp $SOFTWARE_INFO
+
+echo "HOSTNAME" > $ZONELIST_INFO
+echo "DATE" >> $ZONELIST_INFO
+echo "ZONELIST" >> $ZONELIST_INFO
+awk '{printf "%-30s", $1}' $ZONELIST_INFO > $ZONELIST_INFO.tmp && mv $ZONELIST_INFO.tmp $ZONELIST_INFO
+echo >> $ZONELIST_INFO
+echo "ZONELIST REPORT" > $ZONELIST_INFO.tmp
+date '+%a %d-%b-%Y %R' >> $ZONELIST_INFO.tmp 
+echo >> $ZONELIST_INFO.tmp
+cat $ZONELIST_INFO >> $ZONELIST_INFO.tmp
+mv $ZONELIST_INFO.tmp $ZONELIST_INFO
 
 # Loop through all the hosts
 while read hostName

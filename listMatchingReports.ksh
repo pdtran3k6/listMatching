@@ -44,7 +44,7 @@
 #
 #
 # CHANGELOG:
-# Mar 4 2016 PHAT TRAN
+# Mar 7 2016 PHAT TRAN
 ############################################################################################################
 
 SOURCE_DIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
@@ -80,7 +80,9 @@ cd $SOURCE_DIR
 # Generate raw Masterlist and raw ExceptionFile (no header)
 cat $EXCEPTION | sed '1d' > $NO_HEADER_EXCEPTION
 rm $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt 2> /dev/null
-echo "EXTRA HOSTS \n" > $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt
+echo "EXTRA HOSTS" > $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt
+date '+%a %d-%b-%Y %R' >> $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt
+echo >> $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt
 total=$(cat $NO_HEADER_MASTER | wc -l)
 
 # Generate the total matches
@@ -166,6 +168,7 @@ do
 	echo "$Yes_M\t$NA_M" >> column$source
 	echo >> column$source
 	echo "$Yes_Tally\t$NA_Tally" >> column$source
+	echo >> column$source
 	echo "    $(($Yes_Tally + $NA_Tally))    " >> column$source
 	echo "    $HostPercTotal%   " >> column$source
 	
@@ -179,39 +182,34 @@ percMatched=$(print "scale=2; ($MatchedTally/$total)*100" | bc | sed 's/^[ \t]*/
 percMatched=$(printf %.0f $percMatched)
 # Output the total number of hosts matched
 echo "Total       " > totalMatches
-echo "------------" >> totalMatches
-echo >> totalMatches
-echo $MatchedTally"\t" >> totalMatches
 echo >> totalMatches
 echo >> totalMatches
-echo $total"\t" >> totalMatches
-
-echo "Percentage" > percentageMatched
-echo "------------" >> percentageMatched
-echo >> percentageMatched
-echo $percMatched"%" >> percentageMatched
-echo >> percentageMatched
-echo >> percentageMatched
-echo "100%" >> percentageMatched
+echo $MatchedTally"\t"$percMatched"%" >> totalMatches
+echo >> totalMatches
+echo $total"\t100%" >> totalMatches
 
 
 # Generate the first column of the table with corresponding attributes
 echo "Sources              " > attributes
 echo "                     " >> attributes
 echo >> attributes
-echo "MATCH IN ALL SOURCES" >> attributes
+echo "Match in all sources" >> attributes
 echo >> attributes
-echo "COUNT IN EACH SOURCE" >> attributes
+echo "Count in each source" >> attributes
+echo "                    " >> attributes
 echo "                    " >> attributes
 echo "                    " >> attributes
 
 # Generate the output table
-paste attributes column$SOURCE1 column$SOURCE2 column$SOURCE3 column$SOURCE4 column$SOURCE5 totalMatches percentageMatched > $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
+echo "List Matching Matrix as of `date`" > $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
+echo >> $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
+echo >> $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
+paste attributes column$SOURCE1 column$SOURCE2 column$SOURCE3 column$SOURCE4 column$SOURCE5 totalMatches >> $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
 echo >> $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
 
 
 # Clean up trash in the source folder
-rm attributes totalMatches percentageMatched 
+rm attributes totalMatches
 for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 do 
 	rm column$source 2> /dev/null
@@ -220,6 +218,8 @@ done
 
 # Generate the list of all the exceptions that has expired
 echo "List of expired exceptions" > $REPORTS_OUTPUT_DIR/Expired_Exceptions_Report.txt
+date '+%a %d-%b-%Y %R' >> $REPORTS_OUTPUT_DIR/Expired_Exceptions_Report.txt
+echo >> $REPORTS_OUTPUT_DIR/Expired_Exceptions_Report.txt
 while read row;
 do
 	if [ $(echo $row | awk '{print $4}') != "Never" ] && [ $(date +%Y%m%d) -gt $(echo $row | awk '{print $4}' | sed 's/-//g') ]
@@ -230,10 +230,14 @@ done < $NO_HEADER_EXCEPTION
 
 # List of exceptions sorted by date
 echo "Exceptions sorted by date" > $REPORTS_OUTPUT_DIR/Exceptions_By_Date_Report.txt
+date '+%a %d-%b-%Y %R' >> $REPORTS_OUTPUT_DIR/Exceptions_By_Date_Report.txt
+echo >> $REPORTS_OUTPUT_DIR/Exceptions_By_Date_Report.txt
 cat $NO_HEADER_EXCEPTION | sort -b -k 4.1,4.4 -k 4.6,4.7 -k 4.9,4.10 >> $REPORTS_OUTPUT_DIR/Exceptions_By_Date_Report.txt
 echo >> $REPORTS_OUTPUT_DIR/Exceptions_By_Date_Report.txt 
 
 # List of exceptions sorted by host's name
 echo "Exceptions sorted by host name" > $REPORTS_OUTPUT_DIR/Exceptions_By_Hostname_Report.txt
+date '+%a %d-%b-%Y %R' >> $REPORTS_OUTPUT_DIR/Exceptions_By_Hostname_Report.txt
+echo >> $REPORTS_OUTPUT_DIR/Exceptions_By_Hostname_Report.txt
 cat $NO_HEADER_EXCEPTION | sort -b -k 3 >> $REPORTS_OUTPUT_DIR/Exceptions_By_Hostname_Report.txt
 echo >> $REPORTS_OUTPUT_DIR/Exceptions_By_Hostname_Report.txt

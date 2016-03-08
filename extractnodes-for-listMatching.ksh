@@ -29,11 +29,12 @@
 #
 #
 # CHANGELOG:
-# Feb 24 2016 PHAT TRAN
+# Mar 8 2016 PHAT TRAN
 ############################################################################################################
  
 HOST=`uname -n`
-TARGETDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/$HOST/listMatching
+YM=`date +%Y%m`
+TARGETDIR=/opt/fundserv/syscheck/common-data/$YM/$HOST/listMatching
 
 if [ ! -d $TARGETDIR ]
 then
@@ -47,6 +48,11 @@ fi
 if [ -f "/opt/boksm/sbin/boksadm" ]
 then
 	/opt/boksm/sbin/boksadm -S hostadm -l -t UNIXBOKSHOST -S | awk '{print $1}' > $TARGETDIR/boks-$HOST.list
+	export size=`du -h $TARGETDIR/boks-$HOST.list | awk '{print $1}'`
+	if [  "$size" == "0K" ]
+	then 
+		rm -rf $TARGETDIR
+	fi
 fi
 
 ##### CONTROLM
@@ -58,16 +64,25 @@ fi
 if [ -f "/usr/openv/netbackup/bin/admincmd/bpplclients" ]
 then
 	/usr/openv/netbackup/bin/admincmd/bpplclients -allunique -l | grep -i -v "windows" | awk '{print $2}' > $TARGETDIR/netbackup-$HOST.list
+	export size=`du -h $TARGETDIR/netbackup-$HOST.list | awk '{print $1}'`
+	if [  "$size" == "0K" ]
+	then 
+		rm -rf $TARGETDIR
+	fi
 fi
 
 ##### UPTIME
 # Check to see if this is a UPTIME admin server
-echo $HOST | grep -i "uptime" > /dev/null
-
-# Extract all hosts and output into Uptime.list
-if [ $? -eq 0 ]
-then
+ls /etc/init.d/ | grep uptime > /dev/null
+if [ $? -eq 0 ] 
+then 
+	# Extract all hosts and output into Uptime.list
 	mysql -u uptime -puptime -P3308 --protocol=tcp uptime -e "SELECT name FROM entity" | sed '1d' > $TARGETDIR/uptime-$HOST.list 2> dev/null
+	export size=`du -h $TARGETDIR/uptime-$HOST.list | awk '{print $1}'`
+	if [  "$size" == "0K" ]
+	then 
+		rm -rf $TARGETDIR
+	fi
 fi
 
 
