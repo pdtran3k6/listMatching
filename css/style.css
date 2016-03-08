@@ -3,47 +3,61 @@
 body 
 {
 	text-align: center;
-	padding-top: 20px;
+	padding-top: 10px;
 }
 
 a
 {
 	font-family: Arial;
-	font-size: 50px;
 }
 
 h1
 {
 	font-family: Verdana;
 	font-weight: bold;
-	font-size: 6em;
+
 }
 
 h2
 {
 	font-family: Verdana;
 	font-weight: bold;
-	font-size: 4em;
+
 }
 
 h3
 {
 	font-family: Verdana;
-	font-size: 60px;
+
 }
 
 h4
 {
 	font-family: Verdana;
-	font-size: 55px;
-	margin-top: 100px; 
 }
 
 p
 {
 	font-family: Arial;
-	padding: 50px;
-	font-size: 50px;
+	padding: 10px;
+}
+
+ul
+{
+	font-size: 30px;
+}
+
+img
+{
+	height: auto; 
+    width: auto; 
+    max-width: 900px; 
+    max-height: 300px;
+}
+
+#minions
+{
+	max-height: 200px;
 }
 
 #navtext
@@ -54,14 +68,8 @@ p
 
 .row 
 {
-	padding: 60px;
+	padding: 10px;
 	margin-bottom: 50px;
-}
-
-.col-sm-12 
-{
-	padding: 120px;
-	margin-bottom: 20px;
 }
 
 .content
