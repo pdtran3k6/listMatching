@@ -28,7 +28,7 @@
 #
 #
 # CHANGELOG:
-# Feb 19 2016 PHAT TRAN
+# Mar 9 2016 PHAT TRAN
 ############################################################################################################
 
 HOST=`uname -n`
@@ -54,3 +54,9 @@ done < $TMPFILE
 sort -u $TARGETDIR/syscheck-$HOST.list > $TARGETDIR/syscheck-$HOST.tmp 
 mv $TARGETDIR/syscheck-$HOST.tmp $TARGETDIR/syscheck-$HOST.list
 rm -f $TMPFILE
+
+export size=`du -h $TARGETDIR/syscheck-$HOST.list | awk '{print $1}'`
+if [  "$size" == "0K" ]
+then 
+	rm -rf $TARGETDIR
+fi

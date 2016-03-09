@@ -29,7 +29,7 @@
 #
 #
 # CHANGELOG:
-# Mar 8 2016 PHAT TRAN
+# Mar 9 2016 PHAT TRAN
 ############################################################################################################
  
 HOST=`uname -n`
@@ -77,7 +77,7 @@ ls /etc/init.d/ | grep uptime > /dev/null
 if [ $? -eq 0 ] 
 then 
 	# Extract all hosts and output into Uptime.list
-	mysql -u uptime -puptime -P3308 --protocol=tcp uptime -e "SELECT name FROM entity" | sed '1d' > $TARGETDIR/uptime-$HOST.list 2> dev/null
+	mysql -u uptime -puptime -P3308 --protocol=tcp uptime -e "SELECT name FROM entity" | sed '1d' > $TARGETDIR/uptime-$HOST.list
 	export size=`du -h $TARGETDIR/uptime-$HOST.list | awk '{print $1}'`
 	if [  "$size" == "0K" ]
 	then 
