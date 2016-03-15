@@ -32,7 +32,7 @@
 	# Mar 11 2016 PHAT TRAN
 	############################################################################################################
 	 
-	HOST=`uname -n`
+	HOST=`uname -n | cut -d'.' -f1`
 	YM=`date +%Y%m`
 	TARGETDIR=/opt/fundserv/syscheck/common-data/$YM/$HOST/listMatching
 	HOST_FOLDER=/opt/fundserv/syscheck/common-data/$YM
@@ -41,7 +41,7 @@
 	if [ ! -d $TARGETDIR ]
 	then
 		mkdir -p -m 755 $TARGETDIR
-		chown syscheck:staff $TARGETDIR
+		chown syscheck:10 $TARGETDIR
 	fi
 
 	##### BOKS

@@ -28,10 +28,10 @@
 #
 #
 # CHANGELOG:
-# Mar 9 2016 PHAT TRAN
+# Mar 15 2016 PHAT TRAN
 ############################################################################################################
 
-HOST=`uname -n`
+HOST=`uname -n | cut -d'.' -f1`
 TARGETDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/$HOST/listMatching
 SOURCEDIR_SYSCHECK=/opt/fundserv/syscheck/local-etc
 TMPFILE=/opt/fundserv/syscheck/tmp/`basename $0`.$$
@@ -40,7 +40,7 @@ HOST_INFO_DIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`
 if [ ! -d $TARGETDIR ]
 then
 	mkdir -p -m 755 $TARGETDIR
-	chown syscheck:staff $TARGETDIR
+	chown syscheck:10 $TARGETDIR
 fi
 
 cat $SOURCEDIR_SYSCHECK/all_dev.list $SOURCEDIR_SYSCHECK/all_prod.list $SOURCEDIR_SYSCHECK/all_uat.list | sort -u > $TMPFILE

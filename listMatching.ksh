@@ -36,7 +36,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Feb 23 2016 PHAT TRAN
+	# Mar 15 2016 PHAT TRAN
 	############################################################################################################
 
 	SOURCE_DIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
@@ -155,6 +155,8 @@
 	comm -3 $NO_HEADER_MASTER IPonly > noIP_master
 	awk -F. '{print $1}' noIP_master > noIP_master.tmp && mv noIP_master.tmp noIP_master
 	cat IPonly noIP_master > $NO_HEADER_MASTER
+	sort -u $NO_HEADER_MASTER > $NO_HEADER_MASTER.tmp 
+	mv $NO_HEADER_MASTER.tmp $NO_HEADER_MASTER
 	rm noIP_master IPonly
 
 	# Generate the Masterlist with proper header and important attributes

@@ -28,7 +28,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Mar 14 2016 PHAT TRAN
+	# Mar 15 2016 PHAT TRAN
 	############################################################################################################
 
 	HOST=$(hostname)
@@ -44,11 +44,9 @@
 	OS=$(uname)
 	TMPFILE=/opt/fundserv/syscheck/tmp/`basename $0`.$$
 
-
-
 	case $OS in
-			SunOS) WHO=$(/usr/ucb/whoami) ;;
-			*) exit 2 ;;
+		SunOS) WHO=$(/usr/ucb/whoami) ;;
+		*) exit 2 ;;
 	esac
 
 	# Check that script is being run as root
@@ -56,38 +54,40 @@
 
 	# Create the logging directory if it does not exist
 	umask 022
-	if [ ! -d $LOGDIR ] ; then
+	if [ ! -d $LOGDIR ]
+	then
 	   mkdir -m 755 -p $LOGDIR >/dev/null 2>&1 && chown -Rh ${OWNER}:${GROUP} /opt/fundserv/syscheck/common-data/$YM >/dev/null 2>&1 || exit 1
 	fi
 
 	# Only generate vxdisk_list_info.txt if the OS is SunOS
 	case $OS in
 			SunOS)
-					# if [ -f "/usr/sbin/vxdisk" ]
-					# then
-							[ -x "$ZNAME" ] && zname=$($ZNAME) || zname="global"
-							if [ "$zname" = "global" ]
-							then
-									cd ~syscheck/common-bin/ && ./serverbanner > $BROCADE_OUTFL
-									echo >> $BROCADE_OUTFL
-									echo "##### one-line summary for all disk access records known to the system #####" >> $BROCADE_OUTFL
-									# Generate an overview of all the disks
-									/usr/sbin/vxdisk list | grep dg >> $BROCADE_OUTFL
-									echo >> $BROCADE_OUTFL
-									
-									# Generate detailed information for each disk
-									/usr/sbin/vxdisk list | grep dg | awk '{print $1}' > $TMPFILE
-									while read deviceSerial
-									do
-											echo "##### detailed information on disk $deviceSerial #####" >> $BROCADE_OUTFL
-											# vxdisk list
-											echo $deviceSerial >> $BROCADE_OUTFL
-											echo >> $BROCADE_OUTFL
-									done < $TMPFILE
-									rm -f $TMPFILE
-									cd ~syscheck/common-bin/ && ./footer $0 $$ >> $BROCADE_OUTFL
-							fi ;;
-					# fi ;;
+			if [ -f "/usr/sbin/vxdisk" ]
+			then
+				[ -x "$ZNAME" ] && zname=$($ZNAME) || zname="global"
+				if [ "$zname" = "global" ]
+				then
+					cd ~syscheck/common-bin/ && ./serverbanner > $BROCADE_OUTFL
+					date '+%a %d-%b-%Y %R' >> $BROCADE_OUTFL
+					echo >> $BROCADE_OUTFL
+					echo "##### one-line summary for all disk access records known to the system #####" >> $BROCADE_OUTFL
+					
+					# Generate an overview of all the disks
+					/usr/sbin/vxdisk list | grep dg >> $BROCADE_OUTFL
+					echo >> $BROCADE_OUTFL
+					
+					# Generate detailed information for each disk
+					/usr/sbin/vxdisk list | grep dg | awk '{print $1}' > $TMPFILE
+					while read deviceSerial
+					do
+						echo "##### detailed information on disk $deviceSerial #####" >> $BROCADE_OUTFL
+						vxdisk list $deviceSerial >> $BROCADE_OUTFL
+						echo >> $BROCADE_OUTFL
+					done < $TMPFILE
+					rm -f $TMPFILE
+					cd ~syscheck/common-bin/ && ./footer $0 $$ >> $BROCADE_OUTFL
+				fi ;;
+			fi ;;
 			*) exit 2 ;;
 	esac
 
