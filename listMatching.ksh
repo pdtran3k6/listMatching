@@ -60,7 +60,20 @@
 	# Put case for different OS
 
 	cd $SOURCE_DIR
-
+	
+	# Remove domain names from all raw sources' lists
+	for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
+	do
+		# Grab IP addresses out first
+		grep -s "142." $source > IPonly
+		comm -3 $source IPonly > noIP_master
+		
+		# Remove domain names from all raw sources' lists
+		awk -F. '{print $1}' noIP_master > noIP_master.tmp && mv noIP_master.tmp noIP_master
+		cat IPonly noIP_master > $source
+	done
+	
+	
 	# Generate raw Masterlist and raw ExceptionFile (no header)
 	cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 | sort -u > $NO_HEADER_MASTER_FULLNAME
 	cat $NO_HEADER_MASTER_FULLNAME | sed 's/ /+/g' > $NO_HEADER_MASTER
@@ -101,7 +114,7 @@
 				echo "YES" >> final$source
 			else
 				# If not found in the source, check if it's in the $EXCEPTION
-				grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" > /dev/null
+				grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" >& /dev/null
 				if [ $? -eq 0 ]
 				then
 				expiryDate=$(grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | grep -sw "$hostName" | awk '{print $4}')
@@ -126,12 +139,12 @@
 		# Check if each source has a specific host
 		for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 		do
-		grep -sw "$hostName" $source > /dev/null
+		grep -sw "$hostName" $source >& /dev/null
 			if [ $? -eq 0 ]
 			then
 				HostTally=$((HostTally + 1))
 			else
-			grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" > /dev/null
+			grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" >& /dev/null
 				if [ $? -eq 0 ]
 				then
 					HostTally=$((HostTally + 1))
@@ -155,8 +168,6 @@
 	comm -3 $NO_HEADER_MASTER IPonly > noIP_master
 	awk -F. '{print $1}' noIP_master > noIP_master.tmp && mv noIP_master.tmp noIP_master
 	cat IPonly noIP_master > $NO_HEADER_MASTER
-	sort -u $NO_HEADER_MASTER > $NO_HEADER_MASTER.tmp 
-	mv $NO_HEADER_MASTER.tmp $NO_HEADER_MASTER
 	rm noIP_master IPonly
 
 	# Generate the Masterlist with proper header and important attributes

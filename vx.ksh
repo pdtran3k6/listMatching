@@ -83,10 +83,20 @@
 						echo "##### detailed information on disk $deviceSerial #####" >> $BROCADE_OUTFL
 						vxdisk list $deviceSerial >> $BROCADE_OUTFL
 						echo >> $BROCADE_OUTFL
+						
+						deviceTagShort=`echo $deviceSerial | sed 's/....$//'`
+						deviceTag=`echo $deviceSerial | sed 's/..$//'`
+						if [ "$deviceTagShort" == "emcpower" ]
+						then
+							/etc/powermt display dev=$deviceTag >> $BROCADE_OUTFL
+						fi
+						echo >> $BROCADE_OUTFL
+						echo >> $BROCADE_OUTFL
+						
 					done < $TMPFILE
 					rm -f $TMPFILE
 					cd ~syscheck/common-bin/ && ./footer $0 $$ >> $BROCADE_OUTFL
-				fi ;;
+				fi
 			fi ;;
 			*) exit 2 ;;
 	esac
