@@ -157,7 +157,7 @@
 		NA_Tally=$(grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | wc -l | sed 's/^[ \t]*//')
 		
 		# Calculating percentages for Yes and N/A		
-		HostPercTotal=$(print "scale=2; (($Yes_Tally + $NA_Tally)/$total)*100" | bc | sed 's/^[ \t]*//')
+		HostPercTotal=$(print "scale=4; (($Yes_Tally + $NA_Tally)/$total)*100" | bc | sed 's/^[ \t]*//')
 		HostPercTotal=$(printf %.0f $HostPercTotal)
 		
 		# Output into file with Header for sources' columns
@@ -178,7 +178,7 @@
 	done
 
 
-	percMatched=$(print "scale=2; ($MatchedTally/$total)*100" | bc | sed 's/^[ \t]*//')
+	percMatched=$(print "scale=4; ($MatchedTally/$total)*100" | bc | sed 's/^[ \t]*//')
 	percMatched=$(printf %.0f $percMatched)
 	# Output the total number of hosts matched
 	echo "Total       " > totalMatches

@@ -62,7 +62,7 @@
 	cd $SOURCE_DIR
 	
 	# Remove domain names from all raw sources' lists
-	for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
+	for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 # $SOURCE5
 	do
 		# Grab IP addresses out first
 		grep -s "142." $source > IPonly
