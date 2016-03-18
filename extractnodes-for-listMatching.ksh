@@ -69,7 +69,7 @@
 	if [ $? -eq 0 ] 
 	then 
 		# Extract all hosts and output into Uptime.list
-		mysql -u uptime -puptime -P3308 --protocol=tcp uptime -e "SELECT sysname, arch FROM entity_configuration WHERE arch LIKE '%Linux%' OR arch LIKE '%SunOS%' OR arch LIKE '%CentOS%' ORDER BY arch" > $TMPFILE.name_os 
+		mysql -u uptime -puptime -P3308 --protocol=tcp uptime -e "SELECT sysname, arch FROM entity_configuration WHERE arch LIKE '%Linux%' OR arch LIKE '%SunOS%' ORDER BY arch" > $TMPFILE.name_os 
 		grep 'vSphere' $TMPFILE.name_os > $TMPFILE.vSphere
 		grep -v 'vSphere' $TMPFILE.name_os | sed '1d' | awk -F. '{print $1}' > $TMPFILE 
 		cat $TMPFILE $TMPFILE.vSphere | awk -F'\t' '{print $1}' | sort -u > $TMPFILE.name_os.tmp

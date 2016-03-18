@@ -56,8 +56,9 @@
 	HostTally=0
 	MatchedTally=0
 
-
-	# Put case for different OS
+	echo "Hosts that are in the ExceptionFile but not in the Master" > $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
+	date '+%a %d-%b-%Y %R' >> $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
+	echo >> $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
 
 	cd $SOURCE_DIR
 	
@@ -72,18 +73,8 @@
 		awk -F. '{print $1}' noIP_master > noIP_master.tmp && mv noIP_master.tmp noIP_master
 		cat IPonly noIP_master > $source
 	done
-	
-	
-	# Generate raw Masterlist and raw ExceptionFile (no header)
-	cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 | sort -u > $NO_HEADER_MASTER_FULLNAME
-	cat $NO_HEADER_MASTER_FULLNAME | sed 's/ /+/g' > $NO_HEADER_MASTER
 
 	cat $EXCEPTION | sed '1d' | awk '{print $3}' > $HOST_ONLY_EXCEPTION
-
-
-	echo "Hosts that are in the ExceptionFile but not in the Master" > $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
-	date '+%a %d-%b-%Y %R' >> $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
-	echo >> $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
 
 	# Added missing hosts from ExceptionFile
 	while read hostName;
@@ -96,9 +87,9 @@
 		fi
 	done < $HOST_ONLY_EXCEPTION
 
-	cat $NO_HEADER_MASTER_FULLNAME | sort -u > $NO_HEADER_MASTER_FULLNAME.tmp
+	cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 >> $NO_HEADER_MASTER_FULLNAME 
+	sort -u $NO_HEADER_MASTER_FULLNAME > $NO_HEADER_MASTER_FULLNAME.tmp
 	mv $NO_HEADER_MASTER_FULLNAME.tmp $NO_HEADER_MASTER_FULLNAME
-
 	cat $NO_HEADER_MASTER_FULLNAME | sed 's/ /+/g' > $NO_HEADER_MASTER
 
 	# Loop through each source
@@ -152,23 +143,16 @@
 			fi
 		done
 			
-		# If the rows are filled with 'Yes's and/or 'N/a's, then add '***' to the matchedList
+		# If the rows are filled with 'Yes's and/or 'N/a's, then add 'MATCH' to the matchedList
 		if [ $HostTally -eq  5 ]
 		then
-			echo "***" >> matchedList	
+			echo "MATCH" >> matchedList	
 		else
 			echo "_" >> matchedList
 		fi
 		HostTally=0
 	done < $NO_HEADER_MASTER_FULLNAME
 		
-		
-	# Remove domains of certain nodes 
-	grep -s "142.148" $NO_HEADER_MASTER > IPonly
-	comm -3 $NO_HEADER_MASTER IPonly > noIP_master
-	awk -F. '{print $1}' noIP_master > noIP_master.tmp && mv noIP_master.tmp noIP_master
-	cat IPonly noIP_master > $NO_HEADER_MASTER
-	rm noIP_master IPonly
 
 	# Generate the Masterlist with proper header and important attributes
 	echo "Hostname" > $MASTER
