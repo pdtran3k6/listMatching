@@ -101,25 +101,41 @@
 			then
 				# Copy new set of sysinfo.txt files from HOST_INFO_DIR into WEB_HOST_INFO_DIR
 				cp $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt $WEB_HOST_INFO_DIR/$hostName-sysinfo.txt
-
+				
+				SYSINFO=$HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt
+				
 				# Data for hardware
-				cat $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt | sed '/^$/d' | egrep -v 'ZONELIST|SW' | grep "^HOSTNAME" > $TMPFILE
-				cat $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt | sed '/^$/d' | egrep -v 'ZONELIST|SW' | grep -v "^HOSTNAME" >> $TMPFILE
+				grep "^HOSTNAME" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt > $TMPFILE
+				grep "^DATE" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt >> $TMPFILE
+				grep "^OS" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt >> $TMPFILE
+				grep "^KERNEL" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt >> $TMPFILE
+				grep "^MODEL" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt >> $TMPFILE
+				grep "^CPU" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt >> $TMPFILE
+				grep "^ZONETYPE" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt >> $TMPFILE
+				grep "^CHASSIS SERIAL NUMBER" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt >> $TMPFILE
+				grep "^SITE" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt >> $TMPFILE
+				grep "^RACK" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt >> $TMPFILE
+				grep "^U BOTTOM" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt >> $TMPFILE
+				grep "^CONTRACT #" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt >> $TMPFILE
+				grep "^ASSET TAG" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt >> $TMPFILE
+				grep "^REMOTE MGMT" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt >> $TMPFILE
+				grep "^ENV" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt >> $TMPFILE
 				awk -F: '{print $2 $3}' $TMPFILE | cut -c 2- | sed 's/ /_/g' | awk '{printf "%-40s", $1}' >> $HARDWARE_INFO
 				echo >> $HARDWARE_INFO
-
+				
 				# Data for software
-				cat $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt | egrep 'HOSTNAME|DATE|SW' | grep "^HOSTNAME" > $TMPFILE
-				cat $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt | egrep 'HOSTNAME|DATE|SW' | grep -v "^HOSTNAME" >> $TMPFILE
+				grep "^HOSTNAME" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt > $TMPFILE
+				grep "^DATE" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt >> $TMPFILE
+				grep "UPTIME" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt >> $TMPFILE
+				grep "NETBACKUP" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt >> $TMPFILE
 				awk -F: '{print $2}' $TMPFILE | cut -c 2- | sed 's/ /_/g' | awk '{printf "%-30s", $1}' >> $SOFTWARE_INFO
 				echo >> $SOFTWARE_INFO
-
-				# Data for zonelist
-				cat $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt | egrep 'HOSTNAME|DATE|ZONELIST' | grep "^HOSTNAME" > $TMPFILE
-				cat $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt | grep 'DATE' >> $TMPFILE
-				awk -F: '{print $2}' $TMPFILE | cut -c 2- | sed 's/ /_/g' > $TMPFILE.tmp && mv $TMPFILE.tmp $TMPFILE
-				cat $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt | grep 'ZONELIST' | awk -F: '{print $2}' | cut -c 2- | sed 's/ /,/g' >> $TMPFILE
-				awk '{printf "%-30s", $1}' $TMPFILE >> $ZONELIST_INFO
+			
+				# Data for zonelistReport
+				grep "^HOSTNAME" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt > $TMPFILE
+				grep "^DATE" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt >> $TMPFILE
+				grep "^ZONELIST" $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt >> $TMPFILE
+				awk -F: '{print $2}' $TMPFILE | cut -c 2- | sed 's/ /_/g' | awk '{printf "%-30s", $1}' >> $ZONELIST_INFO
 				echo >> $ZONELIST_INFO
 			fi
 	done < $NO_HEADER_MASTER
