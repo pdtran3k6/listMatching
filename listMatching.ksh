@@ -1,4 +1,4 @@
-	#!/bin/ksh
+	#!/bin/sh
 	###########################################################################################################
 	# NAME: listMatching
 	#
@@ -36,7 +36,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Mar 15 2016 PHAT TRAN
+	# Mar 21 2016 PHAT TRAN
 	############################################################################################################
 
 	SOURCE_DIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
@@ -73,13 +73,13 @@
 		awk -F. '{print $1}' noIP_master > noIP_master.tmp && mv noIP_master.tmp noIP_master
 		cat IPonly noIP_master > $source
 	done
-
+	
 	cat $EXCEPTION | sed '1d' | awk '{print $3}' > $HOST_ONLY_EXCEPTION
 
 	# Added missing hosts from ExceptionFile
 	while read hostName;
 	do
-		grep -sw "$hostName" $NO_HEADER_MASTER > /dev/null
+		grep -sw "$hostName" $NO_HEADER_MASTER 2>&1 > /dev/null
 		if [ $? -ne 0 ] 
 		then
 			echo "$hostName" >> $NO_HEADER_MASTER_FULLNAME
@@ -95,26 +95,27 @@
 	# Loop through each source
 	for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 	do
-		echo "$source" | sed 's/.list//g' > final$source
+		sourceName=`echo "$source" | sed 's/.list//g'` 
+		echo "$sourceName" > final$source
 		while read hostName;
 		do
 			# Check to see if the host is in the source
-			grep -sw "$hostName" $source > /dev/null
+			grep -sw "$hostName" $source 2>&1 > /dev/null
 			if [ $? -eq 0 ] 
 			then
 				echo "YES" >> final$source
 			else
 				# If not found in the source, check if it's in the $EXCEPTION
-				grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" >& /dev/null
+				grep -si "$sourceName" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" 2>&1 > /dev/null
 				if [ $? -eq 0 ]
 				then
-				expiryDate=$(grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | grep -sw "$hostName" | awk '{print $4}')
+				expiryDate=`grep -si "$sourceName" $EXCEPTION | grep -sw "$hostName" | awk '{print $4}'`
 					# Check the expiration date of the exception. If it never expires or hasn't expired, insert N/A Ex#; otherwise, insert N/A Ex# (exp). 
 					if [ "$expiryDate" == "Never" ] || [ "$(date +%Y%m%d)" -le "$(echo $expiryDate | sed 's/-//g')" ]
 					then
-						grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" | awk '{print "N/A_" $1}' >> final$source
+						grep -si "$sourceName" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" | awk '{print "N/A_" $1}' >> final$source
 					else
-						grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" | awk '{print "N/A_" $1 "-(exp)"}' >> final$source
+						grep -si "$sourceName" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" | awk '{print "N/A_" $1 "-(exp)"}' >> final$source
 					fi
 				else
 					echo "_" >> final$source			
@@ -130,12 +131,12 @@
 		# Check if each source has a specific host
 		for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 		do
-		grep -sw "$hostName" $source >& /dev/null
+		grep -sw "$hostName" $source 2>&1 > /dev/null
 			if [ $? -eq 0 ]
 			then
 				HostTally=$((HostTally + 1))
 			else
-			grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" >& /dev/null
+			grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" 2>&1 > /dev/null
 				if [ $? -eq 0 ]
 				then
 					HostTally=$((HostTally + 1))
@@ -144,7 +145,7 @@
 		done
 			
 		# If the rows are filled with 'Yes's and/or 'N/a's, then add 'MATCH' to the matchedList
-		if [ $HostTally -eq  5 ]
+		if [ $HostTally -eq 5 ]
 		then
 			echo "MATCH" >> matchedList	
 		else
@@ -162,7 +163,7 @@
 	paste $MASTER final$SOURCE1 final$SOURCE2 final$SOURCE3 final$SOURCE4 final$SOURCE5 matchedList | pr -t -e20 > $MASTERTABLE
 
 	# Clean up trash in source folder
-	rm matchedList
+	rm matchedList IPonly noIP_master
 	for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 	do 
 		rm final$source
