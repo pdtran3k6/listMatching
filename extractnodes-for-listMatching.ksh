@@ -34,8 +34,8 @@
 	 
 	HOST=`uname -n | cut -d'.' -f1`
 	YM=`date +%Y%m`
-	TARGETDIR=/opt/fundserv/syscheck/common-data/$YM/$HOST/listMatching
-	HOST_FOLDER=/opt/fundserv/syscheck/common-data/$YM
+	TARGETDIR=/opt/fundserv/syscheck/all-data/$YM/$HOST/listMatching
+	HOST_FOLDER=/opt/fundserv/syscheck/all-data/$YM
 	TMPFILE=/opt/fundserv/syscheck/tmp/`basename $0`.$$
 
 	if [ ! -d $TARGETDIR ]

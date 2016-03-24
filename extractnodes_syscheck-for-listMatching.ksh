@@ -32,9 +32,9 @@
 	############################################################################################################
 
 	HOST=`uname -n | cut -d'.' -f1`
-	TARGETDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`/$HOST/listMatching
+	TARGETDIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`/$HOST/listMatching
 	TMPFILE=/opt/fundserv/syscheck/tmp/`basename $0`.$$
-	HOST_INFO_DIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`
+	HOST_INFO_DIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
 
 	if [ ! -d $TARGETDIR ]
 	then

@@ -31,7 +31,7 @@
 	# Mar 22 2016 PHAT TRAN
 	############################################################################################################
 
-	HOST_INFO_DIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`
+	HOST_INFO_DIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
 	WEB_HOST_INFO_DIR=/opt/fundserv/syscheck/webcontent/CMDB/sysinfo
 	NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
 	HARDWARE_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/hardwareReport.txt
@@ -101,36 +101,48 @@
 			SYSINFO=$HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt
 			
 			# Data for hardware
-			grep "^HOSTNAME" $SYSINFO > $TMPFILE
-			grep "^DATE" $SYSINFO >> $TMPFILE
-			grep "^OS" $SYSINFO >> $TMPFILE
-			grep "^KERNEL" $SYSINFO >> $TMPFILE
-			grep "^MODEL" $SYSINFO >> $TMPFILE
-			grep "^CPU" $SYSINFO >> $TMPFILE
-			grep "^ZONETYPE" $SYSINFO >> $TMPFILE
-			grep "^CHASSIS SERIAL NUMBER" $SYSINFO >> $TMPFILE
-			grep "^SITE" $SYSINFO >> $TMPFILE
-			grep "^RACK" $SYSINFO >> $TMPFILE
-			grep "^U BOTTOM" $SYSINFO >> $TMPFILE
-			grep "^CONTRACT #" $SYSINFO >> $TMPFILE
-			grep "^ASSET TAG" $SYSINFO >> $TMPFILE
-			grep "^REMOTE MGMT" $SYSINFO >> $TMPFILE
-			grep "^ENV" $SYSINFO >> $TMPFILE
-			awk -F: '{print $2 $3}' $TMPFILE | cut -c 2- | sed 's/ /_/g' | awk '{printf "%-40s", $1}' >> $HARDWARE_INFO
+			grep "^HOSTNAME:" $SYSINFO > $TMPFILE
+			grep "^DATE:" $SYSINFO >> $TMPFILE
+			grep "^OS:" $SYSINFO >> $TMPFILE
+			grep "^KERNEL:" $SYSINFO >> $TMPFILE
+			grep "^MODEL:" $SYSINFO >> $TMPFILE
+			grep "^CPU:" $SYSINFO >> $TMPFILE
+			grep "^ZONETYPE:" $SYSINFO >> $TMPFILE
+			zonetype=`grep "^ZONETYPE:" $SYSINFO | awk -F: '{print $2}'`
+			if [ "$zonetype" == " global" ]
+			then
+				grep "^CHASSIS SERIAL NUMBER:" $SYSINFO >> $TMPFILE
+				grep "^SITE:" $SYSINFO >> $TMPFILE
+				grep "^RACK:" $SYSINFO >> $TMPFILE
+				grep "^U BOTTOM:" $SYSINFO >> $TMPFILE
+				grep "^CONTRACT #:" $SYSINFO >> $TMPFILE
+				grep "^ASSET TAG:" $SYSINFO >> $TMPFILE
+				grep "^REMOTE MGMT:" $SYSINFO >> $TMPFILE
+			else
+				echo >> $TMPFILE
+				echo "SITE: " >> $TMPFILE
+				echo "RACK: " >> $TMPFILE
+				echo "U BOTTOM: " >> $TMPFILE
+				echo "CONTRACT #: " >> $TMPFILE
+				echo "ASSET TAG: " >> $TMPFILE
+				echo "REMOTE MGMT: " >> $TMPFILE
+			fi
+			grep "^ENV:" $SYSINFO >> $TMPFILE
+			awk -F: '{print $2 $3}' $TMPFILE | sed 's/ /_/g' | awk '{printf "%-40s", $1}' >> $HARDWARE_INFO
 			echo >> $HARDWARE_INFO
 			
 			# Data for software
-			grep "^HOSTNAME" $SYSINFO > $TMPFILE
-			grep "^DATE" $SYSINFO >> $TMPFILE
-			grep "UPTIME" $SYSINFO >> $TMPFILE
-			grep "NETBACKUP" $SYSINFO >> $TMPFILE
+			grep "^HOSTNAME:" $SYSINFO > $TMPFILE
+			grep "^DATE:" $SYSINFO >> $TMPFILE
+			grep "UPTIME:" $SYSINFO >> $TMPFILE
+			grep "NETBACKUP:" $SYSINFO >> $TMPFILE
 			awk -F: '{print $2}' $TMPFILE | cut -c 2- | sed 's/ /_/g' | awk '{printf "%-30s", $1}' >> $SOFTWARE_INFO
 			echo >> $SOFTWARE_INFO
 		
 			# Data for zonelistReport
-			grep "^HOSTNAME" $SYSINFO > $TMPFILE
-			grep "^DATE" $SYSINFO >> $TMPFILE
-			grep "^ZONELIST" $SYSINFO >> $TMPFILE
+			grep "^HOSTNAME:" $SYSINFO > $TMPFILE
+			grep "^DATE:" $SYSINFO >> $TMPFILE
+			grep "^ZONELIST:" $SYSINFO >> $TMPFILE
 			awk -F: '{print $2}' $TMPFILE | cut -c 2- | sed 's/ /_/g' | awk '{printf "%-30s", $1}' >> $ZONELIST_INFO
 			echo >> $ZONELIST_INFO
 		fi

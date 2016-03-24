@@ -32,7 +32,7 @@
 	############################################################################################################
 
 	TARGETDIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
-	SOURCEDIR=/opt/fundserv/syscheck/common-data/`date +%Y%m`
+	SOURCEDIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
 	name1=netbackup
 	name2=syscheck
 	name3=boks
