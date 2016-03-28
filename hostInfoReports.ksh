@@ -128,7 +128,7 @@
 				echo "REMOTE MGMT: " >> $TMPFILE
 			fi
 			grep "^ENV:" $SYSINFO >> $TMPFILE
-			awk -F: '{print $2 $3}' $TMPFILE | sed 's/ /_/g' | awk '{printf "%-40s", $1}' >> $HARDWARE_INFO
+			awk -F: '{print $2 $3}' $TMPFILE | sed -e 's/^[ \t]*//' | sed 's/ /_/g' | awk '{printf "%-40s", $1}' >> $HARDWARE_INFO
 			echo >> $HARDWARE_INFO
 			
 			# Data for software
