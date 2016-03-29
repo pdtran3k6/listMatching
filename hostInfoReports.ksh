@@ -37,10 +37,11 @@
 	HARDWARE_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/hardwareReport.txt
 	SOFTWARE_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/softwareReport.txt
 	ZONELIST_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/zonelistReport.txt
+	NETWORK_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/networkReport.txt
 	TMPFILE=/opt/fundserv/syscheck/tmp/`basename $0`.$$
 
 	# Delete all current sysinfo.txt files from WEB_HOST_INFO_DIR
-	rm $WEB_HOST_INFO_DIR/* $HARDWARE_INFO $SOFTWARE_INFO $ZONELIST_INFO 2> /dev/null
+	rm $WEB_HOST_INFO_DIR/* $HARDWARE_INFO $SOFTWARE_INFO $ZONELIST_INFO $NETWORK_INFO 2> /dev/null
 
 	# Header of all the reports file
 	echo "HOSTNAME" >> $HARDWARE_INFO
@@ -58,6 +59,7 @@
 	echo "ASSET_TAG" >> $HARDWARE_INFO
 	echo "REMOTE_MGMT" >> $HARDWARE_INFO
 	echo "ENV" >> $HARDWARE_INFO
+	echo "APPS" >> $HARDWARE_INFO
 	awk '{printf "%-40s", $1}' $HARDWARE_INFO > $HARDWARE_INFO.tmp && mv $HARDWARE_INFO.tmp $HARDWARE_INFO
 	echo >> $HARDWARE_INFO
 	echo "HARDWARE REPORT" > $HARDWARE_INFO.tmp
@@ -128,6 +130,7 @@
 				echo "REMOTE MGMT: " >> $TMPFILE
 			fi
 			grep "^ENV:" $SYSINFO >> $TMPFILE
+			grep "^APPS: " $SYSINFO >> $TMPFILE
 			awk -F: '{print $2 $3}' $TMPFILE | sed -e 's/^[ \t]*//' | sed 's/ /_/g' | awk '{printf "%-40s", $1}' >> $HARDWARE_INFO
 			echo >> $HARDWARE_INFO
 			

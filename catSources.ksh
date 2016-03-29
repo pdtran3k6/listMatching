@@ -28,7 +28,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Mar 15 2016 PHAT TRAN
+	# Mar 29 2016 PHAT TRAN
 	############################################################################################################
 
 	TARGETDIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
@@ -38,14 +38,11 @@
 	name3=boks
 	name4=uptime
 	name5=controlm
-	NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
-	
-	
 	
 	for hostName in $(ls $SOURCEDIR)
 	do
 		for source in $name1 $name2 $name3 $name4 $name5
-		do	
+		do      
 			if [ -f "$SOURCEDIR/$hostName/listMatching/$source-$hostName.list" ]
 			then
 				cp $SOURCEDIR/$hostName/listMatching/$source-$hostName.list $TARGETDIR/$source-$hostName.list
@@ -54,7 +51,8 @@
 	done
 
 	for source in $name1 $name2 $name3 $name4 # $name5
-	do	
+	do      
 		cat $TARGETDIR/$source-*.list | sed '/^$/d' | sort -u > $TARGETDIR/`echo $source | tr [a-z] [A-Z]`.list
 		rm $TARGETDIR/$source-*.list
 	done
+	
