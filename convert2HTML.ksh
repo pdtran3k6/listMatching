@@ -77,7 +77,7 @@
 	echo "\n</table>\n" >> $MASTERTABLE_HTML
 
 	# Link to the report folder
-	echo "<h2>Go to <a href='/listMatching/reports'>Report</a></h2>" >> $MASTERTABLE_HTML
+	echo "<h2>Go to <a href='/listMatching/listMatching.html'>Report</a></h2>" >> $MASTERTABLE_HTML
 
 	# Close html
 	echo "\n</body>\n</html>" >> $MASTERTABLE_HTML

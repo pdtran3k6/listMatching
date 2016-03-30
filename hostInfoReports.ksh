@@ -34,6 +34,7 @@
 	HOST_INFO_DIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
 	WEB_HOST_INFO_DIR=/opt/fundserv/syscheck/webcontent/CMDB/sysinfo
 	NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
+	ALLFIELD_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/allfieldReport.txt
 	HARDWARE_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/hardwareReport.txt
 	SOFTWARE_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/softwareReport.txt
 	ZONELIST_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/zonelistReport.txt
@@ -41,9 +42,33 @@
 	TMPFILE=/opt/fundserv/syscheck/tmp/`basename $0`.$$
 
 	# Delete all current sysinfo.txt files from WEB_HOST_INFO_DIR
-	rm $WEB_HOST_INFO_DIR/* $HARDWARE_INFO $SOFTWARE_INFO $ZONELIST_INFO $NETWORK_INFO 2> /dev/null
+	rm $WEB_HOST_INFO_DIR/* $ALLFIELD_INFO $HARDWARE_INFO $SOFTWARE_INFO $ZONELIST_INFO $NETWORK_INFO 2> /dev/null
 
 	# Header of all the reports file
+	echo "HOSTNAME" >> $ALLFIELD_INFO
+	echo "DATE" >> $ALLFIELD_INFO
+	echo "OS" >> $ALLFIELD_INFO
+	echo "KERNEL" >> $ALLFIELD_INFO
+	echo "MODEL" >> $ALLFIELD_INFO
+	echo "CPU" >> $ALLFIELD_INFO
+	echo "ZONETYPE" >> $ALLFIELD_INFO
+	echo "CHASSIS_S/N" >> $ALLFIELD_INFO
+	echo "SITE" >> $ALLFIELD_INFO
+	echo "RACK" >> $ALLFIELD_INFO
+	echo "U_BOTTOM" >> $ALLFIELD_INFO
+	echo "CONTRACT_#" >> $ALLFIELD_INFO
+	echo "ASSET_TAG" >> $ALLFIELD_INFO
+	echo "REMOTE_MGMT" >> $ALLFIELD_INFO
+	echo "ENV" >> $ALLFIELD_INFO
+	echo "APPS" >> $ALLFIELD_INFO
+	awk '{printf "%-40s", $1}' $ALLFIELD_INFO > $ALLFIELD_INFO.tmp && mv $ALLFIELD_INFO.tmp $ALLFIELD_INFO
+	echo >> $ALLFIELD_INFO
+	echo "GENERAL REPORT" > $ALLFIELD_INFO.tmp
+	date '+%a %d-%b-%Y %R' >> $ALLFIELD_INFO.tmp
+	echo >> $ALLFIELD_INFO.tmp
+	cat $ALLFIELD_INFO >> $ALLFIELD_INFO.tmp
+	mv $ALLFIELD_INFO.tmp $ALLFIELD_INFO
+	
 	echo "HOSTNAME" >> $HARDWARE_INFO
 	echo "DATE" >> $HARDWARE_INFO
 	echo "OS" >> $HARDWARE_INFO
@@ -51,15 +76,6 @@
 	echo "MODEL" >> $HARDWARE_INFO
 	echo "CPU" >> $HARDWARE_INFO
 	echo "ZONETYPE" >> $HARDWARE_INFO
-	echo "CHASSIS_S/N" >> $HARDWARE_INFO
-	echo "SITE" >> $HARDWARE_INFO
-	echo "RACK" >> $HARDWARE_INFO
-	echo "U_BOTTOM" >> $HARDWARE_INFO
-	echo "CONTRACT_#" >> $HARDWARE_INFO
-	echo "ASSET_TAG" >> $HARDWARE_INFO
-	echo "REMOTE_MGMT" >> $HARDWARE_INFO
-	echo "ENV" >> $HARDWARE_INFO
-	echo "APPS" >> $HARDWARE_INFO
 	awk '{printf "%-40s", $1}' $HARDWARE_INFO > $HARDWARE_INFO.tmp && mv $HARDWARE_INFO.tmp $HARDWARE_INFO
 	echo >> $HARDWARE_INFO
 	echo "HARDWARE REPORT" > $HARDWARE_INFO.tmp
@@ -67,7 +83,7 @@
 	echo >> $HARDWARE_INFO.tmp
 	cat $HARDWARE_INFO >> $HARDWARE_INFO.tmp
 	mv $HARDWARE_INFO.tmp $HARDWARE_INFO
-
+	
 	echo "HOSTNAME" > $SOFTWARE_INFO
 	echo "DATE" >> $SOFTWARE_INFO
 	echo "UPTIME" >> $SOFTWARE_INFO
@@ -94,7 +110,6 @@
 	# Loop through all the hosts
 	while read hostName
 	do
-
 		if [ -f "$HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt" ]
 		then
 			# Copy new set of sysinfo.txt files from HOST_INFO_DIR into WEB_HOST_INFO_DIR
@@ -102,7 +117,7 @@
 			
 			SYSINFO=$HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt
 			
-			# Data for hardware
+			# Data for all field
 			grep "^HOSTNAME:" $SYSINFO > $TMPFILE
 			grep "^DATE:" $SYSINFO >> $TMPFILE
 			grep "^OS:" $SYSINFO >> $TMPFILE
@@ -131,7 +146,18 @@
 			fi
 			grep "^ENV:" $SYSINFO >> $TMPFILE
 			grep "^APPS: " $SYSINFO >> $TMPFILE
-			awk -F: '{print $2 $3}' $TMPFILE | sed -e 's/^[ \t]*//' | sed 's/ /_/g' | awk '{printf "%-40s", $1}' >> $HARDWARE_INFO
+			awk -F: '{print $2 $3}' $TMPFILE | sed -e 's/^[ \s]*//' | sed 's/ /_/g' | awk '{printf "%-40s", $1}' >> $ALLFIELD_INFO
+			echo >> $ALLFIELD_INFO
+			
+			# Data for hardware
+			grep "^HOSTNAME:" $SYSINFO > $TMPFILE
+			grep "^DATE:" $SYSINFO >> $TMPFILE
+			grep "^OS:" $SYSINFO >> $TMPFILE
+			grep "^KERNEL:" $SYSINFO >> $TMPFILE
+			grep "^MODEL:" $SYSINFO >> $TMPFILE
+			grep "^CPU:" $SYSINFO >> $TMPFILE
+			grep "^ZONETYPE:" $SYSINFO >> $TMPFILE
+			awk -F: '{print $2}' $TMPFILE | sed -e 's/^[ \s]*//' | sed 's/ /_/g' | awk '{printf "%-40s", $1}' >> $HARDWARE_INFO
 			echo >> $HARDWARE_INFO
 			
 			# Data for software
@@ -139,14 +165,14 @@
 			grep "^DATE:" $SYSINFO >> $TMPFILE
 			grep "UPTIME:" $SYSINFO >> $TMPFILE
 			grep "NETBACKUP:" $SYSINFO >> $TMPFILE
-			awk -F: '{print $2}' $TMPFILE | cut -c 2- | sed 's/ /_/g' | awk '{printf "%-30s", $1}' >> $SOFTWARE_INFO
+			awk -F: '{print $2}' $TMPFILE | sed -e 's/^[ \s]*//' | sed 's/ /_/g' | awk '{printf "%-30s", $1}' >> $SOFTWARE_INFO
 			echo >> $SOFTWARE_INFO
 		
 			# Data for zonelistReport
 			grep "^HOSTNAME:" $SYSINFO > $TMPFILE
 			grep "^DATE:" $SYSINFO >> $TMPFILE
 			grep "^ZONELIST:" $SYSINFO >> $TMPFILE
-			awk -F: '{print $2}' $TMPFILE | cut -c 2- | sed 's/ /_/g' | awk '{printf "%-30s", $1}' >> $ZONELIST_INFO
+			awk -F: '{print $2}' $TMPFILE | sed -e 's/^[ \s]*//' | sed 's/ /,/g' | awk '{printf "%-30s", $1}' >> $ZONELIST_INFO
 			echo >> $ZONELIST_INFO
 		fi
 	done < $NO_HEADER_MASTER

@@ -76,6 +76,9 @@
 	
 	cat $EXCEPTION | sed '1d' | awk '{print $3}' > $HOST_ONLY_EXCEPTION
 
+	
+
+	cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 > $NO_HEADER_MASTER_FULLNAME
 	# Added missing hosts from ExceptionFile
 	while read hostName;
 	do
@@ -85,9 +88,7 @@
 			echo "$hostName" >> $NO_HEADER_MASTER_FULLNAME
 			echo "$hostName" >> $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
 		fi
-	done < $HOST_ONLY_EXCEPTION
-
-	cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 >> $NO_HEADER_MASTER_FULLNAME 
+	done < $HOST_ONLY_EXCEPTION	
 	sort -u $NO_HEADER_MASTER_FULLNAME > $NO_HEADER_MASTER_FULLNAME.tmp
 	mv $NO_HEADER_MASTER_FULLNAME.tmp $NO_HEADER_MASTER_FULLNAME
 	cat $NO_HEADER_MASTER_FULLNAME | sed 's/ /+/g' > $NO_HEADER_MASTER
