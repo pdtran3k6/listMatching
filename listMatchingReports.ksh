@@ -201,7 +201,8 @@
 	echo "                    " >> attributes
 
 	# Generate the output table
-	echo "List Matching Matrix as of `date '+%a %d-%b-%Y %R'`" > $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
+	echo "LIST MATCHING MATRIX" > $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
+	date '+%a %d-%b-%Y %R' >> $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
 	echo >> $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
 	echo >> $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt
 	paste attributes column$SOURCE1 column$SOURCE2 column$SOURCE3 column$SOURCE4 column$SOURCE5 totalMatches >> $REPORTS_OUTPUT_DIR/Yes_NA_Report.txt

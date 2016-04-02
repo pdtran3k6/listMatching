@@ -1,14 +1,28 @@
 /* This is css stylesheet for Operations Portal homepage */
+html {
+	background: url('../image/team.jpg')
+		no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+}
 
 body 
 {
 	text-align: center;
 	padding-top: 10px;
+	background-color: rgba(255, 0, 0, 0);
 }
 
 a
 {
 	font-family: Arial;
+	color: #44AA4A;
+}
+
+a:hover, a:focus, a:active, a.active {
+	color: #F9A603;
+	text-decoration: none;
 }
 
 h1
@@ -28,6 +42,8 @@ h2
 h3
 {
 	font-family: Verdana;
+	margin-left: 100px;
+	margin-right: 100px;
 
 }
 
@@ -49,21 +65,23 @@ ul
 
 img
 {
+	position: fixed;
+    left: 300px;
+    top: 20px;
 	height: auto; 
     width: auto; 
     max-width: 900px; 
-    max-height: 300px;
-}
-
-#minions
-{
-	max-height: 200px;
+    max-height: 200px;
 }
 
 #navtext
 {
-	margin-top: 60px;
+	padding-top: 25px;
+	padding-bottom: 25px;
+	margin-top: 550px;
 	margin-bottom: 60px;
+	background-color: rgba(255, 255, 255, 0.9);
+	
 }
 
 .row 

@@ -24,14 +24,14 @@
 	#
 	#
 	# CHANGELOG:
-	# Mar 29 2016 PHAT TRAN
+	# Apr 1 2016 PHAT TRAN
 	############################################################################################################
 
 	TARGETDIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
 	SOURCEDIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
 	NETWORK_INFO=/opt/fundserv/syscheck/webcontent/CMDB/reports/networkReport.txt
 	
-	/opt/fundserv/syscheck/common-bin/serverbanner > $NETWORK_INFO
+	echo "IP INFO REPORT" > $NETWORK_INFO
 	date '+%a %d-%b-%Y %R' >> $NETWORK_INFO
 	echo >> $NETWORK_INFO
 	
@@ -40,13 +40,13 @@
 		if [ -f "$SOURCEDIR/$hostName/CMDB/$hostName-IPinfo.txt" ]
 		then
 			cat $SOURCEDIR/$hostName/CMDB/$hostName-IPinfo.txt >> $NETWORK_INFO
-			echo "###########################################################################" >> $NETWORK_INFO
+			echo "################################################################################################################" >> $NETWORK_INFO
 			echo >> $NETWORK_INFO
 		fi
 	done
 
 	echo >> $NETWORK_INFO
 	/opt/fundserv/syscheck/common-bin/footer $0 $$ >> $NETWORK_INFO
-        
+
 	
 	

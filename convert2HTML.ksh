@@ -35,7 +35,7 @@
 		
 	# Set the spacing between columns
 	echo "<head>
-	<style type="text/css">
+	<style type='text/css'>
 	td
 	{
 		padding:0 70px 0 70px;
@@ -47,7 +47,7 @@
 
 	# Title of the table
 	echo "\n<h3 style='font-family:Tahoma;'>List of nodes from different Systems Management tools</h3>\n" >> $MASTERTABLE_HTML
-	date '+%a %d-%b-%Y %R' >> $MASTERTABLE_HTML
+	echo "<p>`date '+%a %d-%b-%Y %R'`</p>" >> $MASTERTABLE_HTML
 	echo "<table align='center'>" >> $MASTERTABLE_HTML
 
 	# Add each columns and each rows into table format (Additional columns could be added)
