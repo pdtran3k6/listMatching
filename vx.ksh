@@ -28,7 +28,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Mar 15 2016 PHAT TRAN
+	# Apr 4 2016 PHAT TRAN
 	############################################################################################################
 
 	HOST=$(hostname)
@@ -67,7 +67,7 @@
 				[ -x "$ZNAME" ] && zname=$($ZNAME) || zname="global"
 				if [ "$zname" = "global" ]
 				then
-					cd ~syscheck/common-bin/ && ./serverbanner > $BROCADE_OUTFL
+					/opt/fundserv/syscheck/common-bin/serverbanner > $BROCADE_OUTFL
 					date '+%a %d-%b-%Y %R' >> $BROCADE_OUTFL
 					echo >> $BROCADE_OUTFL
 					echo "##### one-line summary for all disk access records known to the system #####" >> $BROCADE_OUTFL
@@ -86,16 +86,10 @@
 						
 						deviceTagShort=`echo $deviceSerial | sed 's/....$//'`
 						deviceTag=`echo $deviceSerial | sed 's/..$//'`
-						if [ "$deviceTagShort" == "emcpower" ]
-						then
-							/etc/powermt display dev=$deviceTag >> $BROCADE_OUTFL
-						fi
-						echo >> $BROCADE_OUTFL
-						echo >> $BROCADE_OUTFL
-						
+						if [ "$deviceTagShort" == "emcpower" ] && /etc/powermt display dev=$deviceTag >> $BROCADE_OUTFL
 					done < $TMPFILE
 					rm -f $TMPFILE
-					cd ~syscheck/common-bin/ && ./footer $0 $$ >> $BROCADE_OUTFL
+					/opt/fundserv/syscheck/common-bin/footer $0 $$ >> $BROCADE_OUTFL
 				fi
 			fi ;;
 			*) exit 2 ;;

@@ -44,7 +44,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Mar 7 2016 PHAT TRAN
+	# Apr 1 2016 PHAT TRAN
 	############################################################################################################
 
 	SOURCE_DIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
@@ -91,12 +91,12 @@
 		# Check if each source has a specific host
 		for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 		do		
-		grep -sw "$hostName" $source > /dev/null
+		grep -sw "$hostName" $source > /dev/null 2>&1
 			if [ $? -eq 0 ]
 			then
 				HostTally=$((HostTally + 1))
 			else
-			grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g'| grep -sw "$hostName" > /dev/null
+			grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g'| grep -sw "$hostName" > /dev/null 2>&1
 				if [ $? -eq 0 ]
 				then
 					HostTally=$((HostTally + 1))
@@ -110,12 +110,12 @@
 			MatchedTally=$((MatchedTally + 1))
 			for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 			do		
-			grep -sw "$hostName" $source > /dev/null
+			grep -sw "$hostName" $source > /dev/null 2>&1
 			if [ $? -eq 0 ]
 			then
 				export Yes_TallyM`echo $source | sed 's/.list//g'`=$((Yes_TallyM`echo $source | sed 's/.list//g'` + 1))
 			else
-			grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g'| grep -sw "$hostName" > /dev/null
+			grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g'| grep -sw "$hostName" > /dev/null 2>&1
 				if [ $? -eq 0 ]
 				then
 					export NA_TallyM`echo $source | sed 's/.list//g'`=$((NA_TallyM`echo $source | sed 's/.list//g'` + 1))
@@ -145,7 +145,7 @@
 		done < $source
 		
 		# List all the hosts that aren't supposed to be in certain source	
-		ls | grep -s "extra_hosts-$source" > /dev/null
+		ls | grep -s "extra_hosts-$source" > /dev/null 2>&1
 		if [ $? -eq 0 ]
 		then
 			echo "List of extra hosts in $source" >> $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt
@@ -154,10 +154,10 @@
 		fi
 		
 		Yes_Tally=$(cat $source | wc -l | sed 's/^[ \t]*//')
-		NA_Tally=$(grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | wc -l | sed 's/^[ \t]*//')
+		NA_Tally=$(grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | wc -l | sed 's/^[ ]*//')
 		
 		# Calculating percentages for Yes and N/A		
-		HostPercTotal=$(print "scale=4; (($Yes_Tally + $NA_Tally)/$total)*100" | bc | sed 's/^[ \t]*//')
+		HostPercTotal=$(print "scale=4; (($Yes_Tally + $NA_Tally)/$total)*100" | bc | sed 's/^[ ]*//')
 		HostPercTotal=$(printf %.0f $HostPercTotal)
 		
 		# Output into file with Header for sources' columns
@@ -178,7 +178,7 @@
 	done
 
 
-	percMatched=$(print "scale=4; ($MatchedTally/$total)*100" | bc | sed 's/^[ \t]*//')
+	percMatched=$(print "scale=4; ($MatchedTally/$total)*100" | bc | sed 's/^[ ]*//')
 	percMatched=$(printf %.0f $percMatched)
 	# Output the total number of hosts matched
 	echo "Total       " > totalMatches

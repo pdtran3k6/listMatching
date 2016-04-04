@@ -14,13 +14,15 @@ body
 	background-color: rgba(255, 0, 0, 0);
 }
 
-a
+a, a:focus
 {
 	font-family: Arial;
 	color: #44AA4A;
+	text-decoration: none;
 }
 
-a:hover, a:focus, a:active, a.active {
+a:hover, a:active, a.active 
+{
 	color: #F9A603;
 	text-decoration: none;
 }

@@ -47,67 +47,33 @@
 	rm $WEB_HOST_INFO_DIR/* $ALLFIELD_INFO $HARDWARE_INFO $SOFTWARE_INFO $ZONELIST_INFO $NETWORK_INFO $VX_INFO 2> /dev/null
 
 	# Header of all the reports file
-	echo "HOSTNAME" >> $ALLFIELD_INFO
-	echo "DATE" >> $ALLFIELD_INFO
-	echo "REMOTE_MGMT" >> $ALLFIELD_INFO
-	echo "OS" >> $ALLFIELD_INFO
-	echo "KERNEL" >> $ALLFIELD_INFO
-	echo "MODEL" >> $ALLFIELD_INFO
-	echo "CPU" >> $ALLFIELD_INFO
-	echo "ZONETYPE" >> $ALLFIELD_INFO
-	echo "CHASSIS_S/N" >> $ALLFIELD_INFO
-	echo "SITE" >> $ALLFIELD_INFO
-	echo "RACK" >> $ALLFIELD_INFO
-	echo "U_BOTTOM" >> $ALLFIELD_INFO
-	echo "CONTRACT_#" >> $ALLFIELD_INFO
-	echo "ASSET_TAG" >> $ALLFIELD_INFO
-	echo "ENV" >> $ALLFIELD_INFO
-	echo "APPS" >> $ALLFIELD_INFO
-	awk '{printf "%-40s", $1}' $ALLFIELD_INFO > $ALLFIELD_INFO.tmp && mv $ALLFIELD_INFO.tmp $ALLFIELD_INFO
+	allfieldFormat="%-40s"
+	echo "GENERAL REPORT" > $ALLFIELD_INFO
+	date '+%a %d-%b-%Y %R' >> $ALLFIELD_INFO
 	echo >> $ALLFIELD_INFO
-	echo "GENERAL REPORT" > $ALLFIELD_INFO.tmp
-	date '+%a %d-%b-%Y %R' >> $ALLFIELD_INFO.tmp
-	echo >> $ALLFIELD_INFO.tmp
-	cat $ALLFIELD_INFO >> $ALLFIELD_INFO.tmp
-	mv $ALLFIELD_INFO.tmp $ALLFIELD_INFO
+	printf "$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat\
+	$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat\n" \
+	"HOSTNAME" "DATE" "REMOTE_MGMT" "OS" "KERNEL" "MODEL" "CPU" "ZONETYPE" "CHASSIS_S/N" "SITE" "RACK" \
+	"U_BOTTOM" "CONTRACT_#" "ASSET_TAG" "ENV" "APPS" >> $ALLFIELD_INFO
 	
-	echo "HOSTNAME" >> $HARDWARE_INFO
-	echo "DATE" >> $HARDWARE_INFO
-	echo "OS" >> $HARDWARE_INFO
-	echo "KERNEL" >> $HARDWARE_INFO
-	echo "MODEL" >> $HARDWARE_INFO
-	echo "CPU" >> $HARDWARE_INFO
-	echo "ZONETYPE" >> $HARDWARE_INFO
-	awk '{printf "%-40s", $1}' $HARDWARE_INFO > $HARDWARE_INFO.tmp && mv $HARDWARE_INFO.tmp $HARDWARE_INFO
+	hardwareFormat="%-40s"
+	echo "HARDWARE REPORT" > $HARDWARE_INFO
+	date '+%a %d-%b-%Y %R' >> $HARDWARE_INFO
 	echo >> $HARDWARE_INFO
-	echo "HARDWARE REPORT" > $HARDWARE_INFO.tmp
-	date '+%a %d-%b-%Y %R' >> $HARDWARE_INFO.tmp
-	echo >> $HARDWARE_INFO.tmp
-	cat $HARDWARE_INFO >> $HARDWARE_INFO.tmp
-	mv $HARDWARE_INFO.tmp $HARDWARE_INFO
+	printf "$hardwareFormat$hardwareFormat$hardwareFormat$hardwareFormat$hardwareFormat$hardwareFormat$hardwareFormat\n" \
+	"HOSTNAME" "DATE" "OS" "KERNEL" "MODEL" "CPU" "ZONETYPE" >> $HARDWARE_INFO
 	
-	echo "HOSTNAME" > $SOFTWARE_INFO
-	echo "DATE" >> $SOFTWARE_INFO
-	echo "UPTIME" >> $SOFTWARE_INFO
-	echo "NETBACKUP" >> $SOFTWARE_INFO
-	awk '{printf "%-30s", $1}' $SOFTWARE_INFO > $SOFTWARE_INFO.tmp && mv $SOFTWARE_INFO.tmp $SOFTWARE_INFO
+	softwareFormat="%-30s"
+	echo "SOFTWARE REPORT" > $SOFTWARE_INFO
+	date '+%a %d-%b-%Y %R' >> $SOFTWARE_INFO
 	echo >> $SOFTWARE_INFO
-	echo "SOFTWARE REPORT" > $SOFTWARE_INFO.tmp
-	date '+%a %d-%b-%Y %R' >> $SOFTWARE_INFO.tmp
-	echo >> $SOFTWARE_INFO.tmp
-	cat $SOFTWARE_INFO >> $SOFTWARE_INFO.tmp
-	mv $SOFTWARE_INFO.tmp $SOFTWARE_INFO
-
-	echo "HOSTNAME" > $ZONELIST_INFO
-	echo "DATE" >> $ZONELIST_INFO
-	echo "ZONELIST" >> $ZONELIST_INFO
-	awk '{printf "%-30s", $1}' $ZONELIST_INFO > $ZONELIST_INFO.tmp && mv $ZONELIST_INFO.tmp $ZONELIST_INFO
+	printf "$softwareFormat$softwareFormat$softwareFormat$softwareFormat\n" "HOSTNAME" "DATE" "UPTIME" "NETBACKUP" >> $SOFTWARE_INFO
+	
+	zonelistFormat="%-30s"
+	echo "ZONELIST REPORT" > $ZONELIST_INFO
+	date '+%a %d-%b-%Y %R' >> $ZONELIST_INFO
 	echo >> $ZONELIST_INFO
-	echo "ZONELIST REPORT" > $ZONELIST_INFO.tmp
-	date '+%a %d-%b-%Y %R' >> $ZONELIST_INFO.tmp
-	echo >> $ZONELIST_INFO.tmp
-	cat $ZONELIST_INFO >> $ZONELIST_INFO.tmp
-	mv $ZONELIST_INFO.tmp $ZONELIST_INFO
+	printf "$zonelistFormat$zonelistFormat$zonelistFormat\n" "HOSTNAME" "DATE" "ZONELIST" >> $SOFTWARE_INFO
 
 	# Loop through all the hosts
 	while read hostName
@@ -190,4 +156,3 @@
 		echo >> $ZONELIST_INFO
 	done < $TMPFILE2
 	rm -f $TMPFILE2
-	

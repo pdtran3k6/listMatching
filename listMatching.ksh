@@ -1,4 +1,4 @@
-	#!/bin/sh
+	#!/bin/ksh
 	###########################################################################################################
 	# NAME: listMatching
 	#
@@ -36,7 +36,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Mar 21 2016 PHAT TRAN
+	# Apr 4 2016 PHAT TRAN
 	############################################################################################################
 
 	SOURCE_DIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
@@ -82,7 +82,7 @@
 	# Added missing hosts from ExceptionFile
 	while read hostName;
 	do
-		grep -sw "$hostName" $NO_HEADER_MASTER 2>&1 > /dev/null
+		grep -sw "$hostName" $NO_HEADER_MASTER > /dev/null 2>&1
 		if [ $? -ne 0 ] 
 		then
 			echo "$hostName" >> $NO_HEADER_MASTER_FULLNAME
@@ -101,13 +101,13 @@
 		while read hostName;
 		do
 			# Check to see if the host is in the source
-			grep -sw "$hostName" $source 2>&1 > /dev/null
+			grep -sw "$hostName" $source > /dev/null 2>&1
 			if [ $? -eq 0 ] 
 			then
 				echo "YES" >> final$source
 			else
 				# If not found in the source, check if it's in the $EXCEPTION
-				grep -si "$sourceName" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" 2>&1 > /dev/null
+				grep -si "$sourceName" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" > /dev/null 2>&1
 				if [ $? -eq 0 ]
 				then
 				expiryDate=`grep -si "$sourceName" $EXCEPTION | grep -sw "$hostName" | awk '{print $4}'`
@@ -132,12 +132,12 @@
 		# Check if each source has a specific host
 		for source in $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5
 		do
-		grep -sw "$hostName" $source 2>&1 > /dev/null
+		grep -sw "$hostName" $source > /dev/null 2>&1
 			if [ $? -eq 0 ]
 			then
 				HostTally=$((HostTally + 1))
 			else
-			grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" 2>&1 > /dev/null
+			grep -si "`echo $source | sed 's/.list//g'`" $EXCEPTION | sed 's/+/ /g' | grep -sw "$hostName" > /dev/null 2>&1
 				if [ $? -eq 0 ]
 				then
 					HostTally=$((HostTally + 1))

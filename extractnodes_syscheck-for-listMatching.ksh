@@ -28,7 +28,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Mar 28 2016 PHAT TRAN
+	# Apr 1 2016 PHAT TRAN
 	############################################################################################################
 
 	HOST=`uname -n | cut -d'.' -f1`
@@ -53,7 +53,4 @@
 	done
 	
 	export size=`du -h $TARGETDIR/syscheck-$HOST.list | awk '{print $1}'`
-	if [  "$size" == "0K" ]
-	then 
-		rm -rf $TARGETDIR
-	fi
+	if [  "$size" == "0K" ] && rm -rf $TARGETDIR
