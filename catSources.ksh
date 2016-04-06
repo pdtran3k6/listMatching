@@ -28,7 +28,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Mar 29 2016 PHAT TRAN
+	# Apr 5 2016 PHAT TRAN
 	############################################################################################################
 
 	TARGETDIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
@@ -50,7 +50,7 @@
 		done
 	done
 
-	for source in $name1 $name2 $name3 $name4 # $name5
+	for source in $name1 $name2 $name3 $name4 $name5
 	do      
 		cat $TARGETDIR/$source-*.list | sed '/^$/d' | sort -u > $TARGETDIR/`echo $source | tr [a-z] [A-Z]`.list
 		rm $TARGETDIR/$source-*.list

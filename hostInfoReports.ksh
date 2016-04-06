@@ -28,7 +28,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Apr 1 2016 PHAT TRAN
+	# Apr 6 2016 PHAT TRAN
 	############################################################################################################
 
 	HOST_INFO_DIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
@@ -51,8 +51,7 @@
 	echo "GENERAL REPORT" > $ALLFIELD_INFO
 	date '+%a %d-%b-%Y %R' >> $ALLFIELD_INFO
 	echo >> $ALLFIELD_INFO
-	printf "$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat\
-	$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat\n" \
+	printf "$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat$allfieldFormat\n" \
 	"HOSTNAME" "DATE" "REMOTE_MGMT" "OS" "KERNEL" "MODEL" "CPU" "ZONETYPE" "CHASSIS_S/N" "SITE" "RACK" \
 	"U_BOTTOM" "CONTRACT_#" "ASSET_TAG" "ENV" "APPS" >> $ALLFIELD_INFO
 	
@@ -73,7 +72,7 @@
 	echo "ZONELIST REPORT" > $ZONELIST_INFO
 	date '+%a %d-%b-%Y %R' >> $ZONELIST_INFO
 	echo >> $ZONELIST_INFO
-	printf "$zonelistFormat$zonelistFormat$zonelistFormat\n" "HOSTNAME" "DATE" "ZONELIST" >> $SOFTWARE_INFO
+	printf "$zonelistFormat$zonelistFormat$zonelistFormat\n" "HOSTNAME" "DATE" "ZONELIST" >> $ZONELIST_INFO
 
 	# Loop through all the hosts
 	while read hostName
@@ -136,6 +135,7 @@
 			
 			# Data for software
 			grep "^HOSTNAME:" $SYSINFO > $TMPFILE
+			grep "^OS:" $SYSINFO >> $TMPFILE
 			grep "^DATE:" $SYSINFO >> $TMPFILE
 			grep "UPTIME:" $SYSINFO >> $TMPFILE
 			grep "NETBACKUP:" $SYSINFO >> $TMPFILE

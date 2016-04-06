@@ -28,7 +28,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Apr 4 2016 PHAT TRAN
+	# Apr 5 2016 PHAT TRAN
 	############################################################################################################
 
 	HOST=$(hostname)
@@ -78,6 +78,9 @@
 					
 					# Generate detailed information for each disk
 					/usr/sbin/vxdisk list | grep dg | awk '{print $1}' > $TMPFILE
+					echo "                    *****************************************************" >> $BROCADE_OUTFL
+					echo "                    ***  Output of command vxdisk list #deviceSerial  ***" >> $BROCADE_OUTFL
+					echo "                    *****************************************************" >> $BROCADE_OUTFL
 					while read deviceSerial
 					do
 						echo "##### detailed information on disk $deviceSerial #####" >> $BROCADE_OUTFL
@@ -86,7 +89,13 @@
 						
 						deviceTagShort=`echo $deviceSerial | sed 's/....$//'`
 						deviceTag=`echo $deviceSerial | sed 's/..$//'`
-						if [ "$deviceTagShort" == "emcpower" ] && /etc/powermt display dev=$deviceTag >> $BROCADE_OUTFL
+						if [ "$deviceTagShort" == "emcpower" ] 
+						then
+							echo "                    *******************************************" >> $BROCADE_OUTFL
+							echo "                    ***  Output of command powermt display  ***" >> $BROCADE_OUTFL
+							echo "                    *******************************************" >> $BROCADE_OUTFL
+							/etc/powermt display dev=$deviceTag >> $BROCADE_OUTFL
+						fi	 
 					done < $TMPFILE
 					rm -f $TMPFILE
 					/opt/fundserv/syscheck/common-bin/footer $0 $$ >> $BROCADE_OUTFL

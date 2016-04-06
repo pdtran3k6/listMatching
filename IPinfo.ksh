@@ -27,7 +27,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Apr 1 2016 PHAT TRAN
+	# Apr 6 2016 PHAT TRAN
 	############################################################################################################
 
 	HOST=`uname -n | cut -d'.' -f1`
@@ -40,7 +40,6 @@
 	echo "                    ********************************************" >> $TARGETDIR/$HOST-IPinfo.txt
 	echo >> $TARGETDIR/$HOST-IPinfo.txt
 	echo >> $TARGETDIR/$HOST-IPinfo.txt
-	echo "Output of command netstat -an" >> $TARGETDIR/$HOST-IPinfo.txt
 	netstat -an >> $TARGETDIR/$HOST-IPinfo.txt
 	echo >> $TARGETDIR/$HOST-IPinfo.txt
 	echo >> $TARGETDIR/$HOST-IPinfo.txt 
@@ -50,6 +49,4 @@
 	echo >> $TARGETDIR/$HOST-IPinfo.txt
 	ifconfig -a >> $TARGETDIR/$HOST-IPinfo.txt
 	/opt/fundserv/syscheck/common-bin/footer $0 $$ >> $TARGETDIR/$HOST-IPinfo.txt
-	
-	
 	

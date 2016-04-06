@@ -29,7 +29,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Mar 11 2016 PHAT TRAN
+	# Apr 6 2016 PHAT TRAN
 	############################################################################################################
 	 
 	HOST=`uname -n | cut -d'.' -f1`
@@ -39,29 +39,24 @@
 	TMPFILE=/opt/fundserv/syscheck/tmp/`basename $0`.$$
 
 	if [ ! -d $TARGETDIR ]
-	then
+	then	
 		mkdir -p -m 755 $TARGETDIR
-		chown syscheck:10 $TARGETDIR
+		chown -R syscheck:10 $HOST_FOLDER
 	fi
-
+	
 	##### BOKS
 	# Check to see if this is a BOKS admin server
 	# If yes, extract the list of hosts to TARGETDIR
-	if [ -f "/opt/boksm/sbin/boksadm" ]
-	then
-		/opt/boksm/sbin/boksadm -S hostadm -l -t UNIXBOKSHOST -S | awk '{print $1}' > $TARGETDIR/boks-$HOST.list
-	fi
+	[ -f "/opt/boksm/sbin/boksadm" ] && /opt/boksm/sbin/boksadm -S hostadm -l -t UNIXBOKSHOST -S | awk '{print $1}' > $TARGETDIR/boks-$HOST.list
 
 	##### CONTROLM
-
-
+	# Since all the Control M servers are linux, we can hardcode the path of 'whoami' command
+	[ -f "/opt/controlm/ctm_server/exe_Linux-x86_64/ctm_agstat" ] && runuser -l controlm -c "/opt/controlm/ctm_server/exe_Linux-x86_64/ctm_agstat -list '*'" | awk '{print $2}' | sed '1,5d' > $TARGETDIR/controlm-$HOST.list
+	
 	##### NETBACKUP
 	# Check to see if this is a NETBACKUP admin server
 	# If yes, extract the list of hosts that aren't Windows to the TARGETDIR
-	if [ -f "/usr/openv/netbackup/bin/admincmd/bpplclients" ]
-	then
-		/usr/openv/netbackup/bin/admincmd/bpplclients -allunique -l | grep -i -v "windows" | awk '{print $2}' > $TARGETDIR/netbackup-$HOST.list
-	fi
+	[ -f "/usr/openv/netbackup/bin/admincmd/bpplclients" ] && /usr/openv/netbackup/bin/admincmd/bpplclients -allunique -l | grep -i -v "windows" | awk '{print $2}' > $TARGETDIR/netbackup-$HOST.list
 
 	##### UPTIME
 	# Check to see if this is a UPTIME admin server
@@ -79,7 +74,7 @@
 	ls $HOST_FOLDER > $TMPFILE
 	while read hostName
 	do
-		export size=`du -h $HOST_FOLDER/$hostName/listMatching/*-$hostName.list | awk '{print $1}'`
+		size=`du -h $HOST_FOLDER/$hostName/listMatching/*-$hostName.list | awk '{print $1}'`
 		if [ -d $HOST_FOLDER/$hostName/listMatching ]
 		then
 			if [  "$size" == "0K" ] || [ -z "$(ls -A $HOST_FOLDER/$hostName/listMatching)" ]
