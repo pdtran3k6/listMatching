@@ -28,7 +28,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Apr 6 2016 PHAT TRAN
+	# Apr 7 2016 PHAT TRAN
 	############################################################################################################
 
 	HOST_INFO_DIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
@@ -62,11 +62,11 @@
 	printf "$hardwareFormat$hardwareFormat$hardwareFormat$hardwareFormat$hardwareFormat$hardwareFormat$hardwareFormat\n" \
 	"HOSTNAME" "DATE" "OS" "KERNEL" "MODEL" "CPU" "ZONETYPE" >> $HARDWARE_INFO
 	
-	softwareFormat="%-30s"
+	softwareFormat="%-35s"
 	echo "SOFTWARE REPORT" > $SOFTWARE_INFO
 	date '+%a %d-%b-%Y %R' >> $SOFTWARE_INFO
 	echo >> $SOFTWARE_INFO
-	printf "$softwareFormat$softwareFormat$softwareFormat$softwareFormat\n" "HOSTNAME" "DATE" "UPTIME" "NETBACKUP" >> $SOFTWARE_INFO
+	printf "$softwareFormat$softwareFormat$softwareFormat$softwareFormat$softwareFormat\n" "HOSTNAME" "DATE" "OS" "NETBACKUP" "UPTIME" >> $SOFTWARE_INFO
 	
 	zonelistFormat="%-30s"
 	echo "ZONELIST REPORT" > $ZONELIST_INFO
@@ -139,7 +139,7 @@
 			grep "^DATE:" $SYSINFO >> $TMPFILE
 			grep "UPTIME:" $SYSINFO >> $TMPFILE
 			grep "NETBACKUP:" $SYSINFO >> $TMPFILE
-			awk -F: '{print $2}' $TMPFILE | sed -e 's/^[ ]*//' | sed 's/ /_/g' | awk '{printf "%-30s", $1}' >> $SOFTWARE_INFO
+			awk -F: '{print $2}' $TMPFILE | sed -e 's/^[ ]*//' | sed 's/ /_/g' | awk '{printf "%-35s", $1}' >> $SOFTWARE_INFO
 			echo >> $SOFTWARE_INFO
 		fi
 	done < $NO_HEADER_MASTER

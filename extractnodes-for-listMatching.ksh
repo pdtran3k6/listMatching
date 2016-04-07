@@ -51,7 +51,7 @@
 
 	##### CONTROLM
 	# Since all the Control M servers are linux, we can hardcode the path of 'whoami' command
-	[ -f "/opt/controlm/ctm_server/exe_Linux-x86_64/ctm_agstat" ] && runuser -l controlm -c "/opt/controlm/ctm_server/exe_Linux-x86_64/ctm_agstat -list '*'" | awk '{print $2}' | sed '1,5d' > $TARGETDIR/controlm-$HOST.list
+	[ -f "/opt/controlm/ctm_server/exe_Linux-x86_64/ctm_agstat" ] && su - controlm -c "/opt/controlm/ctm_server/exe_Linux-x86_64/ctm_agstat -list '*'" | awk '{print $2}' | sed '1,5d' > $TARGETDIR/controlm-$HOST.list
 	
 	##### NETBACKUP
 	# Check to see if this is a NETBACKUP admin server

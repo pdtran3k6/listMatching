@@ -66,12 +66,11 @@ ul
 
 img
 {
-	position: fixed;
     left: 300px;
     top: 20px;
 	height: auto; 
     width: auto; 
-    max-width: 900px; 
+    max-width: 500px; 
     max-height: 200px;
 }
 
