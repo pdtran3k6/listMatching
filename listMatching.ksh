@@ -36,7 +36,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Apr 4 2016 PHAT TRAN
+	# Apr 8 2016 PHAT TRAN
 	############################################################################################################
 
 	SOURCE_DIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
@@ -56,7 +56,7 @@
 	HostTally=0
 	MatchedTally=0
 
-	echo "Hosts that are in the ExceptionFile but not in the Master" > $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
+	echo "HOSTS THAT ARE IN THE EXCEPTION FILE BUT NOT IN THE MASTER" > $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
 	date '+%a %d-%b-%Y %R' >> $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
 	echo >> $REPORTS_OUTPUT_DIR/Missing_Hosts_Report.txt
 
@@ -75,8 +75,6 @@
 	done
 	
 	cat $EXCEPTION | sed '1d' | awk '{print $3}' > $HOST_ONLY_EXCEPTION
-
-	
 
 	cat $SOURCE1 $SOURCE2 $SOURCE3 $SOURCE4 $SOURCE5 > $NO_HEADER_MASTER_FULLNAME
 	# Added missing hosts from ExceptionFile

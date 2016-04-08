@@ -24,31 +24,52 @@
 	# 
 	#
 	# CHANGELOG:
-	# Mar 7 2016 PHAT TRAN
+	# Apr 8 2016 PHAT TRAN
 	############################################################################################################
 
 	NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
 	MASTERTABLE_HTML=/opt/fundserv/syscheck/webcontent/listMatching/MasterTable.html
+	HIP_HTML=/opt/fundserv/syscheck/webcontent/listMatching/HIP.html
 	MASTERTABLE=/opt/fundserv/syscheck/webcontent/listMatching/table/MasterTable
-
+	HOST_INFO_DIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
+	
+	#############################
+	##### GENERATE HIP.HTML #####
+	#############################
+	echo "<html>\n" > $HIP_HTML
+	echo "<head>" >> $HIP_HTML
+	echo "<link rel=\"stylesheet\" href=\"../css/report.css\"/>" >> $HIP_HTML
+	echo "</head>" >> $HIP_HTML
+	echo "<body>\n" >> $HIP_HTML
+	
+	# Title of Host Information Page
+	echo "\n<h2>HOST INFORMATION PAGE</h2>\n" >> $HIP_HTML
+	echo "<p>`date '+%a %d-%b-%Y %R'`</p>" >> $HIP_HTML
+	
+	while read hostName
+	do
+		[ -f "$HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt" ] && echo "<h3><a href='/CMDB/sysinfo/$hostName-sysinfo.txt'>$hostName</h3>" >> $HIP_HTML
+	done < $NO_HEADER_MASTER
+	
+	# Close html
+	echo "\n</body>\n</html>" >> $HIP_HTML
+	
+	#####################################
+	##### GENERATE MASTERTABLE.HTML #####
+	#####################################
 	echo "<html>\n" > $MASTERTABLE_HTML
-		
-	# Set the spacing between columns
-	echo "<head>
-	<style type='text/css'>
-	td
-	{
-		padding:0 70px 0 70px;
-	}
-	</style>
-	</head>\n" >> $MASTERTABLE_HTML
-	echo "<body align='center'>\n" >> $MASTERTABLE_HTML
+	
+	# Set the spacing between columns for MasterTable.html
+	echo "<head>" >> $MASTERTABLE_HTML
+	echo "<link rel=\"stylesheet\" href=\"../css/report.css\"/>" >> $MASTERTABLE_HTML
+	echo "</head>\n" >> $MASTERTABLE_HTML
+	echo "<body>\n" >> $MASTERTABLE_HTML
 
 
 	# Title of the table
-	echo "\n<h3 style='font-family:Tahoma;'>List of nodes from different Systems Management tools</h3>\n" >> $MASTERTABLE_HTML
+	echo "\n<h2>LIST OF NODES FROM DIFFERENT SYSTEMS MANAGEMENT TOOLS</h2>\n" >> $MASTERTABLE_HTML
 	echo "<p>`date '+%a %d-%b-%Y %R'`</p>" >> $MASTERTABLE_HTML
-	echo "<table align='center'>" >> $MASTERTABLE_HTML
+	echo "<table>" >> $MASTERTABLE_HTML
 
 	# Add each columns and each rows into table format (Additional columns could be added)
 	while read col1 col2 col3 col4 col5 col6 col7

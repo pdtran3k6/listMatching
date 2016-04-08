@@ -44,7 +44,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Apr 1 2016 PHAT TRAN
+	# Apr 8 2016 PHAT TRAN
 	############################################################################################################
 
 	SOURCE_DIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
@@ -80,7 +80,7 @@
 	# Generate raw Masterlist and raw ExceptionFile (no header)
 	cat $EXCEPTION | sed '1d' > $NO_HEADER_EXCEPTION
 	rm $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt 2> /dev/null
-	echo "EXTRA HOSTS" > $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt
+	echo "EXTRA HOSTS THAT AREN'T SUPPOSED TO BE IN THE SOURCE" > $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt
 	date '+%a %d-%b-%Y %R' >> $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt
 	echo >> $REPORTS_OUTPUT_DIR/Extra_Hosts_Report.txt
 	total=$(cat $NO_HEADER_MASTER | wc -l)
@@ -218,7 +218,7 @@
 	done
 
 	# Generate the list of all the exceptions that has expired
-	echo "List of expired exceptions" > $REPORTS_OUTPUT_DIR/Expired_Exceptions_Report.txt
+	echo "LIST OF EXPIRED EXCEPTIONS" > $REPORTS_OUTPUT_DIR/Expired_Exceptions_Report.txt
 	date '+%a %d-%b-%Y %R' >> $REPORTS_OUTPUT_DIR/Expired_Exceptions_Report.txt
 	echo >> $REPORTS_OUTPUT_DIR/Expired_Exceptions_Report.txt
 	while read row;
@@ -230,14 +230,14 @@
 	done < $NO_HEADER_EXCEPTION
 
 	# List of exceptions sorted by date
-	echo "Exceptions sorted by date" > $REPORTS_OUTPUT_DIR/Exceptions_By_Date_Report.txt
+	echo "EXCEPTIONS SORTED BY DATE" > $REPORTS_OUTPUT_DIR/Exceptions_By_Date_Report.txt
 	date '+%a %d-%b-%Y %R' >> $REPORTS_OUTPUT_DIR/Exceptions_By_Date_Report.txt
 	echo >> $REPORTS_OUTPUT_DIR/Exceptions_By_Date_Report.txt
 	cat $NO_HEADER_EXCEPTION | sort -b -k 4.1,4.4 -k 4.6,4.7 -k 4.9,4.10 >> $REPORTS_OUTPUT_DIR/Exceptions_By_Date_Report.txt
 	echo >> $REPORTS_OUTPUT_DIR/Exceptions_By_Date_Report.txt 
 
 	# List of exceptions sorted by host's name
-	echo "Exceptions sorted by host name" > $REPORTS_OUTPUT_DIR/Exceptions_By_Hostname_Report.txt
+	echo "EXCEPTIONS SORTED BY HOSTNAME" > $REPORTS_OUTPUT_DIR/Exceptions_By_Hostname_Report.txt
 	date '+%a %d-%b-%Y %R' >> $REPORTS_OUTPUT_DIR/Exceptions_By_Hostname_Report.txt
 	echo >> $REPORTS_OUTPUT_DIR/Exceptions_By_Hostname_Report.txt
 	cat $NO_HEADER_EXCEPTION | sort -b -k 3 >> $REPORTS_OUTPUT_DIR/Exceptions_By_Hostname_Report.txt

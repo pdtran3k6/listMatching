@@ -28,7 +28,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Apr 7 2016 PHAT TRAN
+	# Apr 8 2016 PHAT TRAN
 	############################################################################################################
 
 	HOST_INFO_DIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
@@ -66,7 +66,7 @@
 	echo "SOFTWARE REPORT" > $SOFTWARE_INFO
 	date '+%a %d-%b-%Y %R' >> $SOFTWARE_INFO
 	echo >> $SOFTWARE_INFO
-	printf "$softwareFormat$softwareFormat$softwareFormat$softwareFormat$softwareFormat\n" "HOSTNAME" "DATE" "OS" "NETBACKUP" "UPTIME" >> $SOFTWARE_INFO
+	printf "$softwareFormat$softwareFormat$softwareFormat$softwareFormat$softwareFormat$softwareFormat\n" "HOSTNAME" "DATE" "OS" "NETBACKUP" "RSYNC" "UPTIME" >> $SOFTWARE_INFO
 	
 	zonelistFormat="%-30s"
 	echo "ZONELIST REPORT" > $ZONELIST_INFO
