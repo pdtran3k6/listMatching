@@ -28,7 +28,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Apr 8 2016 PHAT TRAN
+	# Apr 12 2016 PHAT TRAN
 	############################################################################################################
 
 	HOST_INFO_DIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
@@ -86,8 +86,8 @@
 			zonetype=`grep "^ZONETYPE:" $SYSINFO | awk -F: '{print $2}'`
 			
 			# Data for all field
-			grep "^HOSTNAME:" $SYSINFO > $TMPFILE
-			grep "^DATE:" $SYSINFO >> $TMPFILE
+			grep "^HOSTNAME:" $SYSINFO | head -1 > $TMPFILE
+			grep "^DATE:" $SYSINFO | head -1 >> $TMPFILE
 			if [ "$zonetype" == " global" ]
 			then
 				grep "^REMOTE MGMT:" $SYSINFO >> $TMPFILE
@@ -123,8 +123,8 @@
 			echo >> $ALLFIELD_INFO
 			
 			# Data for hardware
-			grep "^HOSTNAME:" $SYSINFO > $TMPFILE
-			grep "^DATE:" $SYSINFO >> $TMPFILE
+			grep "^HOSTNAME:" $SYSINFO | head -1 > $TMPFILE
+			grep "^DATE:" $SYSINFO | head -1 >> $TMPFILE
 			grep "^OS:" $SYSINFO >> $TMPFILE
 			grep "^KERNEL:" $SYSINFO >> $TMPFILE
 			grep "^MODEL:" $SYSINFO >> $TMPFILE
@@ -134,11 +134,12 @@
 			echo >> $HARDWARE_INFO
 			
 			# Data for software
-			grep "^HOSTNAME:" $SYSINFO > $TMPFILE
+			grep "^HOSTNAME:" $SYSINFO | head -1 > $TMPFILE
 			grep "^OS:" $SYSINFO >> $TMPFILE
-			grep "^DATE:" $SYSINFO >> $TMPFILE
-			grep "UPTIME:" $SYSINFO >> $TMPFILE
-			grep "NETBACKUP:" $SYSINFO >> $TMPFILE
+			grep "^DATE:" $SYSINFO | head -1 >> $TMPFILE
+			grep "^NETBACKUP:" $SYSINFO >> $TMPFILE
+			grep "^RSYNC:" $SYSINFO >> $TMPFILE
+			grep "^UPTIME:" $SYSINFO >> $TMPFILE
 			awk -F: '{print $2}' $TMPFILE | sed -e 's/^[ ]*//' | sed 's/ /_/g' | awk '{printf "%-35s", $1}' >> $SOFTWARE_INFO
 			echo >> $SOFTWARE_INFO
 		fi
@@ -149,8 +150,8 @@
 	do
 		SYSINFO2=$HOST_INFO_DIR/$globalHosts/CMDB/$globalHosts-sysinfo.txt
 		# Data for zonelistReport
-		grep "^HOSTNAME:" $SYSINFO2 > $TMPFILE
-		grep "^DATE:" $SYSINFO2 >> $TMPFILE
+		grep "^HOSTNAME:" $SYSINFO2 | head -1 > $TMPFILE
+		grep "^DATE:" $SYSINFO2 | head -1 >> $TMPFILE
 		grep "^ZONELIST:" $SYSINFO2 >> $TMPFILE
 		awk -F: '{print $2}' $TMPFILE | sed -e 's/^[ ]*//' | sed 's/ /_/g' | awk '{printf "%-30s", $1}' >> $ZONELIST_INFO
 		echo >> $ZONELIST_INFO

@@ -1,14 +1,14 @@
 /* This is css stylesheet for MasterTable.html and HIP.html */
 body 
 {
-	text-align: center;
+	text-align: left;
 	padding-top: 10px;
 	background-color: rgba(255, 0, 0, 0);
 }
 
 table 
 {
-	text-align: center;
+	text-align: left;
 }
 
 td

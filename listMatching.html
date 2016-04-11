@@ -1,44 +1,32 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-    
-    <head>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"/>
-		<link rel="stylesheet" href="../css/style.css"/>
-		<title>Operations Portal</title>
-	</head>
-	<body>
-		
-		
-		<img src="../image/header.png">
-		<div id="navtext">
-			<h1>List Matching Page</h1>
-			<h3>The list matching is used to measure the compliance of the computing devices against our 
-			Standards to see if all of them are configured into our different Systems Management tools 
-			(or have a valid exception).</h3>
-		
-			<div class="content">
-				<ul>
+<html>
+<head>
+	<link rel="stylesheet" href="../css/style.css"/>
+	<title>Operations Portal</title>
+</head>
+<body>
+	<img src="../image/header.png">
+	<div id="navtext">
+		<h1>List Matching Page</h1>
+		<h3>The list matching is used to measure the compliance of the computing devices against our 
+		Standards to see if all of them are configured into our different Systems Management tools 
+		(or have a valid exception).</h3>
+		<div class="content">
+			<ul>
 				<li><a href="./MasterTable.html">list matching table</a></li>
 				<li><a href="./reports/Yes_NA_Report.txt">list matching count and percentage</a></li>
-				</ul>
-			
-				<h2>Exception Reports</h2>
-				<ul>
+			</ul>
+			<h2>Exception Reports</h2>
+			<ul>
 				<li><a href="./reports/Expired_Exceptions_Report.txt">All exceptions that have expired</li>
 				<li><a href="./reports/Missing_Hosts_Report.txt">Hostname in exception file but not in master list</li>
 				<li><a href="./reports/Extra_Hosts_Report.txt">Hostname that are in a source and have an exception for that source</li>
 				<li><a href="./reports/Exceptions_By_Hostname_Report.txt">List of exceptions listed by hostname</li>
 				<li><a href="./reports/Exceptions_By_Date_Report.txt">List of exceptions sorted by dates</li>
-				</ul>
-			</div>
-		
-			<h2><a href="../index.html">Back to Homepage</a></h2>
-		
+			</ul>
 		</div>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-	</body>
-	
+		<h2><a href="../index.html">Back to Homepage</a></h2>
+	</div>
+</body>
+
 </html>
