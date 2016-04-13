@@ -1,79 +1,83 @@
 /* This is css stylesheet for Operations Portal homepage */
-html {
-        background: url(../image/team.jpg) no-repeat center center fixed;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        background-size: cover;
+html 
+{
+	background: url(../image/team.jpg) no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	background-size: cover;
 }
 
-#navtext {
-        margin: 250px 0 10px 0;
-        padding: 20px;
-        background-color: rgba(255, 255, 255, 0.9);
+#navtext 
+{
+	margin: 250px 0 10px 0;
+	padding: 20px;
+	background-color: rgba(255, 255, 255, 0.9);
 }
 
-img {
-        margin: 20px 20px 100px auto;
-        height: auto;
-        width: auto;
-        max-width: 500px;
-        max-height: 200px;
+img 
+{
+	margin: 20px 20px 100px auto;
+	height: auto;
+	width: auto;
+	max-width: 500px;
+	max-height: 200px;
 }
 
 body 
 {
-        text-align: center;
+	text-align: center;
+	background-color: rgba(255, 255, 255, 0);
 }
 
 a, a:focus
 {
-        font-family: Arial;
-        color: #44AA4A;
-        text-decoration: none;
+	font-family: Arial;
+	color: #44AA4A;
+	text-decoration: none;
 }
 
 a:hover, a:active, a.active 
 {
-        color: #F9A603;
-        text-decoration: none;
+	color: #F9A603;
+	text-decoration: none;
 }
 
 h1
 {
-        font-family: Verdana;
-        font-weight: bold;
+	font-family: Verdana;
+	font-weight: bold;
 }
 
 h2
 {
-        font-family: Verdana;
-        font-weight: bold;
+	font-family: Verdana;
+	font-weight: bold;
 }
 
 h3
 {
-        font-family: Tahoma;
-        margin: 0 100px 0 100px;
+	font-family: Tahoma;
+	margin: 0 100px 0 100px;
 }
 
 h4
 {
-        font-family: Verdana;
+	font-family: Verdana;
 }
 
 p
 {
-        font-family: Arial;
-        padding: 10px;
+	font-family: Arial;
+	padding: 10px;
 }
 
 ul
 {
-        font-size: 30px;
+	font-size: 30px;
 }
 
 .content
 {
-        text-align: left;
-        padding-left: 50px;
+	text-align: left;
+	padding-left: 50px;
 }
