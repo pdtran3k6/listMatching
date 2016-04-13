@@ -21,7 +21,6 @@
 	# EXIT CODE:
 	# 0 - success
 	# 1 - incorrect arguments
-	# 10 - invalid report
 	#
 	# CHANGELOG:
 	# Apr 13 2016 PHAT TRAN
