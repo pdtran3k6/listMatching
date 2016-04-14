@@ -28,11 +28,13 @@
 	#
 	#
 	# CHANGELOG:
-	# Apr 5 2016 PHAT TRAN
+	# Apr 14 2016 PHAT TRAN
 	############################################################################################################
 
 	TARGETDIR=/opt/fundserv/syscheck/webcontent/listMatching/sources
+	EXCLUSION=/opt/fundserv/syscheck/webcontent/listMatching/exception
 	SOURCEDIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
+	TMPFILE=/opt/fundserv/syscheck/tmp/`basename $0`.$$
 	name1=netbackup
 	name2=syscheck
 	name3=boks
@@ -53,6 +55,17 @@
 	for source in $name1 $name2 $name3 $name4 $name5
 	do      
 		cat $TARGETDIR/$source-*.list | sed '/^$/d' | sort -u > $TARGETDIR/`echo $source | tr [a-z] [A-Z]`.list
-		rm $TARGETDIR/$source-*.list
+		
+		if [ -f "$source-exclusion" ]
+		then		
+			while read excludingHost
+			do
+				grep -v "$excludingHost" $TARGETDIR/`echo $source | tr [a-z] [A-Z]`.list > $TMPFILE && mv $TMPFILE $TARGETDIR/`echo $source | tr [a-z] [A-Z]`.list
+			done < $EXCLUSION/$source-exclusion
+		fi
+		rm $TMPFILE 2> /dev/null
+		rm $TARGETDIR/$source-*.list 2> /dev/null
 	done
+	
+	
 	

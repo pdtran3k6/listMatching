@@ -29,7 +29,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Apr 6 2016 PHAT TRAN
+	# Apr 14 2016 PHAT TRAN
 	############################################################################################################
 	 
 	HOST=`uname -n | cut -d'.' -f1`
@@ -52,12 +52,13 @@
 	##### CONTROLM
 	# Since all the Control M servers are linux, we can hardcode the path of 'whoami' command
 	[ -f "/opt/controlm/ctm_server/exe_Linux-x86_64/ctm_agstat" ] && su - controlm -c "/opt/controlm/ctm_server/exe_Linux-x86_64/ctm_agstat -list '*'" | awk '{print $2}' | sed '1,5d' > $TARGETDIR/controlm-$HOST.list
+	[ -f "/app/controlm/ctm_server/exe_Linux-x86_64/ctm_agstat" ] && su - controlm -c "/app/controlm/ctm_server/exe_Linux-x86_64/ctm_agstat -list '*'" | awk '{print $2}' | sed '1,5d' > $TARGETDIR/controlm-$HOST.list
 	
 	##### NETBACKUP
 	# Check to see if this is a NETBACKUP admin server
 	# If yes, extract the list of hosts that aren't Windows to the TARGETDIR
 	[ -f "/usr/openv/netbackup/bin/admincmd/bpplclients" ] && /usr/openv/netbackup/bin/admincmd/bpplclients -allunique -l | grep -i -v "windows" | awk '{print $2}' > $TARGETDIR/netbackup-$HOST.list
-
+	
 	##### UPTIME
 	# Check to see if this is a UPTIME admin server
 	ls /etc/init.d/ | grep uptime > /dev/null

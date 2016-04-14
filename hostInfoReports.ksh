@@ -28,7 +28,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Apr 13 2016 PHAT TRAN
+	# Apr 14 2016 PHAT TRAN
 	############################################################################################################
 
 	HOST_INFO_DIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
@@ -46,10 +46,6 @@
 	printf "$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat\n" \
 	"HOSTNAME" "DATE" "REMOTE_MGMT" "OS" "KERNEL" "MODEL" "CPU" "ZONETYPE" "CHASSIS_S/N" "SITE" "RACK" \
 	"U_BOTTOM" "CONTRACT_#" "ASSET_TAG" "ENV" "APPS" > $REPORT_DIR/hostInfoReport.txt
-	
-	hardwareFormat="%-40s"
-	printf "$hardwareFormat$hardwareFormat$hardwareFormat$hardwareFormat$hardwareFormat$hardwareFormat$hardwareFormat\n" \
-	"HOSTNAME" "DATE" "OS" "KERNEL" "MODEL" "CPU" "ZONETYPE" > $REPORT_DIR/hardwareReport.txt
 	
 	softwareFormat="%-35s"
 	printf "$softwareFormat$softwareFormat$softwareFormat$softwareFormat$softwareFormat$softwareFormat\n" "HOSTNAME" "DATE" "OS" "NETBACKUP" "RSYNC" "UPTIME" > $REPORT_DIR/softwareReport.txt
@@ -123,22 +119,9 @@
 			echo "$ENV" >> $TMPFILE
 			echo "$APPS" >> $TMPFILE
 			
-			# Re-format the data in table format (HOST_INFO)
+			# Re-format the data in table format (hostInfoReport.txt)
 			awk -F: '{print $2 $3}' $TMPFILE | sed -e 's/^[ ]*//' | sed 's/ /_/g' | sed 's/^$/_/g' | awk '{printf "%-40s", $1}' >> $REPORT_DIR/hostInfoReport.txt
 			echo >> $REPORT_DIR/hostInfoReport.txt
-			
-			# Data for hardware
-			echo "$HOSTNAME" > $TMPFILE
-			echo "$DATE" >> $TMPFILE
-			echo "$OS" >> $TMPFILE
-			echo "$KERNEL" >> $TMPFILE
-			echo "$MODEL" >> $TMPFILE
-			echo "$CPU" >> $TMPFILE
-			echo "$ZONETYPE" >> $TMPFILE
-			
-			# Re-format the data in table format (HARDWARE_INFO)
-			awk -F: '{print $2}' $TMPFILE | sed -e 's/^[ ]*//' | sed 's/ /_/g' | sed 's/^$/_/g' | awk '{printf "%-40s", $1}' >> $REPORT_DIR/hardwareReport.txt
-			echo >> $REPORT_DIR/hardwareReport.txt
 			
 			# Data for software
 			echo "$HOSTNAME" > $TMPFILE
@@ -148,7 +131,7 @@
 			echo "$RSYNC" >> $TMPFILE
 			echo "$UPTIME" >> $TMPFILE
 			
-			# Re-format the data in table format (SOFTWARE_INFO)
+			# Re-format the data in table format (softwareReport.txt)
 			awk -F: '{print $2}' $TMPFILE | sed -e 's/^[ ]*//' | sed 's/ /_/g' | sed 's/^$/_/g' | awk '{printf "%-35s", $1}' >> $REPORT_DIR/softwareReport.txt
 			echo >> $REPORT_DIR/softwareReport.txt
 		fi
@@ -168,7 +151,7 @@
 		echo "$DATE" >> $TMPFILE
 		echo "$ZONELIST" >> $TMPFILE
 		
-		# Re-format the data in table format (ZONELIST_INFO)
+		# Re-format the data in table format (zonelistReport.txt)
 		awk -F: '{print $2}' $TMPFILE | sed -e 's/^[ ]*//' | sed 's/ /_/g' | sed 's/^$/_/g' | awk '{printf "%-30s", $1}' >> $REPORT_DIR/zonelistReport.txt
 		echo >> $REPORT_DIR/zonelistReport.txt
 	done < $TMPFILE2

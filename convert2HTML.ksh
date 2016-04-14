@@ -21,71 +21,21 @@
 	# EXIT CODE:
 	# 0 - success
 	# 1 - incorrect arguments
-	# 10 - invalid report
 	#
 	# CHANGELOG:
-	# Apr 13 2016 PHAT TRAN
+	# Apr 14 2016 PHAT TRAN
 	############################################################################################################
 
 	NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
 	MASTERTABLE_HTML=/opt/fundserv/syscheck/webcontent/listMatching/MasterTable.html
-	HIP_HTML=/opt/fundserv/syscheck/webcontent/listMatching/HIP.html
 	MASTERTABLE=/opt/fundserv/syscheck/webcontent/listMatching/table/MasterTable
 	HOST_INFO_DIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
 	REPORT_DIR=/opt/fundserv/syscheck/webcontent/CMDB/reports
-	
+
 	##### GENERATE INVENTORY REPORTS #####
 	for report in $(ls $REPORT_DIR)
 	do
 		case $report in 
-			hardwareReport.txt)
-			##################################
-			##### GENERATE HARDWARE.HTML #####
-			##################################
-			echo "<html>" > $REPORT_DIR/hardware.html
-			
-			# Set the spacing between columns for hardware.html
-			echo "<head>" >> $REPORT_DIR/hardware.html
-			echo "<link rel=\"stylesheet\" href=\"../../css/report.css\"/>" >> $REPORT_DIR/hardware.html
-			echo "</head>" >> $REPORT_DIR/hardware.html
-			echo "<body>" >> $REPORT_DIR/hardware.html
-
-			# Title of the table
-			echo "<h2>HARDWARE REPORT</h2>" >> $REPORT_DIR/hardware.html
-			echo "<p>`date '+%a %d-%b-%Y %R'`</p>" >> $REPORT_DIR/hardware.html
-			echo "<table style=\"width:150%\">" >> $REPORT_DIR/hardware.html
-			
-			# Add each columns and each rows into table format (Additional columns could be added)
-			while read hostname date os kernel model cpu zonetype
-			do
-				echo "<tr>" >> $REPORT_DIR/hardware.html
-				# Link to host sysinfo.txt file (excluding the header of host column, which is HOSTNAME)
-				if [ "$hostname" == "HOSTNAME" ] 
-				then 
-					echo "<td>$hostname</td>" >> $REPORT_DIR/hardware.html
-				else 
-					echo "<td><a href='/CMDB/sysinfo/$hostname-sysinfo.txt'>$hostname</td>" >> $REPORT_DIR/hardware.html
-				fi
-				echo "<td>$date</td>" >> $REPORT_DIR/hardware.html
-				echo "<td>$os</td>" >> $REPORT_DIR/hardware.html
-				echo "<td>$kernel</td>" >> $REPORT_DIR/hardware.html
-				echo "<td>$model</td>" >> $REPORT_DIR/hardware.html
-				echo "<td>$cpu</td>" >> $REPORT_DIR/hardware.html
-				echo "<td>$zonetype</td>" >> $REPORT_DIR/hardware.html
-				echo "</tr>" >> $REPORT_DIR/hardware.html
-			done < $REPORT_DIR/$report
-				
-			# Close table
-			echo "</table>" >> $REPORT_DIR/hardware.html
-
-			# Link to the report folder
-			echo "<h2>Go to <a href='/listMatching/inventory.html'>Inventory Report</a></h2>" >> $REPORT_DIR/hardware.html
-
-			# Close html
-			echo "</body>" >> $REPORT_DIR/hardware.html
-			echo "</html>" >> $REPORT_DIR/hardware.html
-			;;
-			
 			hostInfoReport.txt)
 			#############################
 			##### GENERATE HIP.HTML #####
@@ -136,7 +86,7 @@
 			echo "</table>" >> $REPORT_DIR/HIP.html
 
 			# Link to the report folder
-			echo "<h2>Go to <a href='/listMatching/inventory.html'>Inventory Report</a></h2>" >> $REPORT_DIR/HIP.html
+			echo "<h2>Back to <a href='/listMatching/inventory.html'>inventory page</a></h2>" >> $REPORT_DIR/HIP.html
 
 			# Close html
 			echo "</body>" >> $REPORT_DIR/HIP.html
@@ -183,7 +133,7 @@
 			echo "</table>" >> $REPORT_DIR/software.html
 
 			# Link to the report folder
-			echo "<h2>Go to <a href='/listMatching/inventory.html'>Inventory Report</a></h2>" >> $REPORT_DIR/software.html
+			echo "<h2>Back to <a href='/listMatching/inventory.html'>inventory page</a></h2>" >> $REPORT_DIR/software.html
 
 			# Close html
 			echo "</body>" >> $REPORT_DIR/software.html
@@ -227,7 +177,7 @@
 			echo "</table>" >> $REPORT_DIR/zonelist.html
 
 			# Link to the report folder
-			echo "<h2>Go to <a href='/listMatching/inventory.html'>Inventory Report</a></h2>" >> $REPORT_DIR/zonelist.html
+			echo "<h2>Back to <a href='/listMatching/inventory.html'>inventory page</a></h2>" >> $REPORT_DIR/zonelist.html
 
 			# Close html
 			echo "</body>" >> $REPORT_DIR/zonelist.html
@@ -278,7 +228,7 @@
 	echo "</table>" >> $MASTERTABLE_HTML
 
 	# Link to the report folder
-	echo "<h2>Go to <a href='/listMatching/listMatching.html'>Report</a></h2>" >> $MASTERTABLE_HTML
+	echo "<h2>Back to <a href='/listMatching/listMatching.html'>list matching page</a></h2>" >> $MASTERTABLE_HTML
 
 	# Close html
 	echo "</body>" >> $MASTERTABLE_HTML
