@@ -28,7 +28,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Apr 14 2016 PHAT TRAN
+	# Apr 15 2016 PHAT TRAN
 	############################################################################################################
 
 	HOST_INFO_DIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
@@ -59,7 +59,10 @@
 		if [ -f "$HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt" ]
 		then
 			# Copy new set of sysinfo.txt files from HOST_INFO_DIR into WEB_HOST_INFO_DIR
-			cp $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt $WEB_HOST_INFO_DIR/$hostName-sysinfo.txt
+			primIP=`grep "$hostName" /etc/hosts 2> /dev/null | head -1 | awk '{print $1}'` 
+			echo "PRIMARY IP: $primIP" > $TMPFILE
+			echo >> $TMPFILE
+			cat $TMPFILE $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt > $WEB_HOST_INFO_DIR/$hostName-sysinfo.txt
 			
 			# Declare variables for all hosts (global and local)
 			SYSINFO=$HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt

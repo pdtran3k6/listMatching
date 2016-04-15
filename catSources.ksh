@@ -56,8 +56,8 @@
 	do      
 		cat $TARGETDIR/$source-*.list | sed '/^$/d' | sort -u > $TARGETDIR/`echo $source | tr [a-z] [A-Z]`.list
 		
-		if [ -f "$source-exclusion" ]
-		then		
+		if [ -f "$EXCLUSION/$source-exclusion" ]
+		then
 			while read excludingHost
 			do
 				grep -v "$excludingHost" $TARGETDIR/`echo $source | tr [a-z] [A-Z]`.list > $TMPFILE && mv $TMPFILE $TARGETDIR/`echo $source | tr [a-z] [A-Z]`.list
