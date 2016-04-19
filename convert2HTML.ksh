@@ -23,7 +23,7 @@
 	# 1 - incorrect arguments
 	#
 	# CHANGELOG:
-	# Apr 15 2016 PHAT TRAN
+	# Apr 19 2016 PHAT TRAN
 	############################################################################################################
 
 	NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
@@ -46,14 +46,11 @@
 		
 		case $report in 
 			hostInfoReport.txt)
-			########################################
-			##### GENERATE hostInfoReport.html #####
-			########################################
 			# Formatting of the table
 			echo "<table style=\"width:300%\">" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 			
 			# Add each columns and each rows into table format (Additional columns could be added)
-			while read hostname date remote_mgmt os kernel model cpu zonetype chassis_sn site rack u_bottom contract_num asset_tag env apps
+			while read hostname date remote_mgmt os kernel model cpu zonetype chassis_sn site rack u_bottom contract_num asset_tag env app_code app_name
 			do
 				echo "<tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				# Link to host sysinfo.txt file (excluding the header of host column, which is HOSTNAME)
@@ -77,15 +74,38 @@
 				echo "<td>$contract_num</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				echo "<td>$asset_tag</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				echo "<td>$env</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
-				echo "<td>$apps</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "<td>$app_code</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "<td>$app_name</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "</tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+			done < $REPORT_DIR/$report
+			;;
+			
+			rackReport.txt)
+			# Formatting of the table
+			echo "<table style=\"width:100%\">" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+			
+			# Add each columns and each rows into table format (Additional columns could be added)
+			while read hostname asset_tag chassis_sn model rack site u_bottom 
+			do
+				echo "<tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				# Link to host sysinfo.txt file (excluding the header of host column, which is HOSTNAME)
+				if [ "$hostname" == "HOSTNAME" ] 
+				then 
+					echo "<td>$hostname</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				else 
+					echo "<td><a href='/CMDB/sysinfo/$hostname-sysinfo.txt'>$hostname</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				fi
+				echo "<td>$asset_tag</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "<td>$chassis_sn</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "<td>$model</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "<td>$rack</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "<td>$site</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "<td>$u_bottom</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				echo "</tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 			done < $REPORT_DIR/$report
 			;;
 			
 			softwareReport.txt)
-			########################################
-			##### GENERATE softwareReport.html #####
-			########################################
 			# Formatting of the table
 			echo "<table style=\"width:100%\">" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 			
@@ -110,9 +130,6 @@
 			;;
 			
 			zonelistReport.txt)
-			##################################
-			##### GENERATE ZONELIST.HTML #####
-			##################################
 			# Formatting of the table
 			echo "<table style=\"width:300%\">" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 			
@@ -136,10 +153,8 @@
 		
 		# Close table
 		echo "</table>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
-
 		# Link to the report folder
 		echo "<h2>Back to <a href='/listMatching/inventory.html'>inventory page</a></h2>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
-
 		# Close html
 		echo "</body>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 		echo "</html>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html

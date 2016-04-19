@@ -28,7 +28,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Apr 15 2016 PHAT TRAN
+	# Apr 19 2016 PHAT TRAN
 	############################################################################################################
 
 	HOST_INFO_DIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
@@ -42,10 +42,14 @@
 	rm $WEB_HOST_INFO_DIR/* $REPORT_DIR/* 2> /dev/null
 
 	# Header of all the reports file
-	hostInfoFormat="%-40s"
-	printf "$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat\n" \
+	hostInfoFormat="%-35s"
+	printf "$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat \
+	$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat\n" \
 	"HOSTNAME" "DATE" "REMOTE_MGMT" "OS" "KERNEL" "MODEL" "CPU" "ZONETYPE" "CHASSIS_S/N" "SITE" "RACK" \
-	"U_BOTTOM" "CONTRACT_#" "ASSET_TAG" "ENV" "APPS" > $REPORT_DIR/hostInfoReport.txt
+	"U_BOTTOM" "CONTRACT_#" "ASSET_TAG" "ENV" "APP_CODE" "APP_NAME" > $REPORT_DIR/hostInfoReport.txt
+	
+	rackFormat="%-40s"
+	printf "$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat\n" "HOSTNAME" "ASSET_TAG" "CHASSIS_S/N" "MODEL" "RACK" "SITE" "U_BOTTOM" > $REPORT_DIR/rackReport.txt
 	
 	softwareFormat="%-35s"
 	printf "$softwareFormat$softwareFormat$softwareFormat$softwareFormat$softwareFormat$softwareFormat\n" "HOSTNAME" "DATE" "OS" "NETBACKUP" "RSYNC" "UPTIME" > $REPORT_DIR/softwareReport.txt
@@ -59,8 +63,14 @@
 		if [ -f "$HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt" ]
 		then
 			# Copy new set of sysinfo.txt files from HOST_INFO_DIR into WEB_HOST_INFO_DIR
-			primIP=`grep "$hostName" /etc/hosts 2> /dev/null | head -1 | awk '{print $1}'` 
-			echo "PRIMARY IP: $primIP" > $TMPFILE
+			numIP=`grep -v "^#" /etc/hosts 2> /dev/null | grep "$hostName" 2> /dev/null | wc -l | sed 's/^[ ]*//'`
+			if [ "$numIP" -gt 1 ]
+			then
+				primIP=`echo "Error - $numIP lines found in psa03mgmt:/etc/hosts"`
+			else
+				primIP=`grep -v "^#" /etc/hosts 2> /dev/null | grep "$hostName" 2> /dev/null | awk '{print $1}'` 
+			fi
+			echo "LOGIN IP: $primIP" > $TMPFILE
 			echo >> $TMPFILE
 			cat $TMPFILE $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt > $WEB_HOST_INFO_DIR/$hostName-sysinfo.txt
 			
@@ -81,7 +91,8 @@
 			CONTRACT_NUM=`grep "^CONTRACT #:" $SYSINFO | head -1`
 			ASSET_TAG=`grep "^ASSET TAG:" $SYSINFO | head -1`
 			ENV=`grep "^ENV:" $SYSINFO | head -1`
-			APPS=`grep "^APPS: " $SYSINFO | head -1`
+			APP_CODE=`grep "^App code:" $SYSINFO | head -1`
+			APP_NAME=`grep "^App name:" $SYSINFO | head -1`
 			NETBACKUP=`grep "^NETBACKUP:" $SYSINFO | head -1`
 			RSYNC=`grep "^RSYNC:" $SYSINFO | head -1`
 			UPTIME=`grep "^UPTIME:" $SYSINFO | head -1`
@@ -120,13 +131,28 @@
 				echo "ASSET TAG: " >> $TMPFILE
 			fi
 			echo "$ENV" >> $TMPFILE
-			echo "$APPS" >> $TMPFILE
+			echo "$APP_CODE" >> $TMPFILE
+			echo "$APP_NAME" >> $TMPFILE
 			
 			# Re-format the data in table format (hostInfoReport.txt)
-			awk -F: '{print $2 $3}' $TMPFILE | sed -e 's/^[ ]*//' | sed 's/ /_/g' | sed 's/^$/_/g' | awk '{printf "%-40s", $1}' >> $REPORT_DIR/hostInfoReport.txt
+			awk -F: '{print $2 $3}' $TMPFILE | sed -e 's/^[ ]*//' | sed 's/ /_/g' | sed 's/^$/_/g' | awk '{printf "%-35s", $1}' >> $REPORT_DIR/hostInfoReport.txt
 			echo >> $REPORT_DIR/hostInfoReport.txt
 			
-			# Data for software
+			# Data for Rack report
+			echo "$HOSTNAME" > $TMPFILE
+			echo "$ASSET_TAG" >> $TMPFILE
+			echo "$MODEL" >> $TMPFILE
+			echo "$CHASSIS_SN" >> $TMPFILE
+			echo "$RACK" >> $TMPFILE
+			echo "$SITE" >> $TMPFILE
+			echo "$U_BOTTOM" >> $TMPFILE
+			
+			# Re-format the data in table format (rackReport.txt)
+			awk -F: '{print $2 $3}' $TMPFILE | sed -e 's/^[ ]*//' | sed 's/ /_/g' | sed 's/^$/_/g' | awk '{printf "%-40s", $1}' >> $REPORT_DIR/rackReport.txt
+			echo >> $REPORT_DIR/rackReport.txt
+			
+			
+			# Data for Software report
 			echo "$HOSTNAME" > $TMPFILE
 			echo "$DATE" >> $TMPFILE
 			echo "$OS" >> $TMPFILE
@@ -149,7 +175,7 @@
 		DATE=`grep "^DATE:" $SYSINFO2 | head -1`
 		ZONELIST=`grep "^ZONELIST:" $SYSINFO2 | head -1`
 		
-		# Data for zonelistReport
+		# Data for Zonelist report
 		echo "$HOSTNAME" > $TMPFILE
 		echo "$DATE" >> $TMPFILE
 		echo "$ZONELIST" >> $TMPFILE
