@@ -23,7 +23,7 @@
 	# 1 - incorrect arguments
 	#
 	# CHANGELOG:
-	# Apr 19 2016 PHAT TRAN
+	# Apr 20 2016 PHAT TRAN
 	############################################################################################################
 
 	NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
@@ -85,22 +85,45 @@
 			echo "<table style=\"width:100%\">" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 			
 			# Add each columns and each rows into table format (Additional columns could be added)
-			while read hostname asset_tag chassis_sn model rack site u_bottom 
+			while read site rack u_bottom hostname model chassis_sn asset_tag
 			do
 				echo "<tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				# Link to host sysinfo.txt file (excluding the header of host column, which is HOSTNAME)
+				echo "<td>$site</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "<td>$rack</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "<td>$u_bottom</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				if [ "$hostname" == "HOSTNAME" ] 
 				then 
 					echo "<td>$hostname</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				else 
 					echo "<td><a href='/CMDB/sysinfo/$hostname-sysinfo.txt'>$hostname</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				fi
-				echo "<td>$asset_tag</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
-				echo "<td>$chassis_sn</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				echo "<td>$model</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
-				echo "<td>$rack</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "<td>$chassis_sn</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "<td>$asset_tag</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "</tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+			done < $REPORT_DIR/$report
+			;;
+			
+			appsReport.txt)
+			# Formatting of the table
+			echo "<table style=\"width:100%\">" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+			
+			# Add each columns and each rows into table format (Additional columns could be added)
+			while read app_code app_name env site hostname 
+			do
+				echo "<tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				# Link to host sysinfo.txt file (excluding the header of host column, which is HOSTNAME)
+				echo "<td>$app_code</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "<td>$app_name</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "<td>$env</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				echo "<td>$site</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
-				echo "<td>$u_bottom</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				if [ "$hostname" == "HOSTNAME" ] 
+				then 
+					echo "<td>$hostname</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				else 
+					echo "<td><a href='/CMDB/sysinfo/$hostname-sysinfo.txt'>$hostname</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				fi
 				echo "</tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 			done < $REPORT_DIR/$report
 			;;

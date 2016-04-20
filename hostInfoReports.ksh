@@ -28,7 +28,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Apr 19 2016 PHAT TRAN
+	# Apr 20 2016 PHAT TRAN
 	############################################################################################################
 
 	HOST_INFO_DIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
@@ -37,7 +37,7 @@
 	NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
 	TMPFILE=/opt/fundserv/syscheck/tmp/`basename $0`.$$
 	TMPFILE2=/opt/fundserv/syscheck/tmp/`basename $0`-2.$$
-	
+	CURRENT_HOSTNAME=`hostname`     
 	# Delete all current sysinfo.txt files from WEB_HOST_INFO_DIR
 	rm $WEB_HOST_INFO_DIR/* $REPORT_DIR/* 2> /dev/null
 
@@ -47,10 +47,7 @@
 	$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat\n" \
 	"HOSTNAME" "DATE" "REMOTE_MGMT" "OS" "KERNEL" "MODEL" "CPU" "ZONETYPE" "CHASSIS_S/N" "SITE" "RACK" \
 	"U_BOTTOM" "CONTRACT_#" "ASSET_TAG" "ENV" "APP_CODE" "APP_NAME" > $REPORT_DIR/hostInfoReport.txt
-	
-	rackFormat="%-40s"
-	printf "$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat\n" "HOSTNAME" "ASSET_TAG" "CHASSIS_S/N" "MODEL" "RACK" "SITE" "U_BOTTOM" > $REPORT_DIR/rackReport.txt
-	
+
 	softwareFormat="%-35s"
 	printf "$softwareFormat$softwareFormat$softwareFormat$softwareFormat$softwareFormat$softwareFormat\n" "HOSTNAME" "DATE" "OS" "NETBACKUP" "RSYNC" "UPTIME" > $REPORT_DIR/softwareReport.txt
 	
@@ -66,9 +63,9 @@
 			numIP=`grep -v "^#" /etc/hosts 2> /dev/null | grep "$hostName" 2> /dev/null | wc -l | sed 's/^[ ]*//'`
 			if [ "$numIP" -gt 1 ]
 			then
-				primIP=`echo "Error - $numIP lines found in psa03mgmt:/etc/hosts"`
+					primIP=`echo "Error - $numIP lines found in $CURRENT_HOSTNAME:/etc/hosts"`
 			else
-				primIP=`grep -v "^#" /etc/hosts 2> /dev/null | grep "$hostName" 2> /dev/null | awk '{print $1}'` 
+					primIP=`grep -v "^#" /etc/hosts 2> /dev/null | grep "$hostName" 2> /dev/null | awk '{print $1}'` 
 			fi
 			echo "LOGIN IP: $primIP" > $TMPFILE
 			echo >> $TMPFILE
@@ -76,27 +73,28 @@
 			
 			# Declare variables for all hosts (global and local)
 			SYSINFO=$HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt
-			HOSTNAME=`grep "^HOSTNAME:" $SYSINFO | head -1`
-			DATE=`grep "^DATE:" $SYSINFO | head -1`
-			OS=`grep "^OS:" $SYSINFO | head -1`
-			REMOTE_MGMT=`grep "^REMOTE MGMT:" $SYSINFO | head -1`
-			KERNEL=`grep "^KERNEL:" $SYSINFO | head -1`
-			MODEL=`grep "^MODEL:" $SYSINFO | head -1`
-			CPU=`grep "^CPU:" $SYSINFO | head -1`
-			ZONETYPE=`grep "^ZONETYPE:" $SYSINFO | head -1`
-			CHASSIS_SN=`grep "^CHASSIS SERIAL NUMBER:" $SYSINFO | head -1`
-			SITE=`grep "^SITE:" $SYSINFO | head -1`
-			RACK=`grep "^RACK:" $SYSINFO | head -1`
-			U_BOTTOM=`grep "^U BOTTOM:" $SYSINFO | head -1`
-			CONTRACT_NUM=`grep "^CONTRACT #:" $SYSINFO | head -1`
-			ASSET_TAG=`grep "^ASSET TAG:" $SYSINFO | head -1`
-			ENV=`grep "^ENV:" $SYSINFO | head -1`
-			APP_CODE=`grep "^App code:" $SYSINFO | head -1`
-			APP_NAME=`grep "^App name:" $SYSINFO | head -1`
-			NETBACKUP=`grep "^NETBACKUP:" $SYSINFO | head -1`
-			RSYNC=`grep "^RSYNC:" $SYSINFO | head -1`
-			UPTIME=`grep "^UPTIME:" $SYSINFO | head -1`
+			HOSTNAME=`grep -i "^HOSTNAME:" $SYSINFO | head -1`
+			DATE=`grep -i "^DATE:" $SYSINFO | head -1`
+			OS=`grep -i "^OS:" $SYSINFO | head -1`
+			REMOTE_MGMT=`grep -i "^REMOTE MGMT:" $SYSINFO | head -1`
+			KERNEL=`grep -i "^KERNEL:" $SYSINFO | head -1`
+			MODEL=`grep -i "^MODEL:" $SYSINFO | head -1`
+			CPU=`grep -i "^CPU:" $SYSINFO | head -1`
+			ZONETYPE=`grep -i "^ZONETYPE:" $SYSINFO | head -1`
+			CHASSIS_SN=`grep -i "^CHASSIS SERIAL NUMBER:" $SYSINFO | head -1`
+			SITE=`grep -i "^SITE:" $SYSINFO | head -1`
+			RACK=`grep -i "^RACK:" $SYSINFO | head -1`
+			U_BOTTOM=`grep -i "^U BOTTOM:" $SYSINFO | head -1`
+			CONTRACT_NUM=`grep -i "^CONTRACT #:" $SYSINFO | head -1`
+			ASSET_TAG=`grep -i "^ASSET TAG:" $SYSINFO | head -1`
+			ENV=`grep -i "^ENV:" $SYSINFO | head -1`
+			APP_CODE=`grep -i "^App code:" $SYSINFO | head -1`
+			APP_NAME=`grep -i "^App name:" $SYSINFO | head -1`
+			NETBACKUP=`grep -i "^NETBACKUP:" $SYSINFO | head -1`
+			RSYNC=`grep -i "^RSYNC:" $SYSINFO | head -1`
+			UPTIME=`grep -i "^UPTIME:" $SYSINFO | head -1`
 			zone=`echo $ZONETYPE | awk -F: '{print $2}'`
+			rack=`echo $RACK | awk -F: '{print $2}'`
 			
 			# Data for hostInfo
 			echo "$HOSTNAME" > $TMPFILE
@@ -139,17 +137,33 @@
 			echo >> $REPORT_DIR/hostInfoReport.txt
 			
 			# Data for Rack report
-			echo "$HOSTNAME" > $TMPFILE
-			echo "$ASSET_TAG" >> $TMPFILE
-			echo "$MODEL" >> $TMPFILE
-			echo "$CHASSIS_SN" >> $TMPFILE
-			echo "$RACK" >> $TMPFILE
-			echo "$SITE" >> $TMPFILE
-			echo "$U_BOTTOM" >> $TMPFILE
+			# Only includes the host if the it has Rack info
+			if [ ! -z "$rack" ]
+			then
+				echo "$SITE" > $TMPFILE
+				echo "$RACK" >> $TMPFILE
+				echo "$U_BOTTOM" >> $TMPFILE
+				echo "$HOSTNAME" >> $TMPFILE
+				echo "$MODEL" >> $TMPFILE
+				echo "$CHASSIS_SN" >> $TMPFILE
+				echo "$ASSET_TAG" >> $TMPFILE
+				
+				# Re-format the data in table format (rackReport.txt)
+				awk -F: '{print $2}' $TMPFILE | sed -e 's/^[ ]*//' | sed 's/ /_/g' | sed 's/^$/_/g' | awk '{printf "%-40s", $1}' >> $REPORT_DIR/rackReport.txt
+				echo >> $REPORT_DIR/rackReport.txt
+			fi
 			
-			# Re-format the data in table format (rackReport.txt)
-			awk -F: '{print $2 $3}' $TMPFILE | sed -e 's/^[ ]*//' | sed 's/ /_/g' | sed 's/^$/_/g' | awk '{printf "%-40s", $1}' >> $REPORT_DIR/rackReport.txt
-			echo >> $REPORT_DIR/rackReport.txt
+			
+			# Data for Apps report
+			echo "$APP_CODE" > $TMPFILE
+			echo "$APP_NAME" >> $TMPFILE
+			echo "$ENV" >> $TMPFILE
+			echo "$SITE" >> $TMPFILE
+			echo "$HOSTNAME" >> $TMPFILE
+			
+			# Re-format the data in table format (appsReport.txt)
+			awk -F: '{print $2}' $TMPFILE | sed -e 's/^[ ]*//' | sed 's/ /_/g' | sed 's/^$/_/g' | awk '{printf "%-40s", $1}' >> $REPORT_DIR/appsReport.txt
+			echo >> $REPORT_DIR/appsReport.txt
 			
 			
 			# Data for Software report
@@ -169,21 +183,31 @@
 	# Loop through all the global hosts
 	while read globalHosts
 	do
-		# Declare variables for global hosts
-		SYSINFO2=$HOST_INFO_DIR/$globalHosts/CMDB/$globalHosts-sysinfo.txt
-		HOSTNAME=`grep "^HOSTNAME:" $SYSINFO2 | head -1`
-		DATE=`grep "^DATE:" $SYSINFO2 | head -1`
-		ZONELIST=`grep "^ZONELIST:" $SYSINFO2 | head -1`
-		
-		# Data for Zonelist report
-		echo "$HOSTNAME" > $TMPFILE
-		echo "$DATE" >> $TMPFILE
-		echo "$ZONELIST" >> $TMPFILE
-		
-		# Re-format the data in table format (zonelistReport.txt)
-		awk -F: '{print $2}' $TMPFILE | sed -e 's/^[ ]*//' | sed 's/ /_/g' | sed 's/^$/_/g' | awk '{printf "%-30s", $1}' >> $REPORT_DIR/zonelistReport.txt
-		echo >> $REPORT_DIR/zonelistReport.txt
+			# Declare variables for global hosts
+			SYSINFO2=$HOST_INFO_DIR/$globalHosts/CMDB/$globalHosts-sysinfo.txt
+			HOSTNAME=`grep -i "^HOSTNAME:" $SYSINFO2 | head -1`
+			DATE=`grep -i "^DATE:" $SYSINFO2 | head -1`
+			ZONELIST=`grep -i "^ZONELIST:" $SYSINFO2 | head -1`
+			
+			# Data for Zonelist report
+			echo "$HOSTNAME" > $TMPFILE
+			echo "$DATE" >> $TMPFILE
+			echo "$ZONELIST" >> $TMPFILE
+			
+			# Re-format the data in table format (zonelistReport.txt)
+			awk -F: '{print $2}' $TMPFILE | sed -e 's/^[ ]*//' | sed 's/ /_/g' | sed 's/^$/_/g' | awk '{printf "%-30s", $1}' >> $REPORT_DIR/zonelistReport.txt
+			echo >> $REPORT_DIR/zonelistReport.txt
 	done < $TMPFILE2
+	
+	sort $REPORT_DIR/rackReport.txt > $TMPFILE 
+	rackFormat="%-40s"
+	printf "$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat\n" "SITE" "RACK" "U_BOTTOM" "HOSTNAME" "MODEL" "CHASSIS_S/N" "ASSET_TAG" > $TMPFILE2
+	cat $TMPFILE2 $TMPFILE > $REPORT_DIR/rackReport.txt
+	
+	sort $REPORT_DIR/appsReport.txt > $TMPFILE
+	appsFormat="%-40s"
+	printf "$appsFormat$appsFormat$appsFormat$appsFormat$appsFormat\n" "APP_CODE" "APP_NAME" "ENV" "SITE" "HOSTNAME" > $TMPFILE2
+	cat $TMPFILE2 $TMPFILE > $REPORT_DIR/appsReport.txt
 	
 	# Clean up trashes
 	rm -f $TMPFILE2
