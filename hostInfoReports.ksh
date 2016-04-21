@@ -28,7 +28,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Apr 20 2016 PHAT TRAN
+	# Apr 21 2016 PHAT TRAN
 	############################################################################################################
 
 	HOST_INFO_DIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
@@ -37,10 +37,12 @@
 	NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
 	TMPFILE=/opt/fundserv/syscheck/tmp/`basename $0`.$$
 	TMPFILE2=/opt/fundserv/syscheck/tmp/`basename $0`-2.$$
-	CURRENT_HOSTNAME=`hostname`     
+	CURRENT_HOSTNAME=`hostname`
+	ENVIRONMENT_LIST=/opt/fundserv/syscheck/webcontent/listMatching/environmentList.txt
+	
 	# Delete all current sysinfo.txt files from WEB_HOST_INFO_DIR
 	rm $WEB_HOST_INFO_DIR/* $REPORT_DIR/* 2> /dev/null
-
+	
 	# Header of all the reports file
 	hostInfoFormat="%-35s"
 	printf "$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat \
@@ -208,6 +210,13 @@
 	appsFormat="%-40s"
 	printf "$appsFormat$appsFormat$appsFormat$appsFormat$appsFormat\n" "APP_CODE" "APP_NAME" "ENV" "SITE" "HOSTNAME" > $TMPFILE2
 	cat $TMPFILE2 $TMPFILE > $REPORT_DIR/appsReport.txt
+	
+	echo "ENVIRONMENT COUNT" > $REPORT_DIR/environmentCountReport.txt
+	while read environment
+	do
+		count=`grep -i "$environment" $REPORT_DIR/hostInfoReport.txt | wc -l` 
+		echo "$environment: $count" >> $REPORT_DIR/environmentCountReport.txt
+	done < $ENVIRONMENT_LIST
 	
 	# Clean up trashes
 	rm -f $TMPFILE2

@@ -23,7 +23,7 @@
 	# 1 - incorrect arguments
 	#
 	# CHANGELOG:
-	# Apr 20 2016 PHAT TRAN
+	# Apr 21 2016 PHAT TRAN
 	############################################################################################################
 
 	NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
@@ -76,6 +76,21 @@
 				echo "<td>$env</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				echo "<td>$app_code</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				echo "<td>$app_name</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "</tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+			done < $REPORT_DIR/$report
+			;;
+			
+			environmentCountReport.txt)
+			# Formatting of the table
+			echo "<table style=\"width:50%\">" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+			
+			# Add each columns and each rows into table format (Additional columns could be added)
+			while read env count
+			do
+				echo "<tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				# Link to host sysinfo.txt file (excluding the header of host column, which is HOSTNAME)
+				echo "<td>$env</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "<td>$count</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				echo "</tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 			done < $REPORT_DIR/$report
 			;;
