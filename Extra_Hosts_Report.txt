@@ -1,2 +1,0 @@
-List of extra hosts in UPTIME.list
-pla01jira01

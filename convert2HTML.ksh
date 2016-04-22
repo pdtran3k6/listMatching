@@ -23,7 +23,7 @@
 	# 1 - incorrect arguments
 	#
 	# CHANGELOG:
-	# Apr 21 2016 PHAT TRAN
+	# Apr 22 2016 PHAT TRAN
 	############################################################################################################
 
 	NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
@@ -81,6 +81,7 @@
 			;;
 			
 			environmentCountReport.txt)
+			echo "<p>Count of OS images per environment, that have syscheck installed</p>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 			# Formatting of the table
 			echo "<table style=\"width:50%\">" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 			

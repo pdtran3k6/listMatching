@@ -28,7 +28,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Apr 21 2016 PHAT TRAN
+	# Apr 22 2016 PHAT TRAN
 	############################################################################################################
 
 	HOST_INFO_DIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
@@ -211,12 +211,16 @@
 	printf "$appsFormat$appsFormat$appsFormat$appsFormat$appsFormat\n" "APP_CODE" "APP_NAME" "ENV" "SITE" "HOSTNAME" > $TMPFILE2
 	cat $TMPFILE2 $TMPFILE > $REPORT_DIR/appsReport.txt
 	
+	sort -u $ENVIRONMENT_LIST > $TMPFILE && mv $TMPFILE $ENVIRONMENT_LIST
 	echo "ENVIRONMENT COUNT" > $REPORT_DIR/environmentCountReport.txt
 	while read environment
 	do
 		count=`grep -i "$environment" $REPORT_DIR/hostInfoReport.txt | wc -l` 
 		echo "$environment: $count" >> $REPORT_DIR/environmentCountReport.txt
+		total=$(($total + $count))
 	done < $ENVIRONMENT_LIST
+	echo >> $REPORT_DIR/environmentCountReport.txt
+	echo "Total: $total" >> $REPORT_DIR/environmentCountReport.txt
 	
 	# Clean up trashes
 	rm -f $TMPFILE2
