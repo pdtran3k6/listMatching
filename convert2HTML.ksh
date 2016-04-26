@@ -23,7 +23,7 @@
 	# 1 - incorrect arguments
 	#
 	# CHANGELOG:
-	# Apr 22 2016 PHAT TRAN
+	# Apr 26 2016 PHAT TRAN
 	############################################################################################################
 
 	NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
@@ -91,6 +91,38 @@
 				echo "<tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				# Link to host sysinfo.txt file (excluding the header of host column, which is HOSTNAME)
 				echo "<td>$env</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "<td>$count</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "</tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+			done < $REPORT_DIR/$report
+			;;
+			
+			osCountReport.txt)
+			echo "<p>Count of hosts per os, that have syscheck installed</p>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+			# Formatting of the table
+			echo "<table style=\"width:50%\">" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+			
+			# Add each columns and each rows into table format (Additional columns could be added)
+			while read os count
+			do
+				echo "<tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				# Link to host sysinfo.txt file (excluding the header of host column, which is HOSTNAME)
+				echo "<td>$os</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "<td>$count</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "</tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+			done < $REPORT_DIR/$report
+			;;
+			
+			modelCountReport.txt)
+			echo "<p>Count of hosts per model, that have syscheck installed</p>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+			# Formatting of the table
+			echo "<table style=\"width:50%\">" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+			
+			# Add each columns and each rows into table format (Additional columns could be added)
+			while read model count
+			do
+				echo "<tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				# Link to host sysinfo.txt file (excluding the header of host column, which is HOSTNAME)
+				echo "<td>$model</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				echo "<td>$count</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				echo "</tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 			done < $REPORT_DIR/$report
