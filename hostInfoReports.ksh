@@ -28,7 +28,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Apr 26 2016 PHAT TRAN
+	# Apr 27 2016 PHAT TRAN
 	############################################################################################################
 
 	HOST_INFO_DIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
@@ -235,16 +235,18 @@
 	echo >> $REPORT_DIR/environmentCountReport.txt
 	echo "Total: $etotal" >> $REPORT_DIR/environmentCountReport.txt
 	
+	HOST_INFO_TABLE=$REPORT_DIR/hostInfoTable.txt
+	sed '1d' $REPORT_DIR/hostInfoReport.txt > $HOST_INFO_TABLE
 	echo > $TMPFILE
 	echo > $TMPFILE2
 	while read hostname date remote_mgmt os kernel model cpu zonetype chassis_sn site rack u_bottom contract_num asset_tag env app_code app_name
 	do
 		echo "$os" >> $TMPFILE
 		echo "$model" >> $TMPFILE2
-	done < $(sed '1d' $REPORT_DIR/hostInfoReport.txt)
+	done < $HOST_INFO_TABLE
 	
-	sed '/^$/d' $TMPFILE | sort -u > $OS_LIST 
-	sed '/^$/d' $TMPFILE2 | sort -u > $MODEL_LIST 
+	sed '/^$/d' $TMPFILE | sed '/^_$/d' | sort -u > $OS_LIST 
+	sed '/^$/d' $TMPFILE2 | sed '/^_$/d' | sort -u > $MODEL_LIST 
 	
 	echo "OS COUNT" > $REPORT_DIR/osCountReport.txt
 	while read os
@@ -270,3 +272,4 @@
 	# Clean up trashes
 	rm -f $TMPFILE2
 	rm -f $TMPFILE
+	rm $HOST_INFO_TABLE
