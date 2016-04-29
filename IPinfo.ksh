@@ -66,3 +66,4 @@
 		rm $TARGETDIR/$HOST-IPinfo.txt 2> /dev/null
 	fi
 	
+	rm -f $TMPFILE

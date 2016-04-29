@@ -28,7 +28,7 @@
 	#
 	#
 	# CHANGELOG:
-	# Apr 27 2016 PHAT TRAN
+	# Apr 29 2016 PHAT TRAN
 	############################################################################################################
 
 	HOST_INFO_DIR=/opt/fundserv/syscheck/all-data/`date +%Y%m`
@@ -42,6 +42,7 @@
 	ENVIRONMENT_LIST=/opt/fundserv/syscheck/webcontent/listMatching/environmentList.txt
 	OS_LIST=/opt/fundserv/syscheck/webcontent/listMatching/osList.txt
 	MODEL_LIST=/opt/fundserv/syscheck/webcontent/listMatching/modelList.txt
+
 	
 	# Delete all current sysinfo.txt files from WEB_HOST_INFO_DIR
 	rm $WEB_HOST_INFO_DIR/* $REPORT_DIR/* 2> /dev/null
@@ -57,7 +58,7 @@
 	printf "$softwareFormat$softwareFormat$softwareFormat$softwareFormat$softwareFormat$softwareFormat\n" "HOSTNAME" "DATE" "OS" "NETBACKUP" "RSYNC" "UPTIME" > $REPORT_DIR/softwareReport.txt
 	
 	zonelistFormat="%-30s"
-	printf "$zonelistFormat$zonelistFormat$zonelistFormat\n" "HOSTNAME" "DATE" "ZONELIST" > $REPORT_DIR/zonelistReport.txt
+	printf "$zonelistFormat$zonelistFormat$zonelistFormat\n" "GLOBAL_ZONE" "DATE" "ZONELIST" > $REPORT_DIR/zonelistReport.txt
 	
 	while read hostName
 	do
@@ -95,6 +96,7 @@
 		RSYNC=`grep -i "^RSYNC:" $SYSINFO | head -1`
 		UPTIME=`grep -i "^UPTIME:" $SYSINFO | head -1`
 		rack=`echo $RACK | awk -F: '{print $2}'`
+		app=`echo $APP_CODE | awk -F: '{print $2}'`
 		
 		numIP=`grep -v "^#" /etc/hosts 2> /dev/null | grep -v loghost 2> /dev/null | grep "$hostName" 2> /dev/null | wc -l | sed 's/^[ ]*//'`
 		if [ "$numIP" -gt 1 ]
@@ -113,7 +115,7 @@
 		
 		echo >> $TMPFILE
 		cat $TMPFILE $HOST_INFO_DIR/$hostName/CMDB/$hostName-sysinfo.txt > $WEB_HOST_INFO_DIR/$hostName-sysinfo.txt
-		
+
 		# Data for hostInfo
 		echo "$HOSTNAME" > $TMPFILE
 		echo "$DATE" >> $TMPFILE
@@ -172,16 +174,19 @@
 		fi
 		
 		# Data for Apps report
-		echo "$APP_CODE" > $TMPFILE
-		echo "$APP_NAME" >> $TMPFILE
-		echo "$ENV" >> $TMPFILE
-		echo "$SITE" >> $TMPFILE
-		echo "$HOSTNAME" >> $TMPFILE
-		
-		# Re-format the data in table format (appsReport.txt)
-		awk -F: '{print $2}' $TMPFILE | sed -e 's/^[ ]*//' | sed 's/ /_/g' | sed 's/^$/_/g' | awk '{printf "%-40s", $1}' >> $REPORT_DIR/appsReport.txt
-		echo >> $REPORT_DIR/appsReport.txt
-		
+		# Only includes the host if the it has App info
+		if [ ! -z "$app" ]
+		then
+			echo "$APP_CODE" > $TMPFILE
+			echo "$APP_NAME" >> $TMPFILE
+			echo "$ENV" >> $TMPFILE
+			echo "$SITE" >> $TMPFILE
+			echo "$HOSTNAME" >> $TMPFILE
+			
+			# Re-format the data in table format (appsReport.txt)
+			awk -F: '{print $2}' $TMPFILE | sed -e 's/^[ ]*//' | sed 's/ /_/g' | sed 's/^$/_/g' | awk '{printf "%-40s", $1}' >> $REPORT_DIR/appsReport.txt
+			echo >> $REPORT_DIR/appsReport.txt
+		fi
 		
 		# Data for Software report
 		echo "$HOSTNAME" > $TMPFILE
@@ -196,6 +201,8 @@
 		echo >> $REPORT_DIR/softwareReport.txt
 	done < $HOSTS_WITH_SYSINFO
 
+	echo > HIP_globalHosts.txt
+	mv $TMPFILE2 listOfGlobalHosts.txt
 	# Loop through all the global hosts
 	while read globalHosts
 	do
@@ -213,8 +220,11 @@
 		# Re-format the data in table format (zonelistReport.txt)
 		awk -F: '{print $2}' $TMPFILE | sed -e 's/^[ ]*//' | sed 's/ /_/g' | sed 's/^$/_/g' | awk '{printf "%-30s", $1}' >> $REPORT_DIR/zonelistReport.txt
 		echo >> $REPORT_DIR/zonelistReport.txt
-	done < $TMPFILE2
+		
+		grep "$globalHosts" $REPORT_DIR/hostInfoReport.txt >> HIP_globalHosts.txt 
+	done < listOfGlobalHosts.txt
 	
+	# Header of reports that need to be sorted
 	sort $REPORT_DIR/rackReport.txt > $TMPFILE 
 	rackFormat="%-40s"
 	printf "$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat$hostInfoFormat\n" "SITE" "RACK" "U_BOTTOM" "HOSTNAME" "MODEL" "CHASSIS_S/N" "ASSET_TAG" > $TMPFILE2
@@ -225,6 +235,17 @@
 	printf "$appsFormat$appsFormat$appsFormat$appsFormat$appsFormat\n" "APP_CODE" "APP_NAME" "ENV" "SITE" "HOSTNAME" > $TMPFILE2
 	cat $TMPFILE2 $TMPFILE > $REPORT_DIR/appsReport.txt
 	
+	
+	#############################################
+	#############################################
+	#############################################
+	###### ALL 'COUNT' REPORTS START HERE #######
+	#############################################
+	#############################################
+	#############################################
+	
+	
+	#### Environment count report ####
 	echo "ENVIRONMENT COUNT" > $REPORT_DIR/environmentCountReport.txt
 	while read environment
 	do
@@ -248,28 +269,55 @@
 	sed '/^$/d' $TMPFILE | sed '/^_$/d' | sort -u > $OS_LIST 
 	sed '/^$/d' $TMPFILE2 | sed '/^_$/d' | sort -u > $MODEL_LIST 
 	
+	
+	#### Os count report ####
 	echo "OS COUNT" > $REPORT_DIR/osCountReport.txt
 	while read os
 	do
-		count=`grep -i "$os" $REPORT_DIR/hostInfoReport.txt | wc -l` 
+		count=`grep -i "$os" $HOST_INFO_TABLE | wc -l` 
 		echo "$os: $count" >> $REPORT_DIR/osCountReport.txt
 		ototal=$(($ototal + $count))
 	done < $OS_LIST
 	echo >> $REPORT_DIR/osCountReport.txt
 	echo "Total: $ototal" >> $REPORT_DIR/osCountReport.txt
 	
+	
+	#### Model count report ####
+	#### Since we want only global hosts, we will have to grep from HIP_globalHosts.txt instead of hostInfoReport.txt ####
 	echo "MODEL COUNT" > $REPORT_DIR/modelCountReport.txt
 	while read model
 	do
-		count=`grep -i "$model" $REPORT_DIR/hostInfoReport.txt | wc -l` 
+		count=`grep -i "$model" HIP_globalHosts.txt | wc -l` 
 		echo "$model: $count" >> $REPORT_DIR/modelCountReport.txt
 		mtotal=$(($mtotal + $count))
 	done < $MODEL_LIST
 	echo >> $REPORT_DIR/modelCountReport.txt
 	echo "Total: $mtotal" >> $REPORT_DIR/modelCountReport.txt
 	
+	#### Cron jobs count report ####
+	totalCronJobs=0
+	total=0
+	echo "ENVIRONMENT CRON-JOBS" > $REPORT_DIR/cronJobsReport.txt
+	while read envTag
+	do
+		for hostName in $(ls $HOST_INFO_DIR)
+		do
+			if [ -f "$HOST_INFO_DIR/$hostName/CMDB/$hostName-countcronjobs" ] 
+			then
+				environment=`tail -1 $HOST_INFO_DIR/$hostName/CMDB/$hostName-countcronjobs | awk '{print $2}'`
+				if [ "$environment" == "$envTag" ]
+				then
+					numCronJobs=`tail -1 $HOST_INFO_DIR/$hostName/CMDB/$hostName-countcronjobs | awk '{print $3}'`
+					total=$(($total + $numCronJobs))
+				fi
+			fi
+		done
+		echo "$envTag: $total" >> $REPORT_DIR/cronJobsReport.txt
+		totalCronJobs=$(($totalCronJobs + $total))
+		total=0
+	done < $ENVIRONMENT_LIST
+	echo "Total: $totalCronJobs" >> $REPORT_DIR/cronJobsReport.txt
 	
 	# Clean up trashes
 	rm -f $TMPFILE2
 	rm -f $TMPFILE
-	rm $HOST_INFO_TABLE

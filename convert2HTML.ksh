@@ -23,7 +23,7 @@
 	# 1 - incorrect arguments
 	#
 	# CHANGELOG:
-	# Apr 26 2016 PHAT TRAN
+	# Apr 29 2016 PHAT TRAN
 	############################################################################################################
 
 	NO_HEADER_MASTER=/opt/fundserv/syscheck/webcontent/listMatching/totals/noHeader-Master
@@ -89,9 +89,23 @@
 			while read env count
 			do
 				echo "<tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
-				# Link to host sysinfo.txt file (excluding the header of host column, which is HOSTNAME)
 				echo "<td>$env</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				echo "<td>$count</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "</tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+			done < $REPORT_DIR/$report
+			;;
+			
+			cronJobsReport.txt)
+			echo "<p>Count of cron jobs per environment, that have syscheck installed</p>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+			# Formatting of the table
+			echo "<table style=\"width:50%\">" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+			
+			# Add each columns and each rows into table format (Additional columns could be added)
+			while read env cronjobs
+			do
+				echo "<tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "<td>$env</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				echo "<td>$cronjobs</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				echo "</tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 			done < $REPORT_DIR/$report
 			;;
@@ -105,7 +119,6 @@
 			while read os count
 			do
 				echo "<tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
-				# Link to host sysinfo.txt file (excluding the header of host column, which is HOSTNAME)
 				echo "<td>$os</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				echo "<td>$count</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				echo "</tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
@@ -121,7 +134,6 @@
 			while read model count
 			do
 				echo "<tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
-				# Link to host sysinfo.txt file (excluding the header of host column, which is HOSTNAME)
 				echo "<td>$model</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				echo "<td>$count</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				echo "</tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
@@ -136,10 +148,10 @@
 			while read site rack u_bottom hostname model chassis_sn asset_tag
 			do
 				echo "<tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
-				# Link to host sysinfo.txt file (excluding the header of host column, which is HOSTNAME)
 				echo "<td>$site</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				echo "<td>$rack</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				echo "<td>$u_bottom</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
+				# Link to host sysinfo.txt file (excluding the header of host column, which is HOSTNAME)
 				if [ "$hostname" == "HOSTNAME" ] 
 				then 
 					echo "<td>$hostname</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
@@ -205,11 +217,11 @@
 			echo "<table style=\"width:300%\">" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 			
 			# Add each columns and each rows into table format (Additional columns could be added)
-			while read hostname date zonelist
+			while read globalzone date zonelist
 			do
 				echo "<tr>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				# Link to host sysinfo.txt file (excluding the header of host column, which is HOSTNAME)
-				if [ "$hostname" == "HOSTNAME" ] 
+				if [ "$globalzone" == "GLOBAL_ZONE" ] 
 				then 
 					echo "<td>$hostname</td>" >> $REPORT_DIR/`echo $report | cut -d. -f1`.html
 				else 
